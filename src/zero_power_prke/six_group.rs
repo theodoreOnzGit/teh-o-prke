@@ -1,5 +1,6 @@
 use std::f64::consts::LN_2;
 
+use approx::assert_abs_diff_eq;
 use ndarray::*;
 use ndarray_linalg::Solve;
 use uom::ConstZero;
@@ -138,10 +139,13 @@ pub fn prke_test_zero_reactivity(){
                 background_source_rate).unwrap();
 
         let precursor_and_neutron_pop_sum: VolumetricNumberDensity
-            = precursor_and_neutron_pop_and_source_array.into_iter().sum();
+            = precursor_sum_with_neutron_pop_array.into_iter().sum();
 
 
-        assert_eq!(precursor_and_neutron_pop_sum.get::<per_cubic_meter>(),1.0);
+        assert_abs_diff_eq!(
+            precursor_and_neutron_pop_sum.get::<per_cubic_meter>(),
+            1.0,
+            epsilon = 1e-9);
 }
 
 /// default is to use u235 decay constants and delayed fraction, with 
