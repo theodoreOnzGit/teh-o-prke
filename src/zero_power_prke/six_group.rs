@@ -102,7 +102,7 @@ pub fn prke_test_zero_reactivity(){
         precursor_and_neutron_pop_and_source_array,
     };
 
-    let timestep = Time::new::<millisecond>(1.0);
+    let timestep = Time::new::<millisecond>(50.0);
     let neutron_generation_time = Time::new::<nanosecond>(10.0);
     let zero_reactivity = Ratio::ZERO;
     let background_source_rate = VolumetricNumberRate::ZERO;
@@ -146,6 +146,30 @@ pub fn prke_test_zero_reactivity(){
     assert_abs_diff_eq!(
         precursor_and_neutron_pop_sum.get::<per_cubic_meter>(),
         1.0,
+        epsilon = 1e-9);
+
+    // now the neutron population after 50 ms * 10000 timesteps is:
+    assert_abs_diff_eq!(
+        prke_test.get_current_neutron_population().value,
+        1.179e-7,
+        epsilon = 1e-9);
+
+    // if critical, it should not change after next 500 s
+
+    for _ in 0..number_of_timesteps {
+
+        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+            timestep, 
+            zero_reactivity, 
+            neutron_generation_time, 
+            background_source_rate).unwrap();
+    }
+
+    // now the neutron population after another 50 ms * 10000 timesteps is:
+    // or else 500s should be the same
+    assert_abs_diff_eq!(
+        prke_test.get_current_neutron_population().value,
+        1.179e-7,
         epsilon = 1e-9);
 }
 
