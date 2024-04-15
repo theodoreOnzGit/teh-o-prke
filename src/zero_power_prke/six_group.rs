@@ -5,7 +5,7 @@ use ndarray_linalg::Solve;
 use uom::ConstZero;
 use uom::si::f64::*;
 use uom::si::volumetric_number_density::per_cubic_meter;
-use uom::si::time::second;
+use uom::si::time::{millisecond, nanosecond, second};
 use uom::si::ratio::ratio;
 
 use crate::teh_o_prke_error::TehOPrkeError;
@@ -38,7 +38,135 @@ pub enum DelayedGroupMode {
     Pu239
 }
 
+impl DelayedGroupMode {
+    /// returns a new decay constant array based on nuclide
+    /// (for this version, all decay constant arrays are the same)
+    pub fn get_decay_constant_array(&self) -> [DecayConstant;6] {
+        match self {
+            DelayedGroupMode::U233 => {
+                return new_decay_constant_array();
+            },
+            DelayedGroupMode::U235 => {
+                return new_decay_constant_array();
+            },
+            DelayedGroupMode::Pu239 => {
+                return new_decay_constant_array();
+            },
+        }
+    }
+
+    /// returns a delayed fraction array based on nuclide 
+    pub fn get_delayed_fraction_array(&self) -> [Ratio;6] {
+        match self {
+            DelayedGroupMode::U233 => {
+                return new_u233_delayed_neutron_fraction_array();
+            },
+            DelayedGroupMode::U235 => {
+                return new_u235_delayed_neutron_fraction_array();
+            },
+            DelayedGroupMode::Pu239 => {
+                return new_pu239_delayed_neutron_fraction_array();
+            },
+        }
+    }
+}
+
+#[test]
+pub fn prke_test_zero_reactivity(){
+    // let's make a new six group PRKE struct,
+    // with zero reactivity and zero new source 
+    // we should get a constant neutron pop 
+
+        let delayed_group_mode = DelayedGroupMode::U235;
+
+
+        let precursor_and_neutron_pop_and_source_array: [VolumetricNumberDensity;7] = 
+            [
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::new::<per_cubic_meter>(1.0) 
+            ];
+        let decay_constant_array = delayed_group_mode.get_decay_constant_array();
+        let delayed_fraction_array = delayed_group_mode.get_delayed_fraction_array();
+
+        let mut prke_test = SixGroupPRKE {
+            decay_constant_array,
+            delayed_fraction_array,
+            delayed_group_mode,
+            precursor_and_neutron_pop_and_source_array,
+        };
+
+        let timestep = Time::new::<millisecond>(1.0);
+        let neutron_generation_time = Time::new::<nanosecond>(10.0);
+        let zero_reactivity = Ratio::ZERO;
+        let background_source_rate = VolumetricNumberRate::ZERO;
+
+        // now before running a timestep, we should get a neutron pop of 1 per m3
+        let initial_neutron_pop_float = prke_test.get_current_neutron_population().
+            get::<per_cubic_meter>();
+
+        assert_eq!(initial_neutron_pop_float,1.0);
+
+        // now let's run a timestep with zero reactivity
+
+
+        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+            timestep, 
+            zero_reactivity, 
+            neutron_generation_time, 
+            background_source_rate).unwrap();
+
+}
+
+/// default is to use u235 decay constants and delayed fraction, with 
+/// starting neutron population of 1 per m3
+impl Default for SixGroupPRKE {
+    fn default() -> Self {
+        let delayed_group_mode = DelayedGroupMode::U235;
+
+        // the arrangement is 
+        // [precursor grp 1, 
+        // precursor grp 2, 
+        // precursor grp 3, 
+        // precursor grp 4, 
+        // precursor grp 5, 
+        // precursor grp 6,
+        // neutron population]
+
+
+        let precursor_and_neutron_pop_and_source_array: [VolumetricNumberDensity;7] = 
+            [
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::ZERO,
+            VolumetricNumberDensity::new::<per_cubic_meter>(1.0) 
+            ];
+        let decay_constant_array = delayed_group_mode.get_decay_constant_array();
+        let delayed_fraction_array = delayed_group_mode.get_delayed_fraction_array();
+
+        Self {
+            decay_constant_array,
+            delayed_fraction_array,
+            delayed_group_mode,
+            precursor_and_neutron_pop_and_source_array,
+        }
+
+    }
+}
+
 impl SixGroupPRKE {
+
+    /// obtains current neutron population 
+    pub fn get_current_neutron_population(&self) -> VolumetricNumberDensity {
+        self.precursor_and_neutron_pop_and_source_array[6]
+    }
 
     /// returns the next timestep neutron source vector
     ///

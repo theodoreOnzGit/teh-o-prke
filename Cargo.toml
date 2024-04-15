@@ -11,3 +11,12 @@ ndarray = "0.15.6"
 ndarray-linalg = "0.16.0"
 thiserror = "1.0.58"
 uom = "0.36.0"
+
+[target.'cfg(windows)'.dependencies]
+ndarray-linalg = { version = "0.16.0", features = ["intel-mkl-static"] }
+
+[target.'cfg(macos)'.dependencies]
+ndarray-linalg = { version = "0.16.0", features = ["intel-mkl-static"] }
+
+[target.'cfg(unix)'.dependencies]
+ndarray-linalg = { version = "0.16.0", features = ["openblas-system"] }
