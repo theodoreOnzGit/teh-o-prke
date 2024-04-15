@@ -1,12 +1,11 @@
 use std::f64::consts::LN_2;
 
-use approx::assert_abs_diff_eq;
 use ndarray::*;
 use ndarray_linalg::Solve;
 use uom::ConstZero;
 use uom::si::f64::*;
 use uom::si::volumetric_number_density::per_cubic_meter;
-use uom::si::time::{millisecond, nanosecond, second};
+use uom::si::time::second;
 use uom::si::ratio::ratio;
 
 use crate::teh_o_prke_error::TehOPrkeError;
@@ -78,74 +77,76 @@ pub fn prke_test_zero_reactivity(){
     // with zero reactivity and zero new source 
     // we should get a constant neutron pop 
 
-        let delayed_group_mode = DelayedGroupMode::U235;
+    use uom::si::time::{millisecond, nanosecond};
+    use approx::assert_abs_diff_eq;
+    let delayed_group_mode = DelayedGroupMode::U235;
 
 
-        let precursor_and_neutron_pop_and_source_array: [VolumetricNumberDensity;7] = 
-            [
-            VolumetricNumberDensity::new::<per_cubic_meter>(1.0),
-            VolumetricNumberDensity::ZERO,
-            VolumetricNumberDensity::ZERO,
-            VolumetricNumberDensity::ZERO,
-            VolumetricNumberDensity::ZERO,
-            VolumetricNumberDensity::ZERO,
-            VolumetricNumberDensity::ZERO,
-            ];
-        let decay_constant_array = delayed_group_mode.get_decay_constant_array();
-        let delayed_fraction_array = delayed_group_mode.get_delayed_fraction_array();
+    let precursor_and_neutron_pop_and_source_array: [VolumetricNumberDensity;7] = 
+        [
+        VolumetricNumberDensity::new::<per_cubic_meter>(1.0),
+        VolumetricNumberDensity::ZERO,
+        VolumetricNumberDensity::ZERO,
+        VolumetricNumberDensity::ZERO,
+        VolumetricNumberDensity::ZERO,
+        VolumetricNumberDensity::ZERO,
+        VolumetricNumberDensity::ZERO,
+        ];
+    let decay_constant_array = delayed_group_mode.get_decay_constant_array();
+    let delayed_fraction_array = delayed_group_mode.get_delayed_fraction_array();
 
-        let mut prke_test = SixGroupPRKE {
-            decay_constant_array,
-            delayed_fraction_array,
-            delayed_group_mode,
-            precursor_and_neutron_pop_and_source_array,
-        };
+    let mut prke_test = SixGroupPRKE {
+        decay_constant_array,
+        delayed_fraction_array,
+        delayed_group_mode,
+        precursor_and_neutron_pop_and_source_array,
+    };
 
-        let timestep = Time::new::<millisecond>(1.0);
-        let neutron_generation_time = Time::new::<nanosecond>(10.0);
-        let zero_reactivity = Ratio::ZERO;
-        let background_source_rate = VolumetricNumberRate::ZERO;
+    let timestep = Time::new::<millisecond>(1.0);
+    let neutron_generation_time = Time::new::<nanosecond>(10.0);
+    let zero_reactivity = Ratio::ZERO;
+    let background_source_rate = VolumetricNumberRate::ZERO;
 
-        // now before running a timestep, we should get a neutron pop of 1 per m3
-        let initial_neutron_pop_float = prke_test.get_current_neutron_population().
-            get::<per_cubic_meter>();
+    // now before running a timestep, we should get a neutron pop of 1 per m3
+    let initial_neutron_pop_float = prke_test.get_current_neutron_population().
+        get::<per_cubic_meter>();
 
-        assert_eq!(initial_neutron_pop_float,1.0);
+    assert_eq!(initial_neutron_pop_float,1.0);
 
-        // now let's run a timestep with zero reactivity
+    // now let's run a timestep with zero reactivity
 
-        let number_of_timesteps = 10000;
-        
-        for _ in 0..number_of_timesteps {
+    let number_of_timesteps = 10000;
 
-            prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
-                timestep, 
-                zero_reactivity, 
-                neutron_generation_time, 
-                background_source_rate).unwrap();
-        }
+    for _ in 0..number_of_timesteps {
 
-
-        // makes sense that we dont add to one because of the delayed precursors 
-        //
-        // however, the sum of all precursor concentrations and neutron 
-        // populations should be 1.0
-
-        let precursor_sum_with_neutron_pop_array = 
-            prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
-                timestep, 
-                zero_reactivity, 
-                neutron_generation_time, 
-                background_source_rate).unwrap();
-
-        let precursor_and_neutron_pop_sum: VolumetricNumberDensity
-            = precursor_sum_with_neutron_pop_array.into_iter().sum();
+        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+            timestep, 
+            zero_reactivity, 
+            neutron_generation_time, 
+            background_source_rate).unwrap();
+    }
 
 
-        assert_abs_diff_eq!(
-            precursor_and_neutron_pop_sum.get::<per_cubic_meter>(),
-            1.0,
-            epsilon = 1e-9);
+    // makes sense that we dont add to one because of the delayed precursors 
+    //
+    // however, the sum of all precursor concentrations and neutron 
+    // populations should be 1.0
+
+    let precursor_sum_with_neutron_pop_array = 
+        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+            timestep, 
+            zero_reactivity, 
+            neutron_generation_time, 
+            background_source_rate).unwrap();
+
+    let precursor_and_neutron_pop_sum: VolumetricNumberDensity
+        = precursor_sum_with_neutron_pop_array.into_iter().sum();
+
+
+    assert_abs_diff_eq!(
+        precursor_and_neutron_pop_sum.get::<per_cubic_meter>(),
+        1.0,
+        epsilon = 1e-9);
 }
 
 /// default is to use u235 decay constants and delayed fraction, with 
