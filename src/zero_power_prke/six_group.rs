@@ -82,13 +82,13 @@ pub fn prke_test_zero_reactivity(){
 
         let precursor_and_neutron_pop_and_source_array: [VolumetricNumberDensity;7] = 
             [
+            VolumetricNumberDensity::new::<per_cubic_meter>(1.0),
             VolumetricNumberDensity::ZERO,
             VolumetricNumberDensity::ZERO,
             VolumetricNumberDensity::ZERO,
             VolumetricNumberDensity::ZERO,
             VolumetricNumberDensity::ZERO,
             VolumetricNumberDensity::ZERO,
-            VolumetricNumberDensity::new::<per_cubic_meter>(1.0) 
             ];
         let decay_constant_array = delayed_group_mode.get_decay_constant_array();
         let delayed_fraction_array = delayed_group_mode.get_delayed_fraction_array();
@@ -113,13 +113,35 @@ pub fn prke_test_zero_reactivity(){
 
         // now let's run a timestep with zero reactivity
 
+        let number_of_timesteps = 10000;
+        
+        for _ in 0..number_of_timesteps {
 
-        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
-            timestep, 
-            zero_reactivity, 
-            neutron_generation_time, 
-            background_source_rate).unwrap();
+            prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+                timestep, 
+                zero_reactivity, 
+                neutron_generation_time, 
+                background_source_rate).unwrap();
+        }
 
+
+        // makes sense that we dont add to one because of the delayed precursors 
+        //
+        // however, the sum of all precursor concentrations and neutron 
+        // populations should be 1.0
+
+        let precursor_sum_with_neutron_pop_array = 
+            prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+                timestep, 
+                zero_reactivity, 
+                neutron_generation_time, 
+                background_source_rate).unwrap();
+
+        let precursor_and_neutron_pop_sum: VolumetricNumberDensity
+            = precursor_and_neutron_pop_and_source_array.into_iter().sum();
+
+
+        assert_eq!(precursor_and_neutron_pop_sum.get::<per_cubic_meter>(),1.0);
 }
 
 /// default is to use u235 decay constants and delayed fraction, with 
@@ -140,13 +162,13 @@ impl Default for SixGroupPRKE {
 
         let precursor_and_neutron_pop_and_source_array: [VolumetricNumberDensity;7] = 
             [
+            VolumetricNumberDensity::new::<per_cubic_meter>(1.0) ,
             VolumetricNumberDensity::ZERO,
             VolumetricNumberDensity::ZERO,
             VolumetricNumberDensity::ZERO,
             VolumetricNumberDensity::ZERO,
             VolumetricNumberDensity::ZERO,
             VolumetricNumberDensity::ZERO,
-            VolumetricNumberDensity::new::<per_cubic_meter>(1.0) 
             ];
         let decay_constant_array = delayed_group_mode.get_decay_constant_array();
         let delayed_fraction_array = delayed_group_mode.get_delayed_fraction_array();
@@ -165,7 +187,7 @@ impl SixGroupPRKE {
 
     /// obtains current neutron population 
     pub fn get_current_neutron_population(&self) -> VolumetricNumberDensity {
-        self.precursor_and_neutron_pop_and_source_array[6]
+        self.precursor_and_neutron_pop_and_source_array[0]
     }
 
     /// returns the next timestep neutron source vector
@@ -203,13 +225,13 @@ impl SixGroupPRKE {
                 }
             );
 
-            let delayed_neutron_precursor_group_1_concentration = self.precursor_and_neutron_pop_and_source_array[0];
-            let delayed_neutron_precursor_group_2_concentration = self.precursor_and_neutron_pop_and_source_array[1];
-            let delayed_neutron_precursor_group_3_concentration = self.precursor_and_neutron_pop_and_source_array[2];
-            let delayed_neutron_precursor_group_4_concentration = self.precursor_and_neutron_pop_and_source_array[3];
-            let delayed_neutron_precursor_group_5_concentration = self.precursor_and_neutron_pop_and_source_array[4];
-            let delayed_neutron_precursor_group_6_concentration = self.precursor_and_neutron_pop_and_source_array[5];
-            let neutron_population_number_density = self.precursor_and_neutron_pop_and_source_array[6];
+            let neutron_population_number_density = self.precursor_and_neutron_pop_and_source_array[0];
+            let delayed_neutron_precursor_group_1_concentration = self.precursor_and_neutron_pop_and_source_array[1];
+            let delayed_neutron_precursor_group_2_concentration = self.precursor_and_neutron_pop_and_source_array[2];
+            let delayed_neutron_precursor_group_3_concentration = self.precursor_and_neutron_pop_and_source_array[3];
+            let delayed_neutron_precursor_group_4_concentration = self.precursor_and_neutron_pop_and_source_array[4];
+            let delayed_neutron_precursor_group_5_concentration = self.precursor_and_neutron_pop_and_source_array[5];
+            let delayed_neutron_precursor_group_6_concentration = self.precursor_and_neutron_pop_and_source_array[6];
 
             let precursor_and_neutron_pop_and_source_array_with_background_source = 
                 Self::construct_present_timestep_concentration_and_neutron_pop_vector(
@@ -250,19 +272,19 @@ impl SixGroupPRKE {
             // However, need to pivot around the source vector
 
             self.precursor_and_neutron_pop_and_source_array[0] = 
-                precursor_and_neutron_pop_and_source_vector_next_timestep[1];
-            self.precursor_and_neutron_pop_and_source_array[1] = 
-                precursor_and_neutron_pop_and_source_vector_next_timestep[2];
-            self.precursor_and_neutron_pop_and_source_array[2] = 
-                precursor_and_neutron_pop_and_source_vector_next_timestep[3];
-            self.precursor_and_neutron_pop_and_source_array[3] = 
-                precursor_and_neutron_pop_and_source_vector_next_timestep[4];
-            self.precursor_and_neutron_pop_and_source_array[4] = 
-                precursor_and_neutron_pop_and_source_vector_next_timestep[5];
-            self.precursor_and_neutron_pop_and_source_array[5] = 
-                precursor_and_neutron_pop_and_source_vector_next_timestep[6];
-            self.precursor_and_neutron_pop_and_source_array[6] = 
                 precursor_and_neutron_pop_and_source_vector_next_timestep[0];
+            self.precursor_and_neutron_pop_and_source_array[1] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[1];
+            self.precursor_and_neutron_pop_and_source_array[2] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[2];
+            self.precursor_and_neutron_pop_and_source_array[3] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[3];
+            self.precursor_and_neutron_pop_and_source_array[4] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[4];
+            self.precursor_and_neutron_pop_and_source_array[5] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[5];
+            self.precursor_and_neutron_pop_and_source_array[6] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[6];
 
             // return to environment
             Ok(precursor_and_neutron_pop_and_source_vector_next_timestep)
@@ -292,18 +314,18 @@ impl SixGroupPRKE {
             let mut precursor_and_neutron_pop_and_source_vector: Array1<VolumetricNumberDensity> = 
                 Array::zeros(array_width_and_height);
 
-            precursor_and_neutron_pop_and_source_vector[0] = delayed_neutron_precursor_group_1_concentration;
-            precursor_and_neutron_pop_and_source_vector[1] = delayed_neutron_precursor_group_2_concentration;
-            precursor_and_neutron_pop_and_source_vector[2] = delayed_neutron_precursor_group_3_concentration;
-            precursor_and_neutron_pop_and_source_vector[3] = delayed_neutron_precursor_group_4_concentration;
-            precursor_and_neutron_pop_and_source_vector[4] = delayed_neutron_precursor_group_5_concentration;
-            precursor_and_neutron_pop_and_source_vector[5] = delayed_neutron_precursor_group_6_concentration;
+            precursor_and_neutron_pop_and_source_vector[1] = delayed_neutron_precursor_group_1_concentration;
+            precursor_and_neutron_pop_and_source_vector[2] = delayed_neutron_precursor_group_2_concentration;
+            precursor_and_neutron_pop_and_source_vector[3] = delayed_neutron_precursor_group_3_concentration;
+            precursor_and_neutron_pop_and_source_vector[4] = delayed_neutron_precursor_group_4_concentration;
+            precursor_and_neutron_pop_and_source_vector[5] = delayed_neutron_precursor_group_5_concentration;
+            precursor_and_neutron_pop_and_source_vector[6] = delayed_neutron_precursor_group_6_concentration;
 
 
             let background_source_term: VolumetricNumberDensity = 
                 (background_source_rate * timestep).into();
 
-            precursor_and_neutron_pop_and_source_vector[6] = 
+            precursor_and_neutron_pop_and_source_vector[0] = 
                 background_source_term
                 + neutron_population_number_density;
 
@@ -339,8 +361,8 @@ impl SixGroupPRKE {
         let total_delayed_fraction: Ratio = 
             self.delayed_fraction_array.clone().into_iter().sum();
 
-        // bottom row coefficient
-        let bottom_left_coefficient = Ratio::new::<ratio>(1.0) - 
+        // top row coefficient
+        let top_left_coefficient = Ratio::new::<ratio>(1.0) - 
             timestep_to_neutron_generation_time_ratio*(
                 reactivity - total_delayed_fraction);
         let delta_t_lambda_1: Ratio = timestep * lambda_1;
@@ -355,33 +377,35 @@ impl SixGroupPRKE {
         let mut coefficient_matrix: Array2<Ratio> = 
         Array::zeros((array_width_and_height, array_width_and_height));
 
-        // start changing the bottom row 
+        // okay i won't pivot this time to avoid confusion
+
+        // start changing the top row 
         {
-            coefficient_matrix[[6,0]] = bottom_left_coefficient;
-            coefficient_matrix[[6,1]] = -delta_t_lambda_1;
-            coefficient_matrix[[6,2]] = -delta_t_lambda_2;
-            coefficient_matrix[[6,3]] = -delta_t_lambda_3;
-            coefficient_matrix[[6,4]] = -delta_t_lambda_4;
-            coefficient_matrix[[6,5]] = -delta_t_lambda_5;
-            coefficient_matrix[[6,6]] = -delta_t_lambda_6;
+            coefficient_matrix[[0,0]] = top_left_coefficient;
+            coefficient_matrix[[0,1]] = -delta_t_lambda_1;
+            coefficient_matrix[[0,2]] = -delta_t_lambda_2;
+            coefficient_matrix[[0,3]] = -delta_t_lambda_3;
+            coefficient_matrix[[0,4]] = -delta_t_lambda_4;
+            coefficient_matrix[[0,5]] = -delta_t_lambda_5;
+            coefficient_matrix[[0,6]] = -delta_t_lambda_6;
         }
         // then the left column
         {
-            coefficient_matrix[[0,0]] = -timestep_to_neutron_generation_time_ratio*beta_1;
-            coefficient_matrix[[1,0]] = -timestep_to_neutron_generation_time_ratio*beta_2;
-            coefficient_matrix[[2,0]] = -timestep_to_neutron_generation_time_ratio*beta_3;
-            coefficient_matrix[[3,0]] = -timestep_to_neutron_generation_time_ratio*beta_4;
-            coefficient_matrix[[4,0]] = -timestep_to_neutron_generation_time_ratio*beta_5;
-            coefficient_matrix[[5,0]] = -timestep_to_neutron_generation_time_ratio*beta_6;
+            coefficient_matrix[[1,0]] = -timestep_to_neutron_generation_time_ratio*beta_1;
+            coefficient_matrix[[2,0]] = -timestep_to_neutron_generation_time_ratio*beta_2;
+            coefficient_matrix[[3,0]] = -timestep_to_neutron_generation_time_ratio*beta_3;
+            coefficient_matrix[[4,0]] = -timestep_to_neutron_generation_time_ratio*beta_4;
+            coefficient_matrix[[5,0]] = -timestep_to_neutron_generation_time_ratio*beta_5;
+            coefficient_matrix[[6,0]] = -timestep_to_neutron_generation_time_ratio*beta_6;
         }
         // Lastly, the diagonal
         {
-            coefficient_matrix[[0,1]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_1;
-            coefficient_matrix[[1,2]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_2;
-            coefficient_matrix[[2,3]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_3;
-            coefficient_matrix[[3,4]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_4;
-            coefficient_matrix[[4,5]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_5;
-            coefficient_matrix[[5,6]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_6;
+            coefficient_matrix[[1,1]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_1;
+            coefficient_matrix[[2,2]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_2;
+            coefficient_matrix[[3,3]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_3;
+            coefficient_matrix[[4,4]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_4;
+            coefficient_matrix[[5,5]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_5;
+            coefficient_matrix[[6,6]] = Ratio::new::<ratio>(1.0)+delta_t_lambda_6;
         }
 
         // return the coefficient_matrix
