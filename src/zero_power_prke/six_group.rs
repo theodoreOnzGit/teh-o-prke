@@ -151,8 +151,8 @@ pub fn prke_test_zero_reactivity(){
     // now the neutron population after 50 ms * 10000 timesteps is:
     assert_abs_diff_eq!(
         prke_test.get_current_neutron_population().value,
-        1.179e-7,
-        epsilon = 1e-9);
+        1.17917639e-7,
+        epsilon = 1e-11);
 
     // if critical, it should not change after next 500 s
 
@@ -169,8 +169,8 @@ pub fn prke_test_zero_reactivity(){
     // or else 500s should be the same
     assert_abs_diff_eq!(
         prke_test.get_current_neutron_population().value,
-        1.179e-7,
-        epsilon = 1e-9);
+        1.17917639e-7,
+        epsilon = 1e-11);
 }
 
 /// default is to use u235 decay constants and delayed fraction, with 
