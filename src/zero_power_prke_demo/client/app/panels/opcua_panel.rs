@@ -292,6 +292,14 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
 
                 *neutron_conc_per_m3_to_gui = neutron_conc_per_m3_float;
 
+                //// reactivity debugging 
+                //let reactivity_read_val = &results[1];
+                //let reactivity_val_float: f32 = 
+                //    reactivity_read_val.value.clone()
+                //    .unwrap().as_f64().unwrap()
+                //    as f32;
+                //dbg!(&reactivity_val_float);
+
 
             }
 

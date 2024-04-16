@@ -268,7 +268,7 @@ pub fn construct_and_run_zero_power_prke_server_delayed_critical(run_server: boo
 
     // i'll have some variables here.
     // most important is to give user control of reactivity
-    let reactivity_node = NodeId::new(ns, "reactivity");
+    let reactivity_node = NodeId::new(ns, "reactivity_input");
 
 
     // the resulting outputs are precursor concentrations and neutron population
@@ -294,9 +294,9 @@ pub fn construct_and_run_zero_power_prke_server_delayed_critical(run_server: boo
 
         // we start with negative reactivity first
         VariableBuilder::new(&reactivity_node, 
-                             "reactivity_ratio_not_dollars", "reactivity_ratio_not_dollars")
+                             "reactivity_input", "reactivity_input")
             .data_type(DataTypeId::Float)
-            .value(0.005 as f64)
+            .value(0.00 as f64)
             .writable()
             .organized_by(&folder_id)
             .insert(&mut address_space);
