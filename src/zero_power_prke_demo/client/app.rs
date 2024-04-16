@@ -131,7 +131,7 @@ impl eframe::App for GuiClient {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("OPC-UA GUI Client and Real-time Plot Demos in Written in Rust");
+            ui.heading("Zero Power PRKE Server and Client written in Rust");
 
             // separator and select panel
             ui.separator();

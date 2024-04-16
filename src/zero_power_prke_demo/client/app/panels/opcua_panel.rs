@@ -24,6 +24,8 @@ impl GuiClient {
         {
             let mut binding = self.reactivity_input.lock().unwrap();
             let user_input_value = binding.deref_mut();
+
+            ui.style_mut().spacing.slider_width = 1000.0;
             ui.add(egui::Slider::new(user_input_value, -0.1..=0.007).
                 text("User Input for Reactivity"));
 
