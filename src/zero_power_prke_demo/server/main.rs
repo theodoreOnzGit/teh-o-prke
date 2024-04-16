@@ -132,6 +132,13 @@ pub fn construct_and_run_zero_power_prke_server_prompt_critical(run_server: bool
     // timer
     let loop_time = SystemTime::now();
     // neutron mean lifetime in thermal spectrum reactor is about 10^(-4)s
+    //
+    // see lamarsh or:
+    //
+    // Busch, Robert D., Gregory D. Spriggs, and John S. Hendricks. 
+    // Definition of neutron lifespan and neutron lifetime in MCNP4B. 
+    // No. LA-UR-97-222; CONF-970607-14. Los Alamos National Lab.(LANL), 
+    // Los Alamos, NM (United States), 1997.
     let neutron_mean_lifetime = Time::new::<microsecond>(100.0);
     let background_source_rate = VolumetricNumberRate::new::<per_cubic_meter_second>(5.0);
 
