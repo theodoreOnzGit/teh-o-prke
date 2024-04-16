@@ -35,8 +35,8 @@ fn main() -> eframe::Result<()> {
 
     // for opcua 
 
-    let opcua_input_clone = gui_app.loop_pressure_drop_pump_pressure_pascals_input.clone();
-    let opcua_output_clone = gui_app.mass_flowrate_kg_per_s_output.clone();
+    let opcua_input_clone = gui_app.reactivity_input.clone();
+    let opcua_output_clone = gui_app.neutron_concentration_output_per_m3.clone();
     let isothermal_ciet_plot_ptr_clone = gui_app.isothermal_ciet_plots_ptr.clone();
     let opcua_ip_addr_ptr_clone = gui_app.opcua_server_ip_addr.clone();
 

@@ -29,9 +29,9 @@ pub struct GuiClient {
     pub input_output_plots_ptr: Arc<Mutex<Vec<[f64;3]>>>,
     // for input and output of isothermal ciet opcua server anc client
     #[serde(skip)] 
-    pub loop_pressure_drop_pump_pressure_pascals_input: Arc<Mutex<f32>>,
+    pub reactivity_input: Arc<Mutex<f32>>,
     #[serde(skip)] 
-    pub mass_flowrate_kg_per_s_output: Arc<Mutex<f32>>,
+    pub neutron_concentration_output_per_m3: Arc<Mutex<f32>>,
     #[serde(skip)] 
     pub opcua_server_ip_addr: Arc<Mutex<String>>,
     pub isothermal_ciet_plots_ptr: Arc<Mutex<Vec<[f64;3]>>>,
@@ -80,8 +80,8 @@ impl Default for GuiClient {
             input_output_plots_ptr: Arc::new(
                 Mutex::new(vec![])
             ),
-            loop_pressure_drop_pump_pressure_pascals_input: Arc::new(Mutex::new(0.0)),
-            mass_flowrate_kg_per_s_output: Arc::new(Mutex::new(0.0)),
+            reactivity_input: Arc::new(Mutex::new(0.0)),
+            neutron_concentration_output_per_m3: Arc::new(Mutex::new(0.0)),
             isothermal_ciet_plots_ptr: Arc::new(
                 Mutex::new(vec![])
             ),

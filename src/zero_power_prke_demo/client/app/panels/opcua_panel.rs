@@ -22,7 +22,7 @@ impl GuiClient {
         // slider changes the user input value
         // and we release the mutex lock immediately
         {
-            let mut binding = self.loop_pressure_drop_pump_pressure_pascals_input.lock().unwrap();
+            let mut binding = self.reactivity_input.lock().unwrap();
             let user_input_value = binding.deref_mut();
             ui.add(egui::Slider::new(user_input_value, -0.1..=0.007).
                 text("User Input for Reactivity"));
