@@ -219,6 +219,15 @@ impl SixGroupPRKE {
         self.precursor_and_neutron_pop_and_source_array[0]
     }
 
+    /// total delayed fraction 
+    pub fn get_total_delayed_fraction(&self) -> Ratio {
+
+        let total_delayed_fraction: Ratio = 
+            self.delayed_fraction_array.clone().into_iter().sum();
+
+        total_delayed_fraction
+    }
+
     /// returns the next timestep neutron source vector
     ///
     /// also updates the current precursor and concentration vector
@@ -441,6 +450,28 @@ impl SixGroupPRKE {
         coefficient_matrix
     }
 
+    /// enables you to convert reactivity into keff, useful for calculating 
+    /// the neutron generation time
+    pub fn get_keff_from_reactivity(reactivity: Ratio) -> Ratio {
+
+        // reactivity is rho 
+        //
+        // rho = (k-1)/k
+        //
+        // k * rho = k - 1
+        // k * rho - k = - 1
+        // k - k * rho = 1
+        // k * (1 - rho) = 1
+        // k = 1/(1 - rho) 
+        //
+
+        let ratio_one = Ratio::new::<ratio>(1.0);
+
+        let keff = ratio_one/(ratio_one - reactivity);
+
+        keff
+
+    }
     
 }
 
