@@ -9,13 +9,13 @@ The zero power PRKE is split into two parts, the server and client.
 To run the server:
 
 ```sh
-cargo run --bin server --release
+cargo run --example server --release
 ```
 
 To run the client:
 
 ```sh
-cargo run --bin client --release
+cargo run --example client --release
 ```
 
 Please remember to run the client AFTER the server.
