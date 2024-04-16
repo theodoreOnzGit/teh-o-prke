@@ -156,7 +156,7 @@ fn main() -> eframe::Result<()> {
         let my_local_ip = local_ip().unwrap();
         let ip_addr: String = my_local_ip.to_string();        
         let endpoint: String = "opc.tcp://".to_owned()
-        +&ip_addr+":4840/rust_ciet_opcua_server";
+        +&ip_addr+":4840/rust_zero_power_prke_opcua_server";
 
         let mut connection_result = try_connect_to_server_and_run_client(
             &endpoint,
@@ -172,7 +172,7 @@ fn main() -> eframe::Result<()> {
             let ip_addr: String = opcua_ip_addr_ptr_clone.lock().unwrap().deref_mut()
             .to_string();
             let endpoint: String = "opc.tcp://".to_owned()
-            +&ip_addr+":4840/rust_ciet_opcua_server";
+            +&ip_addr+":4840/rust_zero_power_prke_opcua_server";
 
             if let Err(_) = connection_result.clone() {
                 connection_result = try_connect_to_server_and_run_client(

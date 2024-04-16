@@ -30,7 +30,7 @@ impl GuiClient {
         }
 
 
-        let mut opcua_plot = Plot::new("loop pressure drop plot").legend(Legend::default());
+        let mut opcua_plot = Plot::new("neutron_conc_plot").legend(Legend::default());
 
         // sets the aspect for plot 
         opcua_plot = opcua_plot.width(500.0);
@@ -54,7 +54,7 @@ impl GuiClient {
             }
         ).collect();
 
-        let opcua_user_input_vec: Vec<f64> = opcua_plot_pts.iter().map(
+        let opcua_user_input_reactivity_vec: Vec<f64> = opcua_plot_pts.iter().map(
             |tuple|{
                 let [_,opcua_user_input,_] = *tuple;
 
@@ -62,7 +62,7 @@ impl GuiClient {
             }
         ).collect();
 
-        let opcua_user_output_vec: Vec<f64> = opcua_plot_pts.iter().map(
+        let opcua_user_output_neutron_conc_vec: Vec<f64> = opcua_plot_pts.iter().map(
             |tuple|{
                 let [_,_,opcua_user_output] = *tuple;
 
@@ -88,8 +88,8 @@ impl GuiClient {
         ).collect();
 
         let max_time = time_vec.clone().into_iter().fold(f64::NEG_INFINITY, f64::max);
-        let max_user_input = opcua_user_input_vec.clone().into_iter().fold(f64::NEG_INFINITY, f64::max);
-        let current_user_input = opcua_user_input_vec.clone().into_iter().last();
+        let max_user_input = opcua_user_input_reactivity_vec.clone().into_iter().fold(f64::NEG_INFINITY, f64::max);
+        let current_user_input = opcua_user_input_reactivity_vec.clone().into_iter().last();
 
         let current_user_input = match current_user_input {
             Some(float) => float,
@@ -105,7 +105,7 @@ impl GuiClient {
             "time (seconds), current time (seconds): ".to_owned() 
             + &max_time.to_string());
         opcua_plot = opcua_plot.y_axis_label(
-            "Pressure (Pa) ; \n  current pressure (Pa): ".to_owned()
+            "Reactivity (not dollars) ; \n  current reactivity (not dollars): ".to_owned()
             + &current_user_input.to_string());
 
         // now truncate values that are too old
@@ -138,7 +138,7 @@ impl GuiClient {
 
         // second plot for the 
         ui.separator();
-        let mut opcua_mass_flow_plot = Plot::new("mass flowrate plot").legend(Legend::default());
+        let mut opcua_mass_flow_plot = Plot::new("neutron conc per m3 plot").legend(Legend::default());
 
         // sets the aspect for plot 
         opcua_mass_flow_plot = opcua_mass_flow_plot.width(500.0);
@@ -148,7 +148,7 @@ impl GuiClient {
         opcua_mass_flow_plot = opcua_mass_flow_plot.auto_bounds_y();
         opcua_mass_flow_plot = opcua_mass_flow_plot.x_axis_label(
             "time (seconds)");
-        let current_user_output = opcua_user_output_vec.clone().into_iter().last();
+        let current_user_output = opcua_user_output_neutron_conc_vec.clone().into_iter().last();
 
         let mut current_user_output = match current_user_output {
             Some(float) => float,
@@ -161,20 +161,20 @@ impl GuiClient {
 
 
         opcua_mass_flow_plot = opcua_mass_flow_plot.y_axis_label(
-            "mass flowrate (kg/s) \n 
-            current mass flowrate: ".to_owned() +
+            "neutron conc (per m3) \n 
+            current neutron conc: ".to_owned() +
             &current_user_output.to_string());
 
         ui.horizontal(|ui| {
             opcua_plot.show(ui, |plot_ui| {
                 plot_ui.line(Line::new(PlotPoints::from(
                     time_input_vec.clone()
-                )).name("opc-ua user input (loop pressure drop [Pa])"));
+                )).name("user reactivity input"));
             });
             opcua_mass_flow_plot.show(ui, |plot_ui| {
                 plot_ui.line(Line::new(PlotPoints::from(
                     time_output_vec
-                )).name("mass flowrate kg/s"));
+                )).name("neutron conc output"));
             });
         });
     }
@@ -261,31 +261,21 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
     let _ = Session::run_async(session.clone());
 
     // i want to poll the server and print values 
-    let ctah_branch_mass_flowrate_node = NodeId::new(ns, "ctah_branch_mass_flowrate");
-    let heater_branch_mass_flowrate_node = NodeId::new(ns, "heater_branch_flowrate");
-    let calculation_time_node = NodeId::new(ns, "calculation_time");
-    let ctah_pump_pressure_node = NodeId::new(ns, "ctah_pump_pressure");
-    let bt11_temperature_node = NodeId::new(ns, "bt11_temperature_degC");
-    let bt12_temperature_node = NodeId::new(ns, "bt12_temperature_degC");
-    let heater_power_node = NodeId::new(ns, "heater_power_kilowatts");
+    let neutron_conc_per_m3_output_node = NodeId::new(ns, "neutron_concentration_per_m3");
+    let reactivity_input_node = NodeId::new(ns, "reactivity_input");
 
     // i will also need another thread to run the polling loop 
 
     thread::spawn( move ||{
         loop {
 
-            // this is the reading part
+            // this is the reading part where it reads from the server
             {
                 let session_lock = session.read();
                 let results = session_lock
                     .read(&[
-                        ctah_branch_mass_flowrate_node.clone().into(),
-                        ctah_pump_pressure_node.clone().into(),
-                        calculation_time_node.clone().into(),
-                        heater_branch_mass_flowrate_node.clone().into(),
-                        bt11_temperature_node.clone().into(),
-                        heater_power_node.clone().into(),
-                        bt12_temperature_node.clone().into(),
+                        neutron_conc_per_m3_output_node.clone().into(),
+                        reactivity_input_node.clone().into(),
                     ], TimestampsToReturn::Both, 1.0)
                     .unwrap();
                 //let value = &results[0];
@@ -293,6 +283,14 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
                 // now lock the mutex 
                 let mut neutron_conc_per_m3_to_gui = neutron_conc_per_m3_output_ptr.lock().unwrap();
 
+                // read the neutron concentration from the results
+                let neutron_conc_per_m3_value = &results[0];
+                let neutron_conc_per_m3_float: f32 = 
+                    neutron_conc_per_m3_value.value.clone()
+                    .unwrap().as_f64().unwrap()
+                    as f32;
+
+                *neutron_conc_per_m3_to_gui = neutron_conc_per_m3_float;
 
 
             }
@@ -302,7 +300,7 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
 
             {
                 // first, get user inputs
-                let user_input_pressure_drop: f32 = 
+                let user_input_reactivity: f32 = 
                 reactivity_input_ptr.lock().unwrap().to_owned();
 
 
@@ -310,11 +308,11 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
 
 
                 // next, create the write values
-                let ctah_pump_node_write: WriteValue = WriteValue {
-                        node_id: ctah_pump_pressure_node.clone(),
+                let reactivity_node_write: WriteValue = WriteValue {
+                        node_id: reactivity_input_node.clone(),
                         attribute_id: AttributeId::Value as u32,
                         index_range: UAString::null(),
-                        value: Variant::Float(user_input_pressure_drop).into(),
+                        value: Variant::Float(user_input_reactivity).into(),
                     };
 
 
@@ -324,7 +322,7 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
 
                 let _ = session_lock
                     .write(&[
-                        ctah_pump_node_write,
+                        reactivity_node_write,
                     ])
                     .unwrap();
             }

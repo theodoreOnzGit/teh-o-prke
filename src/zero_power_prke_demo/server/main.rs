@@ -31,7 +31,7 @@ pub fn construct_and_run_zero_power_prke_server_prompt_critical(run_server: bool
 
     // i'll have some variables here.
     // most important is to give user control of reactivity
-    let reactivity_node = NodeId::new(ns, "reactivity");
+    let reactivity_node = NodeId::new(ns, "reactivity_input");
 
 
     // the resulting outputs are precursor concentrations and neutron population
@@ -57,7 +57,7 @@ pub fn construct_and_run_zero_power_prke_server_prompt_critical(run_server: bool
 
         // we start with negative reactivity first
         VariableBuilder::new(&reactivity_node, 
-                             "reactivity_ratio_not_dollars", "reactivity_ratio_not_dollars")
+                             "reactivity_input", "reactivity_input")
             .data_type(DataTypeId::Float)
             .value(0.007 as f64)
             .writable()
@@ -189,7 +189,7 @@ pub fn construct_and_run_zero_power_prke_server_prompt_critical(run_server: bool
             let delayed_fraction = prke_lock_deref_ptr.deref().get_total_delayed_fraction();
             let reactivity_dollars = reactivity/delayed_fraction;
 
-            dbg!(&reactivity_dollars);
+            //dbg!(&reactivity_dollars);
 
 
         }
@@ -231,13 +231,13 @@ pub fn construct_and_run_zero_power_prke_server_prompt_critical(run_server: bool
 
             // deal with precursors later
 
-            dbg!(&neutron_conc_per_m3);
-            dbg!(&precursor_3_conc);
+            //dbg!(&neutron_conc_per_m3);
+            //dbg!(&precursor_3_conc);
         }
 
         let time_taken_for_calculation_loop = loop_time.elapsed().unwrap()
         - loop_time_start;
-        dbg!(&time_taken_for_calculation_loop);
+        //dbg!(&time_taken_for_calculation_loop);
 
     };
 
@@ -419,7 +419,7 @@ pub fn construct_and_run_zero_power_prke_server_delayed_critical(run_server: boo
             let delayed_fraction = prke_lock_deref_ptr.deref().get_total_delayed_fraction();
             let reactivity_dollars = reactivity/delayed_fraction;
 
-            dbg!(&reactivity_dollars);
+            //dbg!(&reactivity_dollars);
 
 
         }
@@ -461,13 +461,13 @@ pub fn construct_and_run_zero_power_prke_server_delayed_critical(run_server: boo
 
             // deal with precursors later
 
-            dbg!(&neutron_conc_per_m3);
-            dbg!(&precursor_3_conc);
+            //dbg!(&neutron_conc_per_m3);
+            //dbg!(&precursor_3_conc);
         }
 
         let time_taken_for_calculation_loop = loop_time.elapsed().unwrap()
         - loop_time_start;
-        dbg!(&time_taken_for_calculation_loop);
+        //dbg!(&time_taken_for_calculation_loop);
 
     };
 
