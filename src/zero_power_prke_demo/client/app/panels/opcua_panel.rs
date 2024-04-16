@@ -30,7 +30,7 @@ impl GuiClient {
         }
 
 
-        let mut reactivity_input_plot = Plot::new("neutron_conc_plot").legend(Legend::default());
+        let mut reactivity_input_plot = Plot::new("reactivity_input_plot").legend(Legend::default());
 
         // sets the aspect for plot 
         reactivity_input_plot = reactivity_input_plot.width(500.0);
@@ -110,7 +110,7 @@ impl GuiClient {
 
         // now truncate values that are too old
         // show only last minute 
-        let time_window_seconds = 10.0;
+        let time_window_seconds = 60.0;
         if max_time as f64 > time_window_seconds as f64 {
             // i want to delete time older than time_window_seconds
             let index_result = time_vec.clone().iter().position(
@@ -141,7 +141,7 @@ impl GuiClient {
         let mut neutron_conc_plot = Plot::new("neutron conc per m3 plot").legend(Legend::default());
 
         // sets the aspect for plot 
-        neutron_conc_plot = neutron_conc_plot.width(500.0);
+        neutron_conc_plot = neutron_conc_plot.width(1200.0);
         neutron_conc_plot = neutron_conc_plot.view_aspect(16.0/9.0);
         neutron_conc_plot = neutron_conc_plot.data_aspect(1e-23);
         neutron_conc_plot = neutron_conc_plot.auto_bounds_x();
