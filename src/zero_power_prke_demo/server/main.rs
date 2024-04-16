@@ -56,7 +56,7 @@ pub fn construct_and_run_zero_power_prke_server(run_server: bool){
         VariableBuilder::new(&reactivity_node, 
                              "reactivity_ratio_not_dollars", "reactivity_ratio_not_dollars")
             .data_type(DataTypeId::Float)
-            .value(0.0003 as f64)
+            .value(0.0005 as f64)
             .writable()
             .organized_by(&folder_id)
             .insert(&mut address_space);
@@ -115,7 +115,7 @@ pub fn construct_and_run_zero_power_prke_server(run_server: bool){
 
 
     // now, for PRKE we have, initial conditions and timestep
-    let timestep = Time::new::<uom::si::time::millisecond>(15.0);
+    let timestep = Time::new::<uom::si::time::millisecond>(2.0);
 
     let prke_six_group = SixGroupPRKE::default();
     let prke_six_group_ptr = Arc::new(Mutex::new(prke_six_group));
