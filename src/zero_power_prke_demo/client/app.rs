@@ -63,7 +63,7 @@ impl Default for GuiClient {
             plot_points_ptr: Arc::new(
                 Mutex::new(vec![])
             ),
-            open_panel: Panel::InputOutput,
+            open_panel: Panel::ZeroPowerPRKE,
             user_input: Arc::new(Mutex::new(0.0)),
             model_output: Arc::new(Mutex::new(0.0)),
             input_output_plots_ptr: Arc::new(

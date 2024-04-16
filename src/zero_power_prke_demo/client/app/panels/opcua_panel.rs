@@ -30,14 +30,14 @@ impl GuiClient {
         }
 
 
-        let mut opcua_plot = Plot::new("neutron_conc_plot").legend(Legend::default());
+        let mut reactivity_input_plot = Plot::new("neutron_conc_plot").legend(Legend::default());
 
         // sets the aspect for plot 
-        opcua_plot = opcua_plot.width(500.0);
-        opcua_plot = opcua_plot.view_aspect(16.0/9.0);
-        opcua_plot = opcua_plot.data_aspect(2.5);
-        opcua_plot = opcua_plot.auto_bounds_x();
-        opcua_plot = opcua_plot.auto_bounds_y();
+        reactivity_input_plot = reactivity_input_plot.width(500.0);
+        reactivity_input_plot = reactivity_input_plot.view_aspect(16.0/9.0);
+        reactivity_input_plot = reactivity_input_plot.data_aspect(2.5);
+        reactivity_input_plot = reactivity_input_plot.auto_bounds_x();
+        reactivity_input_plot = reactivity_input_plot.auto_bounds_y();
 
         // let's create a line in the plot
         let opcua_plot_pts: Vec<[f64;3]> = self.
@@ -97,14 +97,14 @@ impl GuiClient {
         };
 
         // include max x and y values 
-        opcua_plot = opcua_plot.include_x(max_time);
-        opcua_plot = opcua_plot.include_y(max_user_input);
+        reactivity_input_plot = reactivity_input_plot.include_x(max_time);
+        reactivity_input_plot = reactivity_input_plot.include_y(max_user_input);
 
         // axis labels 
-        opcua_plot = opcua_plot.x_axis_label(
+        reactivity_input_plot = reactivity_input_plot.x_axis_label(
             "time (seconds), current time (seconds): ".to_owned() 
             + &max_time.to_string());
-        opcua_plot = opcua_plot.y_axis_label(
+        reactivity_input_plot = reactivity_input_plot.y_axis_label(
             "Reactivity (not dollars) ; \n  current reactivity (not dollars): ".to_owned()
             + &current_user_input.to_string());
 
@@ -138,15 +138,15 @@ impl GuiClient {
 
         // second plot for the 
         ui.separator();
-        let mut opcua_mass_flow_plot = Plot::new("neutron conc per m3 plot").legend(Legend::default());
+        let mut neutron_conc_plot = Plot::new("neutron conc per m3 plot").legend(Legend::default());
 
         // sets the aspect for plot 
-        opcua_mass_flow_plot = opcua_mass_flow_plot.width(500.0);
-        opcua_mass_flow_plot = opcua_mass_flow_plot.view_aspect(16.0/9.0);
-        opcua_mass_flow_plot = opcua_mass_flow_plot.data_aspect(2.5);
-        opcua_mass_flow_plot = opcua_mass_flow_plot.auto_bounds_x();
-        opcua_mass_flow_plot = opcua_mass_flow_plot.auto_bounds_y();
-        opcua_mass_flow_plot = opcua_mass_flow_plot.x_axis_label(
+        neutron_conc_plot = neutron_conc_plot.width(500.0);
+        neutron_conc_plot = neutron_conc_plot.view_aspect(16.0/9.0);
+        neutron_conc_plot = neutron_conc_plot.data_aspect(1e-23);
+        neutron_conc_plot = neutron_conc_plot.auto_bounds_x();
+        neutron_conc_plot = neutron_conc_plot.auto_bounds_y();
+        neutron_conc_plot = neutron_conc_plot.x_axis_label(
             "time (seconds)");
         let current_user_output = opcua_user_output_neutron_conc_vec.clone().into_iter().last();
 
@@ -160,18 +160,18 @@ impl GuiClient {
             (current_user_output * 10000.0).round()/10000.0;
 
 
-        opcua_mass_flow_plot = opcua_mass_flow_plot.y_axis_label(
+        neutron_conc_plot = neutron_conc_plot.y_axis_label(
             "neutron conc (per m3) \n 
             current neutron conc: ".to_owned() +
             &current_user_output.to_string());
 
         ui.horizontal(|ui| {
-            opcua_plot.show(ui, |plot_ui| {
+            reactivity_input_plot.show(ui, |plot_ui| {
                 plot_ui.line(Line::new(PlotPoints::from(
                     time_input_vec.clone()
                 )).name("user reactivity input"));
             });
-            opcua_mass_flow_plot.show(ui, |plot_ui| {
+            neutron_conc_plot.show(ui, |plot_ui| {
                 plot_ui.line(Line::new(PlotPoints::from(
                     time_output_vec
                 )).name("neutron conc output"));
