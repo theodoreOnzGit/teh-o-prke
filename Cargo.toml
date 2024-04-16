@@ -1,8 +1,45 @@
 [package]
 name = "teh-o-prke"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+approx = "0.5.1"
+ndarray = "0.15.6"
+ndarray-linalg = "0.16.0"
+thiserror = "1.0.58"
+uom = "0.36.0"
+serde = { version = "1", features = ["derive"] }
+
+[target.'cfg(windows)'.dependencies]
+ndarray-linalg = { version = "0.16.0", features = ["intel-mkl-static"] }
+
+[target.'cfg(macos)'.dependencies]
+ndarray-linalg = { version = "0.16.0", features = ["intel-mkl-static"] }
+
+[target.'cfg(unix)'.dependencies]
+ndarray-linalg = { version = "0.16.0", features = ["openblas-system"] }
+
+chem-eng-real-time-process-control-simulator = "0.0.3"
+opcua = "0.12.0"
+egui = "0.23.0"
+eframe = { version = "0.23.0", default-features = false, features = [
+    "accesskit",     # Make egui comptaible with screen readers. NOTE: adds a lot of dependencies.
+    "default_fonts", # Embed the default egui fonts.
+    "glow",          # Use the glow rendering backend. Alternative: "wgpu".
+    "persistence",   # Enable restoring app state when restarting the app.
+] }
+env_logger = "0.10.0"
+local-ip-address = "0.5.6"
+roots = "0.0.8"
+egui_plot = "0.23.0"
+
+[[bin]]
+name = "client"
+path = "src/zero_power_prke_demo/client/main.rs"
+
+[[bin]]
+name = "server"
+path = "src/zero_power_prke_demo/server/main.rs"
