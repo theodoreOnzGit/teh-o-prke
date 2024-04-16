@@ -41,7 +41,7 @@ impl GuiClient {
 
         // let's create a line in the plot
         let opcua_plot_pts: Vec<[f64;3]> = self.
-            isothermal_ciet_plots_ptr.lock().unwrap().deref_mut()
+            prke_zero_power_plots_ptr.lock().unwrap().deref_mut()
             .iter().map(|&values|{
                 values}
             ).collect();
@@ -123,7 +123,7 @@ impl GuiClient {
             );
             let _ = match index_result {
                 Some(index) => {
-                    self.isothermal_ciet_plots_ptr.lock().unwrap().deref_mut().remove(index);
+                    self.prke_zero_power_plots_ptr.lock().unwrap().deref_mut().remove(index);
                 },
                 None => {
                     // do nothing 
@@ -232,11 +232,8 @@ pub fn print_value(item: &MonitoredItem) {
 }
 pub fn try_connect_to_server_and_run_client(endpoint: &str,
     ns: u16,
-    loop_pressure_drop_input_ptr: Arc<Mutex<f32>>,
-    isothermal_mass_flow_output_ptr: Arc<Mutex<f32>>,
-    bt12_temp_deg_c_output_ptr: Arc<Mutex<f32>>,
-    bt11_temp_deg_c_input_ptr: Arc<Mutex<f32>>,
-    heater_power_kilowatts_input_ptr: Arc<Mutex<f32>>,
+    reactivity_input_ptr: Arc<Mutex<f32>>,
+    neutron_conc_per_m3_output_ptr: Arc<Mutex<f32>>,
 ) -> Result<(),StatusCode>{
 
     // Make the client configuration
@@ -294,31 +291,8 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
                 //let value = &results[0];
 
                 // now lock the mutex 
-                let mut heater_mass_flowrate_to_gui = isothermal_mass_flow_output_ptr.lock().unwrap();
+                let mut neutron_conc_per_m3_to_gui = neutron_conc_per_m3_output_ptr.lock().unwrap();
 
-                // obtain the heater_branch_flowrate, which should be 
-                // index 3
-
-                let heater_br_flow_data_value = &results[3];
-
-                let heater_branch_flowrate: f32 = 
-                    heater_br_flow_data_value.value.clone()
-                    .unwrap().as_f64().unwrap()
-                    as f32;
-
-                *heater_mass_flowrate_to_gui = heater_branch_flowrate;
-
-                // now for bt12, do the same 
-                let mut heater_exit_temp_to_gui = 
-                bt12_temp_deg_c_output_ptr.lock().unwrap();
-
-                let bt12_exit_temp_data_val = &results[6];
-
-                let bt12_exit_temp_deg_c: f32 = 
-                bt12_exit_temp_data_val.value.clone().unwrap()
-                    .as_f64().unwrap() as f32;
-
-                *heater_exit_temp_to_gui = bt12_exit_temp_deg_c;
 
 
             }
@@ -329,13 +303,8 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
             {
                 // first, get user inputs
                 let user_input_pressure_drop: f32 = 
-                loop_pressure_drop_input_ptr.lock().unwrap().to_owned();
+                reactivity_input_ptr.lock().unwrap().to_owned();
 
-                let user_input_heater_inlet_temp: f32 = 
-                bt11_temp_deg_c_input_ptr.lock().unwrap().to_owned();
-
-                let user_input_heater_power_kilowatts: f32 = 
-                heater_power_kilowatts_input_ptr.lock().unwrap().to_owned();
 
                 //dbg!(&user_input_heater_power_kilowatts);
 
@@ -349,19 +318,6 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
                     };
 
 
-                let heater_inlet_temp_node_write: WriteValue = WriteValue {
-                        node_id: bt11_temperature_node.clone(),
-                        attribute_id: AttributeId::Value as u32,
-                        index_range: UAString::null(),
-                        value: Variant::Float(user_input_heater_inlet_temp).into(),
-                    };
-
-                let heater_power_node_write: WriteValue = WriteValue {
-                        node_id: heater_power_node.clone(),
-                        attribute_id: AttributeId::Value as u32,
-                        index_range: UAString::null(),
-                        value: Variant::Float(user_input_heater_power_kilowatts).into(),
-                    };
                 // now mutex lock the session, 
                 let session_lock = session.read();
                 // put write values into the write session lock
@@ -369,8 +325,6 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
                 let _ = session_lock
                     .write(&[
                         ctah_pump_node_write,
-                        heater_inlet_temp_node_write,
-                        heater_power_node_write,
                     ])
                     .unwrap();
             }

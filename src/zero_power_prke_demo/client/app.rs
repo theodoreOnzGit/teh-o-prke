@@ -27,28 +27,17 @@ pub struct GuiClient {
     pub model_output: Arc<Mutex<f32>>,
 
     pub input_output_plots_ptr: Arc<Mutex<Vec<[f64;3]>>>,
-    // for input and output of isothermal ciet opcua server anc client
+    // for input and output of zero power prke server and client
     #[serde(skip)] 
     pub reactivity_input: Arc<Mutex<f32>>,
     #[serde(skip)] 
     pub neutron_concentration_output_per_m3: Arc<Mutex<f32>>,
     #[serde(skip)] 
     pub opcua_server_ip_addr: Arc<Mutex<String>>,
-    pub isothermal_ciet_plots_ptr: Arc<Mutex<Vec<[f64;3]>>>,
+    /// it will be arranged as 
+    /// [time, reactivity, neutron_conc]
+    pub prke_zero_power_plots_ptr: Arc<Mutex<Vec<[f64;3]>>>,
 
-    // for input and output of heater v2 bare simulation
-    #[serde(skip)] 
-    pub bt11_temp_deg_c: Arc<Mutex<f32>>,
-    #[serde(skip)] 
-    pub bt12_temp_deg_c: Arc<Mutex<f32>>,
-    #[serde(skip)] 
-    pub heater_power_kilowatts: Arc<Mutex<f32>>,
-
-    // it will be arranged [time, bt11, heater_power, bt12]
-    // this is because fluid flows from inlet (bt11) 
-    // gets heated by heater_power 
-    // and exits at bt12
-    pub heater_v2_bare_ciet_plots_ptr: Arc<Mutex<Vec<[f64;4]>>>,
 
     // selected panel for graph plotting 
     open_panel:  Panel,
@@ -82,17 +71,11 @@ impl Default for GuiClient {
             ),
             reactivity_input: Arc::new(Mutex::new(0.0)),
             neutron_concentration_output_per_m3: Arc::new(Mutex::new(0.0)),
-            isothermal_ciet_plots_ptr: Arc::new(
+            prke_zero_power_plots_ptr: Arc::new(
                 Mutex::new(vec![])
             ),
             opcua_server_ip_addr: Arc::new(Mutex::new(
                 ip_addr)),
-            bt11_temp_deg_c: Arc::new(Mutex::new(79.12)),
-            bt12_temp_deg_c: Arc::new(Mutex::new(79.12)),
-            heater_power_kilowatts: Arc::new(Mutex::new(8.5)),
-            heater_v2_bare_ciet_plots_ptr: Arc::new(
-                Mutex::new(vec![])
-            ),
 
 
         }

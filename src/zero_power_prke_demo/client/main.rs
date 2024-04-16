@@ -35,15 +35,11 @@ fn main() -> eframe::Result<()> {
 
     // for opcua 
 
-    let opcua_input_clone = gui_app.reactivity_input.clone();
-    let opcua_output_clone = gui_app.neutron_concentration_output_per_m3.clone();
-    let isothermal_ciet_plot_ptr_clone = gui_app.isothermal_ciet_plots_ptr.clone();
+    let reactivity_input_clone = gui_app.reactivity_input.clone();
+    let neutron_conc_output_clone = gui_app.neutron_concentration_output_per_m3.clone();
+    let zero_power_prke_plot_ptr_clone = gui_app.prke_zero_power_plots_ptr.clone();
     let opcua_ip_addr_ptr_clone = gui_app.opcua_server_ip_addr.clone();
 
-    let bt12_temp_deg_c_ptr_clone = gui_app.bt12_temp_deg_c.clone();
-    let bt11_temp_deg_c_ptr_clone = gui_app.bt11_temp_deg_c.clone();
-    let heater_power_kilowatts_ptr_clone = gui_app.heater_power_kilowatts.clone();
-    let heater_v2_bare_ciet_plots_ptr_clone = gui_app.heater_v2_bare_ciet_plots_ptr.clone();
 
     // let's make a first order transfer fn 
     // G(s)
@@ -165,11 +161,9 @@ fn main() -> eframe::Result<()> {
         let mut connection_result = try_connect_to_server_and_run_client(
             &endpoint,
             2,
-            opcua_input_clone.clone(),
-            opcua_output_clone.clone(),
-            bt12_temp_deg_c_ptr_clone.clone(),
-            bt11_temp_deg_c_ptr_clone.clone(),
-            heater_power_kilowatts_ptr_clone.clone());
+            reactivity_input_clone.clone(),
+            neutron_conc_output_clone.clone(),
+            );
 
         // now, normally it should be well connected, if not, then 
         // retry 
@@ -184,43 +178,27 @@ fn main() -> eframe::Result<()> {
                 connection_result = try_connect_to_server_and_run_client(
                     &endpoint,
                     2,
-                    opcua_input_clone.clone(),
-                    opcua_output_clone.clone(),
-                    bt12_temp_deg_c_ptr_clone.clone(),
-                    bt11_temp_deg_c_ptr_clone.clone(),
-                    heater_power_kilowatts_ptr_clone.clone());
+                    reactivity_input_clone.clone(),
+                    neutron_conc_output_clone.clone(),
+                    );
 
             }
 
             let time_elapsed_ms = time_now.elapsed().unwrap().as_millis();
             let time_elapsed_s: f64 = time_elapsed_ms as f64 / 1000 as f64;
 
-            let loop_pressure_drop_pascals: f32 = 
-                opcua_input_clone.lock().unwrap().deref_mut().clone();
-            let mass_flowrate_kg_per_s: f32 = 
-                opcua_output_clone.lock().unwrap().deref_mut().clone();
+            let reactivity_input: f32 = 
+                reactivity_input_clone.lock().unwrap().deref_mut().clone();
+            let neutron_con_per_m3: f32 = 
+                neutron_conc_output_clone.lock().unwrap().deref_mut().clone();
 
-            isothermal_ciet_plot_ptr_clone.lock().unwrap().deref_mut()
+            zero_power_prke_plot_ptr_clone.lock().unwrap().deref_mut()
                 .push([
                     time_elapsed_s,
-                    loop_pressure_drop_pascals as f64,
-                    mass_flowrate_kg_per_s as f64
+                    reactivity_input as f64,
+                    neutron_con_per_m3 as f64
                 ]);
 
-            let bt11_temp_deg_c: f32 = 
-            bt11_temp_deg_c_ptr_clone.lock().unwrap().deref_mut().clone();
-            let bt12_temp_deg_c: f32 = 
-            bt12_temp_deg_c_ptr_clone.lock().unwrap().deref_mut().clone();
-            let heater_power_kilowatts: f32 = 
-            heater_power_kilowatts_ptr_clone.lock().unwrap().deref_mut().clone();
-            
-            heater_v2_bare_ciet_plots_ptr_clone.lock().unwrap().deref_mut()
-                .push([
-                    time_elapsed_s,
-                    bt11_temp_deg_c as f64,
-                    heater_power_kilowatts as f64,
-                    bt12_temp_deg_c as f64,
-                ]);
 
 
             
