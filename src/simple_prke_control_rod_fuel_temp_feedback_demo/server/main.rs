@@ -61,7 +61,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
         VariableBuilder::new(&control_rod_set_point_node_cm, 
                              "control_rod_set_point_input_cm", "control_rod_set_point_input_cm")
             .data_type(DataTypeId::Float)
-            .value(0.00 as f64)
+            .value(45.0 as f64)
             .writable()
             .organized_by(&folder_id)
             .insert(&mut address_space);
@@ -158,7 +158,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
     // baseline reactivity 
 
     let baseline_excess_reactivity: Ratio = 
-        Ratio::new::<ratio>(0.0035);
+        Ratio::new::<ratio>(0.0020);
 
 
     
@@ -203,7 +203,6 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                     insertion_length, 
                     rod_worth).unwrap();
 
-            dbg!(&control_rod_reactivity);
 
             // now find the fuel temperature reactivity
             // obtain the prke lock, perform the calculations based 
@@ -270,6 +269,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                 fuel_temperature_reactivity +
                 control_rod_reactivity;
 
+            dbg!(&reactivity);
 
             let keff = SixGroupPRKE::get_keff_from_reactivity(reactivity);
             let neutron_generation_time: Time = neutron_mean_lifetime/keff;
@@ -370,6 +370,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                 &now, 
                 &now);
 
+            dbg!(&current_fuel_temperature);
 
             // deal with precursors later
 
