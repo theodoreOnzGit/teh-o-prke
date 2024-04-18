@@ -35,8 +35,8 @@ fn main() -> eframe::Result<()> {
 
     // for opcua 
 
-    let reactivity_input_clone = gui_app.reactivity_input.clone();
-    let neutron_conc_output_clone = gui_app.neutron_concentration_output_per_m3.clone();
+    let control_rod_set_point_input_clone = gui_app.control_rod_insertion_input.clone();
+    let neutron_conc_output_clone = gui_app.fuel_temperature_output_celsius.clone();
     let zero_power_prke_plot_ptr_clone = gui_app.prke_zero_power_plots_ptr.clone();
     let opcua_ip_addr_ptr_clone = gui_app.opcua_server_ip_addr.clone();
 
@@ -109,7 +109,7 @@ fn main() -> eframe::Result<()> {
             // push values to vecto64
             //
             //dbg!([time_elapsed_s,5.0]);
-            let rad_value: f32 = 
+            let rad_value: f64 = 
                 rad_value_ptr_clone.lock().unwrap().deref_mut().clone();
 
             plot_values_ptr_clone.lock().unwrap().deref_mut()
@@ -117,7 +117,7 @@ fn main() -> eframe::Result<()> {
 
             // user inputs and outputs must be editable in real-time and 
             // plotable
-            let user_input: f32 = 
+            let user_input: f64 = 
                 user_input_ptr_clone.lock().unwrap().deref_mut().clone();
 
 
@@ -161,7 +161,7 @@ fn main() -> eframe::Result<()> {
         let mut connection_result = try_connect_to_server_and_run_client(
             &endpoint,
             2,
-            reactivity_input_clone.clone(),
+            control_rod_set_point_input_clone.clone(),
             neutron_conc_output_clone.clone(),
             );
 
@@ -178,7 +178,7 @@ fn main() -> eframe::Result<()> {
                 connection_result = try_connect_to_server_and_run_client(
                     &endpoint,
                     2,
-                    reactivity_input_clone.clone(),
+                    control_rod_set_point_input_clone.clone(),
                     neutron_conc_output_clone.clone(),
                     );
 
@@ -187,15 +187,15 @@ fn main() -> eframe::Result<()> {
             let time_elapsed_ms = time_now.elapsed().unwrap().as_millis();
             let time_elapsed_s: f64 = time_elapsed_ms as f64 / 1000 as f64;
 
-            let reactivity_input: f32 = 
-                reactivity_input_clone.lock().unwrap().deref_mut().clone();
-            let neutron_con_per_m3: f32 = 
+            let control_rod_set_point_input: f64 = 
+                control_rod_set_point_input_clone.lock().unwrap().deref_mut().clone();
+            let neutron_con_per_m3: f64 = 
                 neutron_conc_output_clone.lock().unwrap().deref_mut().clone();
 
             zero_power_prke_plot_ptr_clone.lock().unwrap().deref_mut()
                 .push([
                     time_elapsed_s,
-                    reactivity_input as f64,
+                    control_rod_set_point_input as f64,
                     neutron_con_per_m3 as f64
                 ]);
 

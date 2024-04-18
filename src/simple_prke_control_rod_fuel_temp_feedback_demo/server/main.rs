@@ -32,7 +32,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
     // i'll have some variables here.
     // most important is to give user control of reactivity
-    let reactivity_node = NodeId::new(ns, "reactivity_input");
+    let reactivity_node = NodeId::new(ns, "control_rod_set_point_input");
 
 
     // the resulting outputs are precursor concentrations and neutron population
@@ -58,7 +58,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
         // we start with negative reactivity first
         VariableBuilder::new(&reactivity_node, 
-                             "reactivity_input", "reactivity_input")
+                             "control_rod_set_point_input", "control_rod_set_point_input")
             .data_type(DataTypeId::Float)
             .value(0.00 as f64)
             .writable()
@@ -171,7 +171,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
             // check if neutron pop is too large 
             // otherwise simulator goes to infinity
             let max_neutron_conc = VolumetricNumberDensity::new::<per_cubic_meter>(
-                (0.01*f32::MAX).into());
+                (0.01*f64::MAX).into());
 
             let current_neutron_conc: VolumetricNumberDensity 
                 = prke_lock_deref_ptr.get_current_neutron_population();

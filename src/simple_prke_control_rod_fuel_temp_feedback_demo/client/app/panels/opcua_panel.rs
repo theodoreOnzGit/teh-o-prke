@@ -22,7 +22,7 @@ impl GuiClient {
         // slider changes the user input value
         // and we release the mutex lock immediately
         {
-            let mut binding = self.reactivity_input.lock().unwrap();
+            let mut binding = self.control_rod_insertion_input.lock().unwrap();
             let user_input_value = binding.deref_mut();
 
             ui.style_mut().spacing.slider_width = 1000.0;
@@ -234,8 +234,8 @@ pub fn print_value(item: &MonitoredItem) {
 }
 pub fn try_connect_to_server_and_run_client(endpoint: &str,
     ns: u16,
-    reactivity_input_ptr: Arc<Mutex<f32>>,
-    neutron_conc_per_m3_output_ptr: Arc<Mutex<f32>>,
+    reactivity_input_ptr: Arc<Mutex<f64>>,
+    neutron_conc_per_m3_output_ptr: Arc<Mutex<f64>>,
 ) -> Result<(),StatusCode>{
 
     // Make the client configuration
@@ -287,19 +287,19 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
 
                 // read the neutron concentration from the results
                 let neutron_conc_per_m3_value = &results[0];
-                let neutron_conc_per_m3_float: f32 = 
+                let neutron_conc_per_m3_float: f64 = 
                     neutron_conc_per_m3_value.value.clone()
                     .unwrap().as_f64().unwrap()
-                    as f32;
+                    as f64;
 
                 *neutron_conc_per_m3_to_gui = neutron_conc_per_m3_float;
 
                 //// reactivity debugging 
                 //let reactivity_read_val = &results[1];
-                //let reactivity_val_float: f32 = 
+                //let reactivity_val_float: f64 = 
                 //    reactivity_read_val.value.clone()
                 //    .unwrap().as_f64().unwrap()
-                //    as f32;
+                //    as f64;
                 //dbg!(&reactivity_val_float);
 
 
@@ -310,7 +310,7 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
 
             {
                 // first, get user inputs
-                let user_input_reactivity: f32 = 
+                let user_input_reactivity: f64 = 
                 reactivity_input_ptr.lock().unwrap().to_owned();
 
 
@@ -322,7 +322,7 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
                         node_id: reactivity_input_node.clone(),
                         attribute_id: AttributeId::Value as u32,
                         index_range: UAString::null(),
-                        value: Variant::Float(user_input_reactivity).into(),
+                        value: Variant::Double(user_input_reactivity).into(),
                     };
 
 

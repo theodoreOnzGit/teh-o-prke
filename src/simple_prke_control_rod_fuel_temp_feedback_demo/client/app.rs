@@ -15,23 +15,23 @@ pub struct GuiClient {
     label: String,
 
     #[serde(skip)] // This how you opt-out of serialization of a field
-    pub rad_value_ptr: Arc<Mutex<f32>>,
+    pub rad_value_ptr: Arc<Mutex<f64>>,
 
     // plot values, locked behind an Arc::mutex lock 
     pub plot_points_ptr: Arc<Mutex<Vec<[f64;2]>>>,
 
     // for input and output of a simple transfer function
     #[serde(skip)] 
-    pub user_input: Arc<Mutex<f32>>,
+    pub user_input: Arc<Mutex<f64>>,
     #[serde(skip)] 
-    pub model_output: Arc<Mutex<f32>>,
+    pub model_output: Arc<Mutex<f64>>,
 
     pub input_output_plots_ptr: Arc<Mutex<Vec<[f64;3]>>>,
     // for input and output of zero power prke server and client
     #[serde(skip)] 
-    pub reactivity_input: Arc<Mutex<f32>>,
+    pub control_rod_insertion_input: Arc<Mutex<f64>>,
     #[serde(skip)] 
-    pub neutron_concentration_output_per_m3: Arc<Mutex<f32>>,
+    pub fuel_temperature_output_celsius: Arc<Mutex<f64>>,
     #[serde(skip)] 
     pub opcua_server_ip_addr: Arc<Mutex<String>>,
     /// it will be arranged as 
@@ -69,8 +69,8 @@ impl Default for GuiClient {
             input_output_plots_ptr: Arc::new(
                 Mutex::new(vec![])
             ),
-            reactivity_input: Arc::new(Mutex::new(0.0)),
-            neutron_concentration_output_per_m3: Arc::new(Mutex::new(0.0)),
+            control_rod_insertion_input: Arc::new(Mutex::new(0.0)),
+            fuel_temperature_output_celsius: Arc::new(Mutex::new(0.0)),
             prke_zero_power_plots_ptr: Arc::new(
                 Mutex::new(vec![])
             ),
