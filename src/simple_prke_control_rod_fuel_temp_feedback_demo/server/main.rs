@@ -61,7 +61,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
         // we start with negative reactivity first
         VariableBuilder::new(&control_rod_set_point_node_cm, 
                              "control_rod_set_point_input_cm", "control_rod_set_point_input_cm")
-            .data_type(DataTypeId::Float)
+            .data_type(DataTypeId::Double)
             .value(45.0 as f64)
             .writable()
             .organized_by(&folder_id)
@@ -163,7 +163,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
     // baseline reactivity 
 
     let baseline_excess_reactivity: Ratio = 
-        Ratio::new::<ratio>(0.0020);
+        Ratio::new::<ratio>(0.0065);
 
 
     
@@ -208,6 +208,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                     cylinder_height, 
                     insertion_length, 
                     rod_worth).unwrap();
+
 
 
             // now find the fuel temperature reactivity
@@ -276,9 +277,8 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
 
             let reactivity = baseline_excess_reactivity + 
-                fuel_temperature_reactivity +
+                fuel_temperature_reactivity -
                 control_rod_reactivity;
-
 
             let keff = SixGroupPRKE::get_keff_from_reactivity(reactivity);
             let neutron_generation_time: Time = neutron_mean_lifetime/keff;
@@ -286,27 +286,6 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
 
 
-            // check if neutron pop is too large 
-            // otherwise simulator goes to infinity
-            let max_neutron_conc = VolumetricNumberDensity::new::<per_cubic_meter>(
-                (0.01*f64::MAX).into());
-
-            let current_neutron_conc: VolumetricNumberDensity 
-                = prke_lock_deref_ptr.get_current_neutron_population();
-
-            //dbg!(&current_neutron_conc);
-            //dbg!(&max_neutron_conc);
-
-            if current_neutron_conc > max_neutron_conc {
-
-                let now = DateTime::now();
-                // rod drop if neutron concentration too high
-                let _ = address_space_lock.set_variable_value(
-                    control_rod_set_point_node_cm.clone(), 
-                    -0.05 as f64,
-                    &now, 
-                    &now);
-            }
 
             neutron_and_precursor_conc = prke_lock_deref_ptr
                 .deref_mut()
@@ -323,7 +302,6 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
             let delayed_fraction = prke_lock_deref_ptr.deref().get_total_delayed_fraction();
             let reactivity_dollars = reactivity/delayed_fraction;
 
-            //dbg!(&reactivity_dollars);
 
 
         }
@@ -387,13 +365,10 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
             // deal with precursors later
 
-            //dbg!(&neutron_conc_per_m3);
-            //dbg!(&precursor_3_conc);
         }
 
         let time_taken_for_calculation_loop = loop_time.elapsed().unwrap()
         - loop_time_start;
-        //dbg!(&time_taken_for_calculation_loop);
 
     };
 
