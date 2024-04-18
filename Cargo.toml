@@ -38,9 +38,18 @@ egui_plot = "0.23.0"
 serde = { version = "1", features = ["derive"] }
 
 [[example]]
-name = "client"
+name = "zero_power_client"
 path = "src/zero_power_prke_demo/client/main.rs"
 
 [[example]]
-name = "server"
+name = "zero_power_server"
 path = "src/zero_power_prke_demo/server/main.rs"
+
+
+[[example]]
+name = "client"
+path = "src/simple_prke_control_rod_fuel_temp_feedback_demo/client/main.rs"
+
+[[example]]
+name = "server"
+path = "src/simple_prke_control_rod_fuel_temp_feedback_demo/server/main.rs"
