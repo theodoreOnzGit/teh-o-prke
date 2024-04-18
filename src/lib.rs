@@ -4,8 +4,8 @@
 pub mod zero_power_prke;
 
 
-/// contains functions and structs for temperature feedback 
-pub mod temperature_feedback;
+/// contains functions and structs for fuel temperature feedback 
+pub mod fuel_temperature_feedback;
 
 /// contains functions and structs for control rod feedback 
 pub mod control_rod_feedback;
