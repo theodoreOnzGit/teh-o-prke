@@ -1,5 +1,11 @@
+use std::f64::consts::PI;
+
 use uom::si::f64::*;
+use uom::si::heat_transfer::watt_per_square_meter_kelvin;
+use uom::si::length::centimeter;
+use uom::si::mass_density::gram_per_cubic_centimeter;
 use uom::si::ratio::ratio;
+use uom::si::specific_heat_capacity::joule_per_kilogram_kelvin;
 use uom::si::thermodynamic_temperature::kelvin;
 use crate::teh_o_prke_error::TehOPrkeError;
 
@@ -38,6 +44,28 @@ pub struct SimpleFuelTemperatureFeedback {
 }
 
 impl SimpleFuelTemperatureFeedback {
+
+    /// set initial fuel temperature 
+    pub fn set_fuel_temperature(&mut self,
+        temperature: ThermodynamicTemperature,)
+        -> Result<(), TehOPrkeError>{
+            self.fuel_temperature = temperature;
+
+            Ok(())
+    }
+
+    /// set fuel alpha_coefficient 
+    /// that is reactivity feedback coefficient
+    /// for thermal spectrum reactor
+    ///
+    /// it is typically around 10^(-4) dimensionless
+    pub fn set_fuel_alpha_coefficient(&mut self,
+        alpha_coefficient: Ratio,)
+        -> Result<(), TehOPrkeError>{
+            self.alpha_coefficient = alpha_coefficient;
+
+            Ok(())
+    }
     
     /// add fission heat 
     ///
@@ -107,6 +135,62 @@ impl SimpleFuelTemperatureFeedback {
         obtain_fuel_temperature_reactivity_feedback_thermal_spectrum(
             alpha_coefficient, temperature, reference_temperature)
 
+    }
+}
+
+impl Default for SimpleFuelTemperatureFeedback {
+    fn default() -> Self {
+        // just use water
+        let fuel_specific_heat_capacity: SpecificHeatCapacity = 
+            SpecificHeatCapacity::new::<joule_per_kilogram_kelvin>(4.184);
+
+        // use uranium oxide ish 
+        let fuel_density: MassDensity = 
+            MassDensity::new::<gram_per_cubic_centimeter>(10.85);
+
+        // a cylinder 83 cm high and 30 cm diameter 
+        // (arbitrary)
+
+        let d = Length::new::<centimeter>(30.0);
+        let l = Length::new::<centimeter>(83.0);
+        let fuel_volume: Volume = PI / 4.0 * d * d * l;
+
+        // fuel temperature is default 300K, you'll need to set it initially 
+        // otherwise
+
+        let fuel_temperature:ThermodynamicTemperature 
+            = ThermodynamicTemperature::new::<kelvin>(300.0);
+
+        // convection heat transfer coeff is 20 (W/m^2 K)
+        let convection_heat_trf_coeff: HeatTransfer = 
+             HeatTransfer::new::<watt_per_square_meter_kelvin>(20.0);
+
+        // based on
+        // a cylinder 83 cm high and 30 cm diameter 
+        //
+        // 2* PI/4.0 D^2
+        let cylinder_circular_face_areas: Area = 2.0 *
+            PI / 4.0 * d * d;
+
+
+        let cylinder_curved_area: Area = PI * d * l;
+
+        let convection_heat_trf_area = cylinder_curved_area +
+            cylinder_circular_face_areas;
+
+        // arbitrary
+        let alpha_coefficient: Ratio = Ratio::new::<ratio>(5.0e-4);
+
+
+        Self { 
+            fuel_specific_heat_capacity,
+            fuel_density, 
+            fuel_volume, 
+            fuel_temperature, 
+            convection_heat_trf_coeff, 
+            convection_heat_trf_area, 
+            alpha_coefficient,
+        }
     }
 }
 
