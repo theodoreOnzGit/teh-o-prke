@@ -33,6 +33,8 @@ pub struct GuiClient {
     #[serde(skip)] 
     pub fuel_temperature_output_celsius: Arc<Mutex<f64>>,
     #[serde(skip)] 
+    pub reactor_power_kilowatts: Arc<Mutex<f64>>,
+    #[serde(skip)] 
     pub opcua_server_ip_addr: Arc<Mutex<String>>,
     /// it will be arranged as 
     /// [time, reactivity, neutron_conc]
@@ -47,7 +49,7 @@ pub struct GuiClient {
 enum Panel {
     Simple,
     InputOutput,
-    ZeroPowerPRKE,
+    FuelTempAndControlRodPRKE,
 }
 
 impl Default for GuiClient {
@@ -63,7 +65,7 @@ impl Default for GuiClient {
             plot_points_ptr: Arc::new(
                 Mutex::new(vec![])
             ),
-            open_panel: Panel::ZeroPowerPRKE,
+            open_panel: Panel::FuelTempAndControlRodPRKE,
             user_input: Arc::new(Mutex::new(0.0)),
             model_output: Arc::new(Mutex::new(0.0)),
             input_output_plots_ptr: Arc::new(
@@ -76,6 +78,7 @@ impl Default for GuiClient {
             ),
             opcua_server_ip_addr: Arc::new(Mutex::new(
                 ip_addr)),
+            reactor_power_kilowatts: Arc::new(Mutex::new(0.0)),
 
 
         }
@@ -139,7 +142,7 @@ impl eframe::App for GuiClient {
                 |ui| {
                     ui.selectable_value(&mut self.open_panel, Panel::Simple, "Simple User Input"); 
                     ui.selectable_value(&mut self.open_panel, Panel::InputOutput, "Transfer Fn Simulation"); 
-                    ui.selectable_value(&mut self.open_panel, Panel::ZeroPowerPRKE, "Zero Power PRKE"); 
+                    ui.selectable_value(&mut self.open_panel, Panel::FuelTempAndControlRodPRKE, "Fuel temperature and Control Rod PRKE"); 
             }
             );
             ui.separator();
@@ -153,7 +156,7 @@ impl eframe::App for GuiClient {
                 Panel::InputOutput => {
                     self.transfer_fn_input_output_panel_ui(ui);
                 },
-                Panel::ZeroPowerPRKE => {
+                Panel::FuelTempAndControlRodPRKE => {
                     self.fuel_temp_control_rod_prke_demo_ui(ui);
                 },
             }

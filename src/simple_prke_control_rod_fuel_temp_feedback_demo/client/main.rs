@@ -39,6 +39,8 @@ fn main() -> eframe::Result<()> {
     let neutron_conc_output_clone = gui_app.fuel_temperature_output_celsius.clone();
     let zero_power_prke_plot_ptr_clone = gui_app.prke_zero_power_plots_ptr.clone();
     let opcua_ip_addr_ptr_clone = gui_app.opcua_server_ip_addr.clone();
+    let reactor_power_kilowatts_output_clone = gui_app.reactor_power_kilowatts.clone();
+    let fuel_temperature_celsius_output_clone = gui_app.fuel_temperature_output_celsius.clone();
 
 
     // let's make a first order transfer fn 
@@ -163,6 +165,8 @@ fn main() -> eframe::Result<()> {
             2,
             control_rod_set_point_input_clone.clone(),
             neutron_conc_output_clone.clone(),
+            fuel_temperature_celsius_output_clone.clone(),
+            reactor_power_kilowatts_output_clone.clone(),
             );
 
         // now, normally it should be well connected, if not, then 
@@ -180,6 +184,8 @@ fn main() -> eframe::Result<()> {
                     2,
                     control_rod_set_point_input_clone.clone(),
                     neutron_conc_output_clone.clone(),
+                    fuel_temperature_celsius_output_clone.clone(),
+                    reactor_power_kilowatts_output_clone.clone(),
                     );
 
             }

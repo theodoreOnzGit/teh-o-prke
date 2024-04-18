@@ -188,7 +188,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
         // now we have calculation steps, we need to read reactivity 
         // from the user input first
-        let mut reactor_power_kilowatts: f64;
+        let reactor_power_kilowatts: f64;
 
         {
             let mut address_space_lock = address_space.write();
@@ -278,6 +278,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
             let reactivity = baseline_excess_reactivity + 
                 fuel_temperature_reactivity +
                 control_rod_reactivity;
+
 
             let keff = SixGroupPRKE::get_keff_from_reactivity(reactivity);
             let neutron_generation_time: Time = neutron_mean_lifetime/keff;
@@ -383,9 +384,6 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                 reactor_power_kilowatts as f64,
                 &now, 
                 &now);
-
-            dbg!(&reactor_power_kilowatts);
-
 
             // deal with precursors later
 

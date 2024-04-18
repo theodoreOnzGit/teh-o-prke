@@ -234,8 +234,10 @@ pub fn print_value(item: &MonitoredItem) {
 }
 pub fn try_connect_to_server_and_run_client(endpoint: &str,
     ns: u16,
-    reactivity_input_ptr: Arc<Mutex<f64>>,
+    control_rod_input_ptr: Arc<Mutex<f64>>,
     neutron_conc_per_m3_output_ptr: Arc<Mutex<f64>>,
+    fuel_temperature_celsius_output_ptr: Arc<Mutex<f64>>,
+    reactor_power_kilowatts_output_ptr: Arc<Mutex<f64>>,
 ) -> Result<(),StatusCode>{
 
     // Make the client configuration
@@ -266,6 +268,7 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
     let neutron_conc_per_m3_output_node = NodeId::new(ns, "neutron_concentration_per_m3");
     let reactivity_input_node = NodeId::new(ns, "control_rod_set_point_input");
     let fuel_temperature_node = NodeId::new(ns, "fuel_temperature_output_celsius");
+    let reactor_power_node = NodeId::new(ns, "reactor_power_kilowatts");
 
     // i will also need another thread to run the polling loop 
 
@@ -279,9 +282,10 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
                     .read(&[
                         neutron_conc_per_m3_output_node.clone().into(),
                         reactivity_input_node.clone().into(),
+                        fuel_temperature_node.clone().into(),
+                        reactor_power_node.clone().into(),
                     ], TimestampsToReturn::Both, 1.0)
                     .unwrap();
-                //let value = &results[0];
 
                 // now lock the mutex 
                 let mut neutron_conc_per_m3_to_gui = neutron_conc_per_m3_output_ptr.lock().unwrap();
@@ -294,6 +298,29 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
                     as f64;
 
                 *neutron_conc_per_m3_to_gui = neutron_conc_per_m3_float;
+
+
+                //// read reactor power
+                //let reactor_power_kilowatts_value = &results[3];
+                //let reactor_power_kilowatts_float: f64 = 
+                //    reactor_power_kilowatts_value.value.clone()
+                //    .unwrap().as_f64().unwrap()
+                //    as f64;
+
+                //let mut reactor_power_kilowatts_to_gui = reactor_power_kilowatts_output_ptr.lock().unwrap();
+
+                //*reactor_power_kilowatts_to_gui = reactor_power_kilowatts_float;
+
+                //// read fuel temperature
+                //let fuel_temperature_celsius_value = &results[2];
+                //let fuel_temperature_celsius_float: f64 = 
+                //    fuel_temperature_celsius_value.value.clone()
+                //    .unwrap().as_f64().unwrap()
+                //    as f64;
+
+                //let mut fuel_temperature_celsius_to_gui = fuel_temperature_celsius_output_ptr.lock().unwrap();
+
+                //*fuel_temperature_celsius_to_gui = fuel_temperature_celsius_float;
 
                 //// reactivity debugging 
                 //let reactivity_read_val = &results[1];
@@ -311,8 +338,8 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
 
             {
                 // first, get user inputs
-                let user_input_reactivity: f64 = 
-                reactivity_input_ptr.lock().unwrap().to_owned();
+                let user_input_control_rod_set_point: f64 = 
+                control_rod_input_ptr.lock().unwrap().to_owned();
 
 
                 //dbg!(&user_input_heater_power_kilowatts);
@@ -323,7 +350,7 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
                         node_id: reactivity_input_node.clone(),
                         attribute_id: AttributeId::Value as u32,
                         index_range: UAString::null(),
-                        value: Variant::Double(user_input_reactivity).into(),
+                        value: Variant::Double(user_input_control_rod_set_point).into(),
                     };
 
 
