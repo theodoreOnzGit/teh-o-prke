@@ -252,3 +252,74 @@ pub fn obtain_fuel_temperature_reactivity_feedback_thermal_spectrum(
     Ok(delta_rho)
 
 }
+
+
+#[test]
+pub fn fuel_temperature_feedback_test(){
+
+    use approx::assert_abs_diff_eq;
+
+    let mut fuel_temperature_feedback_struct = 
+        SimpleFuelTemperatureFeedback::default();
+
+
+    // temperature should be 300K
+
+    let fuel_temperature_initial = ThermodynamicTemperature::new::<kelvin>(300.0);
+
+    fuel_temperature_feedback_struct
+        .set_fuel_temperature(fuel_temperature_initial).unwrap();
+
+    let fuel_temperature_test = 
+        fuel_temperature_feedback_struct.get_fuel_temperature().unwrap();
+
+
+    assert_abs_diff_eq!(
+        fuel_temperature_test.get::<kelvin>(),
+        300.0,
+        epsilon = 1e-11);
+
+    // at 300K reference, we should get no reactivity feedback 
+
+    let reactivity_at_reference: Ratio = 
+        fuel_temperature_feedback_struct.obtain_fuel_temperature_delta_rho(
+            ThermodynamicTemperature::new::<kelvin>(300.0)
+            ).unwrap();
+
+    assert_abs_diff_eq!(
+        reactivity_at_reference.get::<ratio>(),
+        0.0,
+        epsilon = 1e-11);
+
+    // now raise temperature to 600K
+    let fuel_temperature_test_1 = ThermodynamicTemperature::new::<kelvin>(600.0);
+    fuel_temperature_feedback_struct
+        .set_fuel_temperature(fuel_temperature_test_1).unwrap();
+
+    let reactivity_test_1: Ratio = 
+        fuel_temperature_feedback_struct.obtain_fuel_temperature_delta_rho(
+            ThermodynamicTemperature::new::<kelvin>(300.0)
+            ).unwrap();
+
+    // should be -0.007174389
+    assert_abs_diff_eq!(
+        reactivity_test_1.get::<ratio>(),
+        -0.007174389,
+        epsilon = 1e-5);
+
+    // at 900K should have more negative feedback
+    let fuel_temperature_test_2 = ThermodynamicTemperature::new::<kelvin>(900.0);
+    fuel_temperature_feedback_struct
+        .set_fuel_temperature(fuel_temperature_test_2).unwrap();
+
+    let reactivity_test_2: Ratio = 
+        fuel_temperature_feedback_struct.obtain_fuel_temperature_delta_rho(
+            ThermodynamicTemperature::new::<kelvin>(300.0)
+            ).unwrap();
+
+    // should be -0.01267949
+    assert_abs_diff_eq!(
+        reactivity_test_2.get::<ratio>(),
+        -0.01267949,
+        epsilon = 1e-5);
+}
