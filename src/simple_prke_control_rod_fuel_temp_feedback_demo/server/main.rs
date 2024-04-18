@@ -3,8 +3,8 @@ use ndarray::*;
 use opcua::server::prelude::*;
 use local_ip_address::local_ip;
 use opcua::server::config;
-use teh_o_prke::zero_power_prke::six_group::SixGroupPRKE;
-use uom::si::{f64::*, ratio::ratio, time::{microsecond, nanosecond}, volumetric_number_density::per_cubic_meter, volumetric_number_rate::per_cubic_meter_second};
+use teh_o_prke::{control_rod_feedback::obtain_rod_worth_cylinder, fuel_temperature_feedback::SimpleFuelTemperatureFeedback, zero_power_prke::six_group::SixGroupPRKE};
+use uom::si::{energy::megaelectronvolt, f64::*, length::centimeter, linear_number_density::per_meter, ratio::ratio, thermodynamic_temperature::{degree_celsius, kelvin}, time::{microsecond, nanosecond}, velocity::meter_per_second, volumetric_number_density::per_cubic_meter, volumetric_number_rate::per_cubic_meter_second};
 
 use std::{ops::{Deref, DerefMut}, sync::{Arc, Mutex}, time::{Instant, SystemTime}};
 fn main(){
@@ -32,7 +32,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
     // i'll have some variables here.
     // most important is to give user control of reactivity
-    let reactivity_node = NodeId::new(ns, "control_rod_set_point_input");
+    let control_rod_set_point_node_cm = NodeId::new(ns, "control_rod_set_point_input_cm");
 
 
     // the resulting outputs are precursor concentrations and neutron population
@@ -44,6 +44,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
     let precursor_concentration_4_node = NodeId::new(ns, "precursor_concentration_4_per_m3");
     let precursor_concentration_5_node = NodeId::new(ns, "precursor_concentration_5_per_m3");
     let precursor_concentration_6_node = NodeId::new(ns, "precursor_concentration_6_per_m3");
+    let fuel_temperature_node = NodeId::new(ns, "fuel_temperature_output_celsius");
 
     let address_space = server.address_space();
 
@@ -57,8 +58,8 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
 
         // we start with negative reactivity first
-        VariableBuilder::new(&reactivity_node, 
-                             "control_rod_set_point_input", "control_rod_set_point_input")
+        VariableBuilder::new(&control_rod_set_point_node_cm, 
+                             "control_rod_set_point_input_cm", "control_rod_set_point_input_cm")
             .data_type(DataTypeId::Float)
             .value(0.00 as f64)
             .writable()
@@ -99,15 +100,16 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                 Variable::new(&precursor_concentration_6_node, 
                               "precursor_concentration_6_per_m3", 
                               "precursor_concentration_6_per_m3", 0 as f64),
+                Variable::new(&fuel_temperature_node, 
+                              "fuel_temperature_output_celsius", 
+                              "fuel_temperature_output_celsius", 0 as f64),
             ],
             &sample_folder_id,
         );
     }
 
-    // adding functions to ciet's server now...
     //
     // this one prints the endpoint every 5s so the user knows
-    // how to connect to ciet
 
     let print_endpoint_simple = || {
         let ip_add = get_ip_as_str();
@@ -127,8 +129,44 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
     let prke_six_group = SixGroupPRKE::default();
     let prke_six_group_ptr = Arc::new(Mutex::new(prke_six_group));
 
+    // not only that, we need to get the fuel_temperature_feedback_struct
+    // set initial temperature to 300K
+    let mut fuel_temperature_feedback_struct = 
+        SimpleFuelTemperatureFeedback::default();
+
+    let reference_temperature = ThermodynamicTemperature::new::<kelvin>(300.0);
+
+    fuel_temperature_feedback_struct.set_fuel_temperature(
+        ThermodynamicTemperature::new::<kelvin>(300.0)).unwrap();
+
+    let fuel_temperature_feedback_struct_ptr = 
+        Arc::new(Mutex::new(fuel_temperature_feedback_struct));
+
+    let surrounding_temperature = 
+        ThermodynamicTemperature::new::<kelvin>(293.0);
+
+    // macroscopic fission XS 
+    let macroscopic_fission_xs: LinearNumberDensity = 
+        LinearNumberDensity::new::<per_meter>(0.1);
+
+
+    // control rod properties 
+    // typical values taken from lamarsh
+    let rod_worth: Ratio = Ratio::new::<ratio>(0.007);
+    let cylinder_height: Length = Length::new::<centimeter>(83.0);
+
+    // baseline reactivity 
+
+    let baseline_excess_reactivity: Ratio = 
+        Ratio::new::<ratio>(0.0035);
+
+
+    
+
     // clone the ptr to move into the loop 
     let prke_six_group_ptr_clone_for_loop = prke_six_group_ptr.clone();
+    let fuel_temperature_feedback_struct_ptr_clone_for_loop 
+        = fuel_temperature_feedback_struct_ptr.clone();
 
     // timer
     let loop_time = SystemTime::now();
@@ -148,24 +186,95 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
         {
             let mut address_space_lock = address_space.write();
-            let reactivity_value_not_dollars: f64 = address_space_lock.
+            let control_rod_insertion_length_set_point: f64 = address_space_lock.
                 get_variable_value(
-                    reactivity_node.clone())
+                    control_rod_set_point_node_cm.clone())
                 .unwrap().value.unwrap()
                 .as_f64().unwrap();
 
-            // once we get reactivity_value_not_dollars, convert it 
-            // into a ratio 
+            let insertion_length: Length = 
+                Length::new::<centimeter>(control_rod_insertion_length_set_point);
 
-            let reactivity = Ratio::new::<ratio>(reactivity_value_not_dollars);
+            // once we get control rod insertion set point, we convert it 
+            // into a reactivity 
+            let control_rod_reactivity: Ratio = 
+                obtain_rod_worth_cylinder(
+                    cylinder_height, 
+                    insertion_length, 
+                    rod_worth).unwrap();
+
+            dbg!(&control_rod_reactivity);
+
+            // now find the fuel temperature reactivity
+            // obtain the prke lock, perform the calculations based 
+            // on reactivity
+            let mut prke_lock_deref_ptr = prke_six_group_ptr_clone_for_loop.lock().unwrap();
+            let mut fuel_temperature_feedback_struct_deref_ptr = 
+                fuel_temperature_feedback_struct_ptr_clone_for_loop.lock().unwrap();
+
+            let fuel_temperature_reactivity: Ratio = {
+
+                // first let's find the fission power 
+                //
+                // fission rate is Sigma_f phi
+                //
+                // phi is n * v
+                let neutron_conc: VolumetricNumberDensity 
+                    = prke_lock_deref_ptr.deref_mut().get_current_neutron_population();
+
+                let thermal_neutron_speed = Velocity::new::<meter_per_second>(2200.0);
+
+                let neutron_flux = neutron_conc * thermal_neutron_speed;
+
+                let fission_rate_per_unit_vol: VolumetricNumberRate =  
+                    (neutron_flux * macroscopic_fission_xs).into();
+
+                // now we have a fission rate per unit volume, we need to 
+                // get fission power 
+                // which we assume is 180 MeV 
+
+                let energy_per_fission: Energy = 
+                    Energy::new::<megaelectronvolt>(180.0);
+
+                let fuel_volume = fuel_temperature_feedback_struct_deref_ptr.fuel_volume;
+
+                let fission_power: Power = fission_rate_per_unit_vol * 
+                    energy_per_fission * 
+                    fuel_volume;
+
+                // add fission power, and remove convection heat
+
+                fuel_temperature_feedback_struct_deref_ptr.add_fission_heat(
+                    fission_power, timestep).unwrap();
+
+                let coolant_temperature = surrounding_temperature;
+                fuel_temperature_feedback_struct_deref_ptr.remove_convection_heat(
+                    coolant_temperature, timestep).unwrap();
+
+                // now get reactivity value 
+
+                let fuel_temp_reactivity_value: Ratio = 
+                    fuel_temperature_feedback_struct_deref_ptr.
+                    obtain_fuel_temperature_delta_rho(reference_temperature)
+                    .unwrap();
+
+                // return reactivity 
+                fuel_temp_reactivity_value
+
+
+            };
+            
+
+
+            let reactivity = baseline_excess_reactivity + 
+                fuel_temperature_reactivity +
+                control_rod_reactivity;
+
 
             let keff = SixGroupPRKE::get_keff_from_reactivity(reactivity);
             let neutron_generation_time: Time = neutron_mean_lifetime/keff;
 
 
-            // obtain the prke lock, perform the calculations based 
-            // on reactivity
-            let mut prke_lock_deref_ptr = prke_six_group_ptr_clone_for_loop.lock().unwrap();
 
 
             // check if neutron pop is too large 
@@ -184,7 +293,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                 let now = DateTime::now();
                 // rod drop if neutron concentration too high
                 let _ = address_space_lock.set_variable_value(
-                    reactivity_node.clone(), 
+                    control_rod_set_point_node_cm.clone(), 
                     -0.05 as f64,
                     &now, 
                     &now);
@@ -244,6 +353,23 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                 neutron_conc_per_m3 as f64,
                 &now, 
                 &now);
+
+            // now for temperature 
+            let current_fuel_temperature: ThermodynamicTemperature = 
+                fuel_temperature_feedback_struct_ptr_clone_for_loop
+                .lock()
+                .unwrap()
+                .get_fuel_temperature()
+                .unwrap();
+
+            let fuel_temp_deg_c: f64 = 
+                current_fuel_temperature.get::<degree_celsius>();
+            let _ = address_space_lock.set_variable_value(
+                fuel_temperature_node.clone(), 
+                fuel_temp_deg_c as f64,
+                &now, 
+                &now);
+
 
             // deal with precursors later
 

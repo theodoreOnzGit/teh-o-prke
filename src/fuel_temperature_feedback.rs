@@ -54,6 +54,12 @@ impl SimpleFuelTemperatureFeedback {
             Ok(())
     }
 
+    /// get current fuel temperature
+    pub fn get_fuel_temperature(&self)
+        -> Result<ThermodynamicTemperature, TehOPrkeError>{
+            Ok(self.fuel_temperature)
+    }
+
     /// set fuel alpha_coefficient 
     /// that is reactivity feedback coefficient
     /// for thermal spectrum reactor

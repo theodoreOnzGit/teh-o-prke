@@ -154,7 +154,7 @@ impl eframe::App for GuiClient {
                     self.transfer_fn_input_output_panel_ui(ui);
                 },
                 Panel::ZeroPowerPRKE => {
-                    self.zero_power_prke_demo_ui(ui);
+                    self.fuel_temp_control_rod_prke_demo_ui(ui);
                 },
             }
             

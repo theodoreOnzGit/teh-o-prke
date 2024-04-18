@@ -9,7 +9,7 @@ use opcua::sync::RwLock;
 use std::sync::{Arc, Mutex};
 
 impl GuiClient {
-    pub fn zero_power_prke_demo_ui(&mut self, ui: &mut Ui) {
+    pub fn fuel_temp_control_rod_prke_demo_ui(&mut self, ui: &mut Ui) {
 
         ui.separator();
         ui.horizontal(|ui| {
@@ -26,8 +26,8 @@ impl GuiClient {
             let user_input_value = binding.deref_mut();
 
             ui.style_mut().spacing.slider_width = 1000.0;
-            ui.add(egui::Slider::new(user_input_value, -0.1..=0.007).
-                text("User Input for Reactivity"));
+            ui.add(egui::Slider::new(user_input_value, 0.0..=100.0).
+                text("User Input for Control Rod Insertion Set Point (cm)"));
 
         }
 
@@ -264,7 +264,8 @@ pub fn try_connect_to_server_and_run_client(endpoint: &str,
 
     // i want to poll the server and print values 
     let neutron_conc_per_m3_output_node = NodeId::new(ns, "neutron_concentration_per_m3");
-    let reactivity_input_node = NodeId::new(ns, "reactivity_input");
+    let reactivity_input_node = NodeId::new(ns, "control_rod_set_point_input");
+    let fuel_temperature_node = NodeId::new(ns, "fuel_temperature_output_celsius");
 
     // i will also need another thread to run the polling loop 
 

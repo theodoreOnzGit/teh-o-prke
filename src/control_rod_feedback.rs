@@ -35,3 +35,25 @@ pub fn obtain_rod_worth_cylinder(cylinder_height: Length,
 
     Ok(reactivity)
 }
+
+// at halfway insertion, we should get zero 0.5 reactivity for 
+// 0.5 rod worth
+//
+#[test]
+pub fn test_halfway_insertion(){
+
+    use approx::assert_abs_diff_eq;
+    use uom::si::length::meter;
+
+    let cylinder_height = Length::new::<meter>(1.0);
+    let insertion_length = Length::new::<meter>(0.5);
+    let rod_worth = Ratio::new::<ratio>(1.0);
+
+    let rod_reactivity = obtain_rod_worth_cylinder(
+        cylinder_height, insertion_length, rod_worth).unwrap();
+
+    assert_abs_diff_eq!(
+        rod_reactivity.get::<ratio>(),
+        0.5,
+        epsilon = 1e-11);
+}
