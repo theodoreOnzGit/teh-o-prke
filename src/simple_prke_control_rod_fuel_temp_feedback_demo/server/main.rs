@@ -4,7 +4,7 @@ use opcua::server::prelude::*;
 use local_ip_address::local_ip;
 use opcua::server::config;
 use teh_o_prke::{control_rod_feedback::obtain_rod_worth_cylinder, fuel_temperature_feedback::SimpleFuelTemperatureFeedback, zero_power_prke::six_group::SixGroupPRKE};
-use uom::si::{energy::megaelectronvolt, f64::*, length::centimeter, linear_number_density::per_meter, ratio::ratio, thermodynamic_temperature::{degree_celsius, kelvin}, time::{microsecond, nanosecond}, velocity::meter_per_second, volumetric_number_density::per_cubic_meter, volumetric_number_rate::per_cubic_meter_second};
+use uom::si::{energy::megaelectronvolt, f64::*, length::centimeter, linear_number_density::per_meter, power::kilowatt, ratio::ratio, thermodynamic_temperature::{degree_celsius, kelvin}, time::{microsecond, nanosecond}, velocity::meter_per_second, volumetric_number_density::per_cubic_meter, volumetric_number_rate::per_cubic_meter_second};
 
 use std::{ops::{Deref, DerefMut}, sync::{Arc, Mutex}, time::{Instant, SystemTime}};
 fn main(){
@@ -37,6 +37,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
     // the resulting outputs are precursor concentrations and neutron population
 
+    let reactor_power_node = NodeId::new(ns, "reactor_power_kilowatts");
     let neutron_concentration_node = NodeId::new(ns, "neutron_concentration_per_m3");
     let precursor_concentration_1_node = NodeId::new(ns, "precursor_concentration_1_per_m3");
     let precursor_concentration_2_node = NodeId::new(ns, "precursor_concentration_2_per_m3");
@@ -79,6 +80,10 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
         // Add some variables to our sample folder. Values will be overwritten by the timer
         let _ = address_space.add_variables(
             vec![
+
+                Variable::new(&reactor_power_node, 
+                              "reactor_power_kilowatts", 
+                              "reactor_power_kilowatts", 0 as f64),
                 Variable::new(&neutron_concentration_node, 
                               "neutron_concentration_per_m3", 
                               "neutron_concentration_per_m3", 0 as f64),
@@ -183,6 +188,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
 
         // now we have calculation steps, we need to read reactivity 
         // from the user input first
+        let mut reactor_power_kilowatts: f64;
 
         {
             let mut address_space_lock = address_space.write();
@@ -241,6 +247,10 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                     energy_per_fission * 
                     fuel_volume;
 
+                // record reactor power 
+                reactor_power_kilowatts = fission_power.get::<kilowatt>();
+
+
                 // add fission power, and remove convection heat
 
                 fuel_temperature_feedback_struct_deref_ptr.add_fission_heat(
@@ -268,8 +278,6 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
             let reactivity = baseline_excess_reactivity + 
                 fuel_temperature_reactivity +
                 control_rod_reactivity;
-
-            dbg!(&reactivity);
 
             let keff = SixGroupPRKE::get_keff_from_reactivity(reactivity);
             let neutron_generation_time: Time = neutron_mean_lifetime/keff;
@@ -369,8 +377,15 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                 fuel_temp_deg_c as f64,
                 &now, 
                 &now);
+            // write reactor power
+            let _ = address_space_lock.set_variable_value(
+                reactor_power_node.clone(), 
+                reactor_power_kilowatts as f64,
+                &now, 
+                &now);
 
-            dbg!(&current_fuel_temperature);
+            dbg!(&reactor_power_kilowatts);
+
 
             // deal with precursors later
 
