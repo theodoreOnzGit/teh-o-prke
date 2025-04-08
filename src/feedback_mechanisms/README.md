@@ -1,7 +1,7 @@
-= Feedback Mechanism Readme 
+# Feedback Mechanism Readme 
 
 
-= Theory 
+# Theory 
 
 From Lamarsh:
 
@@ -11,7 +11,7 @@ Lamarsh, J. R. (1975). Introduction to nuclear engineering.
 
 There are several feedback mechanisms 
 
-== Short term feedback (seconds to minutes)
+## Short term feedback (seconds to minutes)
 
 1. Delayed Neutrons 
 2. Fuel Temperature Feedback
@@ -24,7 +24,7 @@ reactors (MSBRs) such as the liquid fluoride thorium reactor (LFTR) in
 future. But for now, start with solid fuel first.
 
 
-== Medium term feedback (1-2 days)
+## Medium term feedback (1-2 days)
 
 6. Reactor poison feedback 
 7. Burnable poison/absorber feedback 
@@ -32,15 +32,15 @@ future. But for now, start with solid fuel first.
 These would include soluble boron, Xe-135 or iodine pit and samarium 
 poisoning.
 
-== Long term feedback (3 days to several months)
+## Long term feedback (3 days to several months)
 
 8. Fuel depletion
 9. Fuel breeding
 
-= Practical parts 
+# Practical parts 
 
 
-== Real-Time Simulation
+## Real-Time Simulation
 
 On the matter of real-time simulation, we can only do thermal reactors...
 
@@ -70,12 +70,20 @@ eg.
 
 For the last two, we may use longer timesteps to calculate inventory, so 
 not crucial. For short transients, not really important. I'm prioritising 
-short and medium term transients first (items 1 through 7).
+short and medium term transients first (items 1 through 7). Though 
+1 is already accounted for in Six Group PRKE at least for solid fuel.
+Items 2-7 can be programmed.
+
+
+I suppose the general mechanism is to have a function taking in 
+whatever quantifies the feedback, eg. a temperature parameter, void 
+parameter (vapour fraction), etc. and returns a term in the six factor 
+formula 
 
 
 
 
-== Verification and Validation 
+## Verification and Validation 
 
 
 
