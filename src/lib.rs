@@ -19,6 +19,9 @@ pub mod zero_power_prke;
 
 
 /// contains functions and structs for fuel temperature feedback 
+///
+/// this is the simplest feedback mechanism
+/// where rudimentary thermal hydraulics model is added.
 pub mod fuel_temperature_feedback;
 
 /// contains functions and structs for control rod feedback 
@@ -30,5 +33,6 @@ pub mod teh_o_prke_error;
 
 
 /// contains code for various feedback mechanisms
+/// this uses the six factor formula rather than simply adjusting reactivity
 pub mod feedback_mechanisms;
 
