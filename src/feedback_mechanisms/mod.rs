@@ -66,10 +66,28 @@ impl SixFactorFormulaFeedback {
 
             return Ratio::new::<ratio>(-1.0e30);
         }
-        
+
 
         return (keff-Ratio::new::<ratio>(1.0))/keff;
     }
+
+
+    /// fuel temperature feedback, should impact 
+    /// resonance escape probability
+    /// there should be a set fuel temperature to  
+    /// resonance esc probability map or function
+    pub fn fuel_temp_feedback(&mut self,
+        t: ThermodynamicTemperature,
+        resonance_esc_feedback: fn(ThermodynamicTemperature) -> Ratio ) 
+        {
+
+            // this is the user defined resonance 
+            // escape probability feedback due to fuel 
+            // temperature
+            let p = resonance_esc_feedback(t);
+            self.p = p;
+
+        }
 }
 
 impl Default for SixFactorFormulaFeedback {
