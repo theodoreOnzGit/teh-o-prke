@@ -71,3 +71,17 @@ impl SixFactorFormulaFeedback {
         return (keff-Ratio::new::<ratio>(1.0))/keff;
     }
 }
+
+impl Default for SixFactorFormulaFeedback {
+    fn default() -> Self {
+        let ratio_one = Ratio::new::<ratio>(1.0);
+        Self { 
+            p_tnl: ratio_one, 
+            p_fnl: ratio_one, 
+            epsilon: ratio_one, 
+            p: ratio_one, 
+            f: ratio_one, 
+            eta: ratio_one 
+        }
+    }
+}
