@@ -1,4 +1,5 @@
 
+use uom::si::f32::AvailableEnergy;
 use uom::si::ratio::ratio;
 use uom::si::f64::*;
 use uom::si::f64::MassConcentration;
@@ -256,6 +257,35 @@ impl SixFactorFormulaFeedback {
             self.p *= p_chg.get::<ratio>();
         }
 
+    /// burnup feedback 
+    ///
+    /// similar to fuel depletion, but we use 
+    /// burnup units for convenience
+    ///
+    /// as in MWd/ton heavy metal 
+    ///
+    /// this is energy per unit mass
+    ///
+    pub fn fuel_burnup_feedback(&mut self,
+        burnup: AvailableEnergy, 
+        eta_feedback: fn(AvailableEnergy) -> Ratio,
+        fast_fission_factor_feedback: fn(AvailableEnergy) -> Ratio,
+        resonance_esc_feedback: fn(AvailableEnergy) -> Ratio,
+        thermal_utilisation_feedback: fn(AvailableEnergy) -> Ratio,)
+        {
+
+            let f_chg = thermal_utilisation_feedback(burnup);
+            self.f *= f_chg.get::<ratio>();
+
+            let eta_chg = eta_feedback(burnup);
+            self.eta *= eta_chg.get::<ratio>();
+
+            let epsilon_chg = fast_fission_factor_feedback(burnup);
+            self.epsilon *= epsilon_chg.get::<ratio>();
+
+            let p_chg = resonance_esc_feedback(burnup);
+            self.p *= p_chg.get::<ratio>();
+        }
 
 }
 
