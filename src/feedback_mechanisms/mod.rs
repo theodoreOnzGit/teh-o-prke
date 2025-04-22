@@ -95,10 +95,15 @@ impl SixFactorFormulaFeedback {
     /// however, resonance escape probability may also be impacted
     /// as more neutrons may exist in the resonance region
     ///
+    /// note that temperature feedbacks for moderator are accounted 
+    /// for in moderator density feedback by and large
+    ///
     pub fn moderator_density_feedback(&mut self,
         rho: MassDensity,
         mod_void_feedback: fn(MassDensity) -> Ratio,
-        resonance_esc_feedback: fn(MassDensity) -> Ratio
+        resonance_esc_feedback: fn(MassDensity) -> Ratio,
+        thermal_non_leakage_feedback: fn(MassDensity) -> Ratio,
+        fast_non_leakage_feedback: fn(MassDensity) -> Ratio,
         ) 
         {
 
@@ -113,6 +118,10 @@ impl SixFactorFormulaFeedback {
             // moderator density
             let p = resonance_esc_feedback(rho);
             self.p = p;
+            let p_fnl = fast_non_leakage_feedback(rho);
+            let p_tnl = thermal_non_leakage_feedback(rho);
+            self.p_tnl = p_tnl;
+            self.p_fnl = p_fnl;
 
         }
 
