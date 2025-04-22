@@ -1,6 +1,7 @@
-use core::f64;
 
-use uom::si::{f64::*, ratio::ratio};
+use uom::si::ratio::ratio;
+use uom::si::f64::{*};
+use uom::si::f64::MassConcentration;
 
 /// six factor formula to calculate keff and 
 /// reactivity
@@ -84,8 +85,8 @@ impl SixFactorFormulaFeedback {
             // this is the user defined resonance 
             // escape probability feedback due to fuel 
             // temperature
-            let p = resonance_esc_feedback(t);
-            self.p = p;
+            let p_chg = resonance_esc_feedback(t);
+            self.p *= p_chg.get::<ratio>();
 
         }
     /// void (average density) feedback
@@ -111,17 +112,17 @@ impl SixFactorFormulaFeedback {
             // thermal utilisation 
             // feedback due to 
             // moderator density
-            let f = mod_void_feedback(rho);
-            self.f = f;
+            let f_chg = mod_void_feedback(rho);
+            self.f *= f_chg.get::<ratio>();
             // this is the user defined resonance 
             // escape probability feedback due to 
             // moderator density
-            let p = resonance_esc_feedback(rho);
-            self.p = p;
-            let p_fnl = fast_non_leakage_feedback(rho);
-            let p_tnl = thermal_non_leakage_feedback(rho);
-            self.p_tnl = p_tnl;
-            self.p_fnl = p_fnl;
+            let p_chg = resonance_esc_feedback(rho);
+            self.p *= p_chg.get::<ratio>();
+            let p_fnl_chg = fast_non_leakage_feedback(rho);
+            let p_tnl_chg = thermal_non_leakage_feedback(rho);
+            self.p_tnl *= p_tnl_chg.get::<ratio>();
+            self.p_fnl *= p_fnl_chg.get::<ratio>();
 
         }
 
@@ -149,20 +150,113 @@ impl SixFactorFormulaFeedback {
             // thermal utilisation 
             // feedback due to 
             // moderator density
-            let f = mod_void_feedback(rho);
-            self.f = f;
+            let f_chg = mod_void_feedback(rho);
+            self.f *= f_chg.get::<ratio>();
             // this is the user defined resonance 
             // escape probability feedback due to 
             // moderator density
-            let p = resonance_esc_feedback(rho);
-            self.p = p;
-
-            let p_fnl = fast_non_leakage_feedback(rho);
-            let p_tnl = thermal_non_leakage_feedback(rho);
-            self.p_tnl = p_tnl;
-            self.p_fnl = p_fnl;
+            let p_chg = resonance_esc_feedback(rho);
+            self.p *= p_chg.get::<ratio>();
+            let p_fnl_chg = fast_non_leakage_feedback(rho);
+            let p_tnl_chg = thermal_non_leakage_feedback(rho);
+            self.p_tnl *= p_tnl_chg.get::<ratio>();
+            self.p_fnl *= p_fnl_chg.get::<ratio>();
 
         }
+
+    /// control rod feedback
+    ///
+    /// reflects feedback due to degree of control rod insertion 
+    /// this is a ratio of 0 to 1 usually.
+    ///
+    /// this affects thermal utilisation factor usually
+    pub fn control_rod_feedback(&mut self,
+        rod_insertion_ratio: Ratio,
+        ctrl_rod_feedback: fn(Ratio) -> Ratio,
+        ){
+
+        let f_chg = ctrl_rod_feedback(rod_insertion_ratio);
+        self.f *= f_chg.get::<ratio>();
+
+    }
+
+    /// generic leakage feedback
+    /// due to core expansion or some other factor
+    pub fn leakage_feedback(&mut self,
+        rho: MassDensity,
+        thermal_non_leakage_feedback: fn(MassDensity) -> Ratio,
+        fast_non_leakage_feedback: fn(MassDensity) -> Ratio,
+        ) 
+        {
+
+            let p_fnl_chg = fast_non_leakage_feedback(rho);
+            let p_tnl_chg = thermal_non_leakage_feedback(rho);
+            self.p_tnl *= p_tnl_chg.get::<ratio>();
+            self.p_fnl *= p_fnl_chg.get::<ratio>();
+
+        }
+
+    /// reactor poison feedback
+    ///
+    /// reflects feedback due to 
+    /// reactor poison concentration
+    ///
+    /// this affects thermal utilisation factor usually
+    ///
+    /// it is up to the user to decide to use this for 
+    /// Xenon, Samarium or some other poison
+    pub fn reactor_poison_feedback(&mut self,
+        reactor_poison_concentration: MassConcentration,
+        ctrl_rod_feedback: fn(MassConcentration) -> Ratio,
+        ){
+
+        let f_chg = ctrl_rod_feedback(reactor_poison_concentration);
+        self.f *= f_chg.get::<ratio>();
+
+    }
+    /// burnable absorber/poison feedback
+    ///
+    /// reflects feedback due to 
+    /// burnable absorber/poison concentration
+    ///
+    /// this affects thermal utilisation factor usually
+    ///
+    /// it is up to the user to decide to use this for 
+    /// Xenon, Samarium or some other poison
+    pub fn burnable_absorber_posion_feedback(&mut self,
+        burnable_poison_concentration: MassConcentration,
+        ctrl_rod_feedback: fn(MassConcentration) -> Ratio,
+        ){
+
+        let f_chg = ctrl_rod_feedback(burnable_poison_concentration);
+        self.f *= f_chg.get::<ratio>();
+
+    }
+
+
+    /// fuel depletion and fuel breeding 
+    pub fn fuel_depletion_and_breeding_feedback(&mut self,
+        fuel_concentration: MassConcentration, 
+        eta_feedback: fn(MassConcentration) -> Ratio,
+        fast_fission_factor_feedback: fn(MassConcentration) -> Ratio,
+        resonance_esc_feedback: fn(MassConcentration) -> Ratio,
+        thermal_utilisation_feedback: fn(MassConcentration) -> Ratio,)
+        {
+
+            let f_chg = thermal_utilisation_feedback(fuel_concentration);
+            self.f *= f_chg.get::<ratio>();
+
+            let eta_chg = eta_feedback(fuel_concentration);
+            self.eta *= eta_chg.get::<ratio>();
+
+            let epsilon_chg = fast_fission_factor_feedback(fuel_concentration);
+            self.epsilon *= epsilon_chg.get::<ratio>();
+
+            let p_chg = resonance_esc_feedback(fuel_concentration);
+            self.p *= p_chg.get::<ratio>();
+        }
+
+
 }
 
 impl Default for SixFactorFormulaFeedback {
