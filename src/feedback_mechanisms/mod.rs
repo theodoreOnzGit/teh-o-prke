@@ -133,6 +133,9 @@ impl SixFactorFormulaFeedback {
     ///
     /// moreover, this impacts the non leakage probability in 
     /// both fast and thermal regions
+    ///
+    /// reflectors can also act as moderators, but the reflector 
+    /// is outside the core region
     pub fn reflector_density_feedback(&mut self,
         rho: MassDensity,
         mod_void_feedback: fn(MassDensity) -> Ratio,
