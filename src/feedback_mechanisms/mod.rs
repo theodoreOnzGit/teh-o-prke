@@ -88,6 +88,69 @@ impl SixFactorFormulaFeedback {
             self.p = p;
 
         }
+    /// void (average density) feedback
+    /// for moderator
+    ///
+    /// this would affect the thermal utilisation factor
+    /// however, resonance escape probability may also be impacted
+    /// as more neutrons may exist in the resonance region
+    ///
+    pub fn moderator_density_feedback(&mut self,
+        rho: MassDensity,
+        mod_void_feedback: fn(MassDensity) -> Ratio,
+        resonance_esc_feedback: fn(MassDensity) -> Ratio
+        ) 
+        {
+
+            // this is the user defined 
+            // thermal utilisation 
+            // feedback due to 
+            // moderator density
+            let f = mod_void_feedback(rho);
+            self.f = f;
+            // this is the user defined resonance 
+            // escape probability feedback due to 
+            // moderator density
+            let p = resonance_esc_feedback(rho);
+            self.p = p;
+
+        }
+
+    /// void (average density) feedback for reflector 
+    ///
+    /// this would affect the thermal utilisation factor
+    /// however, resonance escape probability may also be impacted
+    /// as more neutrons may exist in the resonance region
+    ///
+    /// moreover, this impacts the non leakage probability in 
+    /// both fast and thermal regions
+    pub fn reflector_density_feedback(&mut self,
+        rho: MassDensity,
+        mod_void_feedback: fn(MassDensity) -> Ratio,
+        resonance_esc_feedback: fn(MassDensity) -> Ratio,
+        thermal_non_leakage_feedback: fn(MassDensity) -> Ratio,
+        fast_non_leakage_feedback: fn(MassDensity) -> Ratio,
+        ) 
+        {
+
+            // this is the user defined 
+            // thermal utilisation 
+            // feedback due to 
+            // moderator density
+            let f = mod_void_feedback(rho);
+            self.f = f;
+            // this is the user defined resonance 
+            // escape probability feedback due to 
+            // moderator density
+            let p = resonance_esc_feedback(rho);
+            self.p = p;
+
+            let p_fnl = fast_non_leakage_feedback(rho);
+            let p_tnl = thermal_non_leakage_feedback(rho);
+            self.p_tnl = p_tnl;
+            self.p_fnl = p_fnl;
+
+        }
 }
 
 impl Default for SixFactorFormulaFeedback {
