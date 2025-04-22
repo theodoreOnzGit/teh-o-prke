@@ -100,7 +100,7 @@ impl eframe::App for FHRSimulatorApp {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("CIET Educational Simulator v1");
+            ui.heading("FHR Educational Simulator v1");
             ui.separator();
             egui::menu::bar(ui, |ui| {
 
