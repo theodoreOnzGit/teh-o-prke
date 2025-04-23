@@ -96,7 +96,7 @@ pub fn new_temp_sensitive_button(
     let hotness: f32 = 
         (button_temp_degc - min_temp_degc)/(max_temp_degc- min_temp_degc);
 
-    let colour_temp = hot_to_cold_colour(hotness);
+    let colour_temp = hot_to_cold_colour_mark_1(hotness);
     let temp_sensitive_button = egui::Button::new(name)
         .fill(colour_temp);
 
@@ -110,7 +110,7 @@ pub fn new_temp_sensitive_button(
 /// Steps:
 /// Cold colors (blue) start with high values in the blue channel (B = 1, G = 0).
 /// Hot colors (red) end with high values in the red channel (R = 1, G = 0).
-pub fn hot_to_cold_colour(hotness: f32) -> Color32 {
+pub fn hot_to_cold_colour_mark_1(hotness: f32) -> Color32 {
     let mut hotness_clone = hotness.clone();
 
     // ensures hotness is between 0 and 1
@@ -129,3 +129,6 @@ pub fn hot_to_cold_colour(hotness: f32) -> Color32 {
         green as u8, 
         blue as u8);
 }
+
+pub mod reactor_art;
+

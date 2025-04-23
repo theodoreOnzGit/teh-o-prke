@@ -78,6 +78,8 @@ impl eframe::App for FHRSimulatorApp {
             let top_most_side = ui_rectangle.top();
 
 
+
+
         });
 
         egui::TopBottomPanel::bottom("github").show(ctx, |ui|{
