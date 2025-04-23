@@ -110,6 +110,12 @@ impl eframe::App for FHRSimulatorApp {
             });
             // for painting widgets
             // https://github.com/emilk/egui/blob/master/crates/egui_demo_lib/src/demo/misc_demo_window.rs
+            //
+            // the main thing is the painter class:
+            // https://docs.rs/egui/latest/egui/struct.Painter.html
+            //
+            // here you can paint circles and rectangles 
+            // images, line segments etc.
 
             CollapsingHeader::new("Misc")
                 .default_open(false)
