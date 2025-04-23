@@ -1,6 +1,6 @@
 use std::f32::consts::TAU;
 
-use egui::{vec2, Color32, Sense, Stroke, Ui, Vec2};
+use egui::{vec2, Color32, Pos2, Rect, Sense, Stroke, Ui, Vec2};
 
 // first thing, reactor
 //
@@ -19,17 +19,32 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     let right_most_side = rectangle.right();
     let bottom_most_side = rectangle.bottom();
 
-    let breadth = (left_most_side - right_most_side).abs();
-    let height = (top_most_side - bottom_most_side).abs();
+    let ui_rectangle: Rect = ui.min_rect();
+    let breadth = right_most_side;
+    let height = bottom_most_side;
 
+    // the size here is the size of the painter
     let size = Vec2::new(breadth, height);
 
     let (response, painter) = ui.allocate_painter(
         size, Sense::hover()
     );
-    let rect = response.rect;
-    let c = rect.center();
-    let r = rect.width() / 2.0 - 1.0;
+    let response_rect = response.rect;
+    
+    // what I want to do now is to shift the 
+    // response rectangle
+
+    let shift: Pos2 = rectangle.min;
+
+    // the rect here is 
+    let rect: egui::Rect = 
+        egui:: Rect {
+            min: response_rect.min + Vec2{ x: shift.x, y: shift.y },
+            max: response_rect.max + Vec2{ x: shift.x, y: shift.y },
+        };
+    
+    let c = response_rect.center();
+    let r = response_rect.width() / 2.0 - 1.0;
     let color = Color32::from_gray(128);
     let stroke = Stroke::new(1.0, color);
     painter.circle_stroke(c, r, stroke);
