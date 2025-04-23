@@ -10,13 +10,20 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     // make a new painter first 
     //
 
-    let arbitrary_size = Vec2::splat(16.0);
 
     // top_left
-    let rectangle_min: Pos2 = rectangle.min;
+    let left_most_side = rectangle.left();
+    let top_most_side = rectangle.top();
+    let right_most_side = rectangle.right();
+    let bottom_most_side = rectangle.bottom();
+
+    let breadth = (left_most_side - right_most_side).abs();
+    let height = (top_most_side - bottom_most_side).abs();
+
+    let size = Vec2::new(breadth, height);
 
     let (response, painter) = ui.allocate_painter(
-        arbitrary_size, Sense::hover()
+        size, Sense::hover()
     );
 
 
