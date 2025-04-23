@@ -1,6 +1,7 @@
 use std::time::Duration;
 
-use egui::{vec2, CollapsingHeader, Color32, Rect, Sense, Stroke, Vec2};
+use egui::{vec2, CollapsingHeader, Color32, Pos2, Rect, Sense, Stroke, Vec2};
+use local_widgets_and_buttons::reactor_art::fhr_reactor_vessel;
 
 use crate::FHRSimulatorApp;
 
@@ -76,6 +77,37 @@ impl eframe::App for FHRSimulatorApp {
             // for relative placement
             let left_most_side = ui_rectangle.left();
             let top_most_side = ui_rectangle.top();
+
+            // next I want to have the reactor vessel 
+
+            let reactor_offset_x: f32 = 60.0;
+            let reactor_offset_y: f32 = 60.0;
+            let reactor_height_px: f32 = 200.0;
+            let reactor_width_px: f32 = 80.0;
+
+            let reactor_rect_top_left: Pos2 = 
+                Pos2 { 
+                    x: left_most_side + reactor_offset_x, 
+                    y:  top_most_side + reactor_offset_y
+                };
+            let reactor_rect_bottom_right: Pos2 = 
+                Pos2 { 
+                    x: reactor_rect_top_left.x + reactor_width_px, 
+                    y: reactor_rect_top_left.y + reactor_height_px
+                };
+
+            let reactor_rectangle: egui::Rect =
+                egui::Rect{
+                    min: reactor_rect_top_left,
+                    max: reactor_rect_bottom_right,
+                };
+
+            fhr_reactor_vessel(ui, reactor_rectangle);
+
+
+
+
+            
 
 
 
