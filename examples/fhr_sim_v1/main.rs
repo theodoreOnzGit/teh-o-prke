@@ -1,5 +1,7 @@
 use std::{thread, time::Duration};
 
+use egui::{vec2, CollapsingHeader, Color32, Sense, Stroke, Vec2};
+
 /// this represents the first iteration 
 /// of the fhr simulator
 ///
@@ -106,6 +108,28 @@ impl eframe::App for FHRSimulatorApp {
 
                 egui::widgets::global_theme_preference_buttons(ui);
             });
+            // for painting widgets
+            // https://github.com/emilk/egui/blob/master/crates/egui_demo_lib/src/demo/misc_demo_window.rs
+
+            CollapsingHeader::new("Misc")
+                .default_open(false)
+                .show(ui, |ui| {
+                    ui.horizontal(|ui| {
+                        ui.label("You can pretty easily paint your own small icons:");
+                        use std::f32::consts::TAU;
+                        let size = Vec2::splat(16.0);
+                        let (response, painter) = ui.allocate_painter(size, Sense::hover());
+                        let rect = response.rect;
+                        let c = rect.center();
+                        let r = rect.width() / 2.0 - 1.0;
+                        let color = Color32::from_gray(128);
+                        let stroke = Stroke::new(1.0, color);
+                        painter.circle_stroke(c, r, stroke);
+                        painter.line_segment([c - vec2(0.0, r), c + vec2(0.0, r)], stroke);
+                        painter.line_segment([c, c + r * Vec2::angled(TAU * 1.0 / 8.0)], stroke);
+                        painter.line_segment([c, c + r * Vec2::angled(TAU * 3.0 / 8.0)], stroke);
+                    });
+                });
         });
 
         egui::TopBottomPanel::bottom("github").show(ctx, |ui|{
