@@ -1,7 +1,9 @@
 use std::time::Duration;
 
-use egui::{vec2, CollapsingHeader, Color32, Pos2, Rect, Sense, Stroke, Vec2};
-use local_widgets_and_buttons::{fhr_reactor_widget::FHRReactorWidget, reactor_art::fhr_reactor_vessel_prototype};
+use egui::{vec2, Pos2, Rect};
+use local_widgets_and_buttons::fhr_reactor_widget::FHRReactorWidget;
+use uom::si::f64::*;
+use uom::si::thermodynamic_temperature::degree_celsius;
 
 use crate::FHRSimulatorApp;
 
@@ -111,8 +113,39 @@ impl eframe::App for FHRSimulatorApp {
 
                     let fhr_size = 
                         vec2(reactor_rectangle.width(), reactor_rectangle.height());
+
+                    let min_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let max_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let pebble_core_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let core_curved_inlet_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let core_curved_outlet_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let core_inlet_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let core_outlet_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let left_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let left_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let left_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let right_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let right_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let right_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+
+
                     let mut fhr_widget = FHRReactorWidget::new(
-                        fhr_size
+                        fhr_size,
+                        min_temp,
+                        max_temp,
+                        pebble_core_temp,
+                        pebble_bed_coolant_temp,
+                        core_curved_inlet_temp,
+                        core_curved_outlet_temp,
+                        core_inlet_temp,
+                        core_outlet_temp,
+                        left_downcomer_upper_temp,
+                        left_downcomer_mid_temp,
+                        left_downcomer_lower_temp,
+                        right_downcomer_upper_temp,
+                        right_downcomer_mid_temp,
+                        right_downcomer_lower_temp,
                     );
                     fhr_widget.set_left_cr_frac(left_control_rod_insertion_frac);
                     fhr_widget.set_right_cr_frac(right_control_rod_insertion_frac);

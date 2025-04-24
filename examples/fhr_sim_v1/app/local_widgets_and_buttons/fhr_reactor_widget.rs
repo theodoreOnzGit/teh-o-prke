@@ -1,4 +1,5 @@
 use egui::{epaint::{CubicBezierShape, PathShape}, vec2, Color32, Pos2, Sense, Stroke, Vec2, Widget};
+use uom::si::f64::*;
 
 use super::hot_to_cold_colour_mark_1;
 
@@ -6,17 +7,63 @@ pub struct FHRReactorWidget {
     size: Vec2,
     left_control_rod_insertion_frac: f32,
     right_control_rod_insertion_frac: f32,
+    min_temp: ThermodynamicTemperature,
+    max_temp: ThermodynamicTemperature,
+    pebble_core_temp: ThermodynamicTemperature,
+    pebble_bed_coolant_temp: ThermodynamicTemperature,
+    core_curved_inlet_temp: ThermodynamicTemperature,
+    core_curved_outlet_temp: ThermodynamicTemperature,
+    core_inlet_temp: ThermodynamicTemperature,
+    core_outlet_temp: ThermodynamicTemperature,
+    left_downcomer_upper_temp: ThermodynamicTemperature,
+    left_downcomer_mid_temp: ThermodynamicTemperature,
+    left_downcomer_lower_temp: ThermodynamicTemperature,
+    right_downcomer_upper_temp: ThermodynamicTemperature,
+    right_downcomer_mid_temp: ThermodynamicTemperature,
+    right_downcomer_lower_temp: ThermodynamicTemperature,
+    
 }
 
 
 impl FHRReactorWidget {
 
     /// constructs a default FHRReactorWidget
-    pub fn new(size: Vec2) -> Self {
+    pub fn new(size: Vec2,
+        min_temp: ThermodynamicTemperature,
+        max_temp: ThermodynamicTemperature,
+        pebble_core_temp: ThermodynamicTemperature,
+        pebble_bed_coolant_temp: ThermodynamicTemperature,
+        core_curved_inlet_temp: ThermodynamicTemperature,
+        core_curved_outlet_temp: ThermodynamicTemperature,
+        core_inlet_temp: ThermodynamicTemperature,
+        core_outlet_temp: ThermodynamicTemperature,
+        left_downcomer_upper_temp: ThermodynamicTemperature,
+        left_downcomer_mid_temp: ThermodynamicTemperature,
+        left_downcomer_lower_temp: ThermodynamicTemperature,
+        right_downcomer_upper_temp: ThermodynamicTemperature,
+        right_downcomer_mid_temp: ThermodynamicTemperature,
+        right_downcomer_lower_temp: ThermodynamicTemperature,
+
+        ) -> Self {
         Self { 
             size, 
             left_control_rod_insertion_frac: 1.0, 
-            right_control_rod_insertion_frac: 1.0 
+            right_control_rod_insertion_frac: 1.0,
+            min_temp,
+            max_temp,
+            pebble_core_temp,
+            pebble_bed_coolant_temp,
+            core_curved_inlet_temp,
+            core_curved_outlet_temp,
+            core_inlet_temp,
+            core_outlet_temp,
+            left_downcomer_upper_temp,
+            left_downcomer_mid_temp,
+            left_downcomer_lower_temp,
+            right_downcomer_upper_temp,
+            right_downcomer_mid_temp,
+            right_downcomer_lower_temp,
+
         }
     }
 
