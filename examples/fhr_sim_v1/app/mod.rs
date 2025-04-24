@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use egui::{vec2, CollapsingHeader, Color32, Pos2, Rect, Sense, Stroke, Vec2};
-use local_widgets_and_buttons::reactor_art::fhr_reactor_vessel;
+use local_widgets_and_buttons::reactor_art::fhr_reactor_vessel_prototype;
 
 use crate::FHRSimulatorApp;
 
@@ -102,7 +102,10 @@ impl eframe::App for FHRSimulatorApp {
                     max: reactor_rect_bottom_right,
                 };
 
-            fhr_reactor_vessel(ui, reactor_rectangle);
+            let control_rod_insertion_frac = 1.0;
+
+            fhr_reactor_vessel_prototype(ui, reactor_rectangle,
+                control_rod_insertion_frac);
 
 
 
