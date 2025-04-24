@@ -438,37 +438,85 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
 
     // next, downcomers
 
-    let downcomer_inlet_bottom_pt = 
+    let left_downcomer_inlet_bottom_pt = 
         fhr_coolant_inlet_bottom_left 
         + vec2(0.0, -reactor_half_length_y * 0.04);
 
-    let downcomer_inlet_top_pt = 
+    let left_downcomer_inlet_top_pt = 
         fhr_coolant_inlet_bottom_left 
         + vec2(0.0, -reactor_half_length_y * 0.12);
 
-    let downcomer_inlet_mid_bottom_pt = 
+    let left_downcomer_inlet_mid_bottom_pt = 
         fhr_coolant_inlet_bottom_left 
-        + vec2(-reactor_half_width_x * 0.65, -reactor_half_length_y * 0.14);
+        + vec2(-reactor_half_width_x * 0.65, -reactor_half_length_y * 0.16);
 
-    let downcomer_inlet_mid_top_pt = 
+    let left_downcomer_inlet_mid_top_pt = 
         fhr_coolant_inlet_bottom_left 
         + vec2(-reactor_half_width_x * 0.6, -reactor_half_length_y * 0.22);
 
-    let downcomer_inlet_1_pts = 
+    let left_downcomer_mid_rect_bottom_left =
+        reflector_curved_edge_bottom_left 
+        + vec2(-reactor_half_width_x *0.16, 0.0);
+
+    let left_downcomer_mid_rect_bottom_right =
+        reflector_curved_edge_bottom_left 
+        + vec2(-reactor_half_width_x *0.08, 0.0);
+
+
+    let left_downcomer_mid_rect_top_left =
+        reflector_curved_edge_top_left 
+        + vec2(-reactor_half_width_x *0.16, 0.0);
+
+    let left_downcomer_mid_rect_top_right =
+        reflector_curved_edge_top_left 
+        + vec2(-reactor_half_width_x *0.08, 0.0);
+
+
+
+    let downcomer_inlet_left_1_pts = 
         vec![
-        downcomer_inlet_bottom_pt,
-        downcomer_inlet_mid_bottom_pt,
-        downcomer_inlet_mid_top_pt,
-        downcomer_inlet_top_pt
+        left_downcomer_inlet_bottom_pt,
+        left_downcomer_inlet_mid_bottom_pt,
+        left_downcomer_inlet_mid_top_pt,
+        left_downcomer_inlet_top_pt
         ];
 
-    let downcomer_inlet_1_shape = 
+    let downcomer_inlet_left_2_pts = 
+        vec![
+        left_downcomer_mid_rect_bottom_left,
+        left_downcomer_mid_rect_bottom_right,
+        left_downcomer_inlet_mid_top_pt,
+        left_downcomer_inlet_mid_bottom_pt,
+        ];
+
+
+    let downcomer_left_mid_pts = 
+        vec![
+        left_downcomer_mid_rect_bottom_left,
+        left_downcomer_mid_rect_top_left,
+        left_downcomer_mid_rect_top_right,
+        left_downcomer_mid_rect_bottom_right,
+        ];
+
+    let left_downcomer_inlet_1_shape = 
         PathShape::convex_polygon(
-            downcomer_inlet_1_pts, 
+            downcomer_inlet_left_1_pts, 
+            coolant_fill, 
+            coolant_stroke);
+    let left_downcomer_inlet_2_shape = 
+        PathShape::convex_polygon(
+            downcomer_inlet_left_2_pts, 
+            coolant_fill, 
+            coolant_stroke);
+    let left_downcomer_mid_shape = 
+        PathShape::convex_polygon(
+            downcomer_left_mid_pts, 
             coolant_fill, 
             coolant_stroke);
 
-    painter.add(downcomer_inlet_1_shape);
+    painter.add(left_downcomer_inlet_1_shape);
+    painter.add(left_downcomer_inlet_2_shape);
+    painter.add(left_downcomer_mid_shape);
 }
 
 
