@@ -257,6 +257,76 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     painter.add(fhr_bottom_metal_semicircle);
     painter.add(fhr_top_metal_semicircle);
     painter.add(fhr_mid_metal_rect);
+
+
+    // inner graphite reflector 
+
+    let graphite_width_fraction = 0.8;
+
+    let reflector_box_top_left = 
+        c + vec2(-reactor_half_width_x * graphite_width_fraction, -reactor_half_length_y * graphite_width_fraction);
+    let reflector_box_bottom_left = 
+        c + vec2(-reactor_half_width_x * graphite_width_fraction, reactor_half_length_y * graphite_width_fraction);
+    let reflector_box_top_right = 
+        c + vec2(reactor_half_width_x * graphite_width_fraction, -reactor_half_length_y * graphite_width_fraction);
+    let reflector_box_bottom_right = 
+        c + vec2(reactor_half_width_x * graphite_width_fraction, reactor_half_length_y * graphite_width_fraction);
+
+    
+    let reflector_curved_edge_fraction = 0.55;
+
+    let reflector_curved_edge_top_left = 
+        c + vec2(-reactor_half_width_x * graphite_width_fraction, -reflector_curved_edge_fraction * reactor_half_length_y);
+    let reflector_curved_edge_bottom_left = 
+        c + vec2(-reactor_half_width_x * graphite_width_fraction, reflector_curved_edge_fraction * reactor_half_length_y);
+    let reflector_curved_edge_top_right = 
+        c + vec2(reactor_half_width_x * graphite_width_fraction, -reflector_curved_edge_fraction * reactor_half_length_y);
+    let reflector_curved_edge_bottom_right = 
+        c + vec2(reactor_half_width_x * graphite_width_fraction, reflector_curved_edge_fraction * reactor_half_length_y);
+
+
+    let reflector_bottom_graphite_pts = 
+        [
+        reflector_curved_edge_bottom_left,
+        reflector_box_bottom_left,
+        reflector_box_bottom_right,
+        reflector_curved_edge_bottom_right
+        ];
+    let reflector_top_graphite_pts = 
+        [
+        reflector_curved_edge_top_left,
+        reflector_box_top_left,
+        reflector_box_top_right,
+        reflector_curved_edge_top_right
+        ];
+
+    let reflector_mid_graphite_pts = 
+        [
+        reflector_curved_edge_bottom_left,
+        reflector_curved_edge_top_left,
+        reflector_curved_edge_top_right,
+        reflector_curved_edge_bottom_right
+        ];
+    let graphite_fill = Color32::BLACK;
+
+    let reflector_bottom_graphite_semicircle = 
+        CubicBezierShape::from_points_stroke(reflector_bottom_graphite_pts, 
+            true, 
+            graphite_fill, 
+            stroke);
+
+    let reflector_top_graphite_semicircle = 
+        CubicBezierShape::from_points_stroke(reflector_top_graphite_pts, 
+            true, 
+            graphite_fill, 
+            stroke);
+    let reflector_mid_graphite_rect = 
+        PathShape::convex_polygon(reflector_mid_graphite_pts.into(), graphite_fill, stroke);
+
+    // fhr reflector graphite
+    painter.add(reflector_bottom_graphite_semicircle);
+    painter.add(reflector_top_graphite_semicircle);
+    painter.add(reflector_mid_graphite_rect);
     
     // fhr coolant 
     let fhr_core_bottom_coolant_shape = 
