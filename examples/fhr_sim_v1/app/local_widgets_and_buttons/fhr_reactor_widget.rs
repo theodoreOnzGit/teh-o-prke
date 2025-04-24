@@ -316,7 +316,7 @@ impl Widget for FHRReactorWidget {
         //
         let fhr_width = reactor_half_width_x * 2.0;
         let fhr_height = reactor_half_length_y * 2.0;
-        let pebble_radius = fhr_width * 0.04;
+        let pebble_radius = fhr_width * 0.042;
         let core_radius = pebble_radius * 0.8;
         let pebble_ctr = c;
 
