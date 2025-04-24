@@ -209,6 +209,7 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     // now for pebble bed 
     //
     let fhr_width = max_width_x * 0.4;
+    let fhr_height = max_height_y * 0.8;
     let pebble_radius = fhr_width * 0.08;
     let core_radius = pebble_radius * 0.8;
     let pebble_ctr = c;
@@ -235,13 +236,41 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         c + vec2(-2.0*pebble_radius,1.1*pebble_radius),
         c + vec2(-3.0*pebble_radius,-2.5*pebble_radius),
         c + vec2(-5.0*pebble_radius,-2.3*pebble_radius),
+        c + vec2(-5.0*pebble_radius,2.3*pebble_radius),
+        c + vec2(5.0*pebble_radius,2.3*pebble_radius),
+        c + vec2(-4.2*pebble_radius,1.3*pebble_radius),
+        c + vec2(4.0*pebble_radius,1.4*pebble_radius),
+        c + vec2(-0.2*pebble_radius,1.3*pebble_radius),
+        c + vec2(0.0*pebble_radius,1.8*pebble_radius),
     ];
+
+    // add another list but transpose upwards 
+    let mut pebble_centres_bottom: Vec<Pos2> = pebble_centers.clone();
+    let mut pebble_centres_top: Vec<Pos2> = pebble_centers.clone();
+
+    for (i,pebble_center) in pebble_centers.iter().enumerate() {
+        pebble_centres_bottom[i] = 
+            *pebble_center + vec2(0.0, fhr_height * 0.1);
+    }
+    for (i,pebble_center) in pebble_centers.iter().enumerate() {
+        pebble_centres_top[i] = 
+            *pebble_center + vec2(0.0, -fhr_height * 0.1);
+    }
+
 
     for pebble_center in pebble_centers.iter(){
         painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
         painter.circle_filled(*pebble_center, core_radius, Color32::DARK_RED);
     }
     
+    for pebble_center in pebble_centres_bottom.iter(){
+        painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
+        painter.circle_filled(*pebble_center, core_radius, Color32::DARK_RED);
+    }
+    for pebble_center in pebble_centres_top.iter(){
+        painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
+        painter.circle_filled(*pebble_center, core_radius, Color32::DARK_RED);
+    }
 
 }
 
