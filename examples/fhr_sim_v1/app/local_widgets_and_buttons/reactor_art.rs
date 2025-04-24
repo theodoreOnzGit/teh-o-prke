@@ -20,8 +20,8 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     let bottom_most_side = rectangle.bottom();
 
     let ui_rectangle: Rect = ui.min_rect();
-    let breadth = right_most_side;
-    let height = bottom_most_side;
+    let breadth = ui_rectangle.right();
+    let height = ui_rectangle.bottom();
 
     // the size here is the size of the painter
     let size = Vec2::new(breadth, height);
@@ -30,6 +30,7 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         size, Sense::hover()
     );
     let response_rect = response.rect;
+    let user_rect = rectangle;
     
     // what I want to do now is to shift the 
     // response rectangle
@@ -39,18 +40,18 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     // the rect here is 
     let rect: egui::Rect = 
         egui:: Rect {
-            min: response_rect.min + Vec2{ x: shift.x, y: shift.y },
-            max: response_rect.max + Vec2{ x: shift.x, y: shift.y },
+            min: user_rect.min,
+            max: user_rect.max,
         };
     
-    let c = response_rect.center();
-    let r = response_rect.width() / 2.0 - 1.0;
+    let c = rect.center();
+    let r = rect.width() / 2.0 - 1.0;
     let color = Color32::from_gray(128);
     let stroke = Stroke::new(1.0, color);
     painter.circle_stroke(c, r, stroke);
     painter.line_segment([c - vec2(0.0, r), c + vec2(0.0, r)], stroke);
-    painter.line_segment([c, c + r * Vec2::angled(TAU * 1.0 / 8.0)], stroke);
-    painter.line_segment([c, c + r * Vec2::angled(TAU * 3.0 / 8.0)], stroke);
+    //painter.line_segment([c, c + r * Vec2::angled(TAU * 1.0 / 8.0)], stroke);
+    //painter.line_segment([c, c + r * Vec2::angled(TAU * 3.0 / 8.0)], stroke);
 
 
 }
