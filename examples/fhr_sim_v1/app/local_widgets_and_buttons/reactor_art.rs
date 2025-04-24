@@ -75,6 +75,16 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     //
     // if wanting filled shapes:
     // https://docs.rs/epaint/0.31.1/epaint/struct.PathShape.html
+    //
+    // also Beizier curve
+    // https://docs.rs/epaint/0.31.1/epaint/struct.QuadraticBezierShape.html
+    // https://docs.rs/epaint/0.31.1/epaint/struct.CubicBezierShape.html
+    //
+    // with these filled curves, I can do a shape which 
+    // for which I can then use the add method to add shapes 
+    // to the painter:
+    // 
+    // https://docs.rs/egui/latest/egui/struct.Painter.html
 
 
 }
