@@ -783,12 +783,13 @@ pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
     painter.add(cr_right_channel_shape);
 
     let cr_width_ratio = 0.08;
+    let cr_colour = Color32::DARK_GRAY;
     let cr_rod_stroke = Stroke::new(
         cr_width_ratio * reactor_half_width_x, 
-        color
+        cr_colour
     );
 
-    let cr_length = reactor_half_length_y * 0.8;
+    let cr_length = reactor_half_length_y * 0.9;
 
     let cr_left_centre = cr_left_ref_pt 
         + vec2(0.0, cr_length*control_rod_insertion_frac - cr_length*0.9);

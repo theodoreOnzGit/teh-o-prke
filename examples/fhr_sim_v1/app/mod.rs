@@ -102,7 +102,7 @@ impl eframe::App for FHRSimulatorApp {
                     max: reactor_rect_bottom_right,
                 };
 
-            let control_rod_insertion_frac = 1.0;
+            let control_rod_insertion_frac = 0.0;
 
             fhr_reactor_vessel_prototype(ui, reactor_rectangle,
                 control_rod_insertion_frac);
