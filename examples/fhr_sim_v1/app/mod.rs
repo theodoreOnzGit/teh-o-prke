@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use egui::{vec2, CollapsingHeader, Color32, Pos2, Rect, Sense, Stroke, Vec2};
-use local_widgets_and_buttons::reactor_art::fhr_reactor_vessel_prototype;
+use local_widgets_and_buttons::{fhr_reactor_widget::FHRReactorWidget, reactor_art::fhr_reactor_vessel_prototype};
 
 use crate::FHRSimulatorApp;
 
@@ -31,7 +31,95 @@ impl eframe::App for FHRSimulatorApp {
 
                 egui::widgets::global_theme_preference_buttons(ui);
             });
+            let mut left_control_rod_insertion_frac 
+                = 0.0;
+            let mut right_control_rod_insertion_frac 
+                = 0.0;
 
+            egui::ScrollArea::both()
+                .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::AlwaysVisible)
+                .drag_to_scroll(true)
+                .show(ui, |ui| {
+
+                    // for painting widgets
+                    // https://github.com/emilk/egui/blob/master/crates/egui_demo_lib/src/demo/misc_demo_window.rs
+                    //
+                    // the main thing is the painter class:
+                    // https://docs.rs/egui/latest/egui/struct.Painter.html
+                    //
+                    // here you can paint circles and rectangles 
+                    // images, line segments etc.
+                    // obtain lock first 
+
+                    let mut fhr_state_ptr = self.fhr_state.lock().unwrap();
+
+                    let left_cr_slider = egui::Slider::new(
+                        &mut fhr_state_ptr.left_cr_insertion_frac, 
+                        0.0000..=1.0)
+                        .logarithmic(false)
+                        .text("Left Control Rod insertion Fraction")
+                        .drag_value_speed(0.001);
+
+                    ui.add(left_cr_slider);
+
+                    let right_cr_slider = egui::Slider::new(
+                        &mut fhr_state_ptr.right_cr_insertion_frac, 
+                        0.0000..=1.0)
+                        .logarithmic(false)
+                        .text("Right Control Rod insertion Fraction")
+                        .drag_value_speed(0.001);
+
+                    ui.add(right_cr_slider);
+
+                    left_control_rod_insertion_frac 
+                        = fhr_state_ptr.left_cr_insertion_frac;
+                    right_control_rod_insertion_frac 
+                        = fhr_state_ptr.right_cr_insertion_frac;
+                    //
+                    drop(fhr_state_ptr);
+
+
+                    let ui_rectangle: Rect = ui.min_rect();
+
+                    // this gives coordinates of top and left of the ui
+                    // for relative placement
+                    let left_most_side = ui_rectangle.left();
+                    let top_most_side = ui_rectangle.top();
+
+                    let reactor_offset_x: f32 = 100.0;
+                    let reactor_offset_y: f32 = 400.0;
+                    let reactor_x_width_px: f32 = 150.0;
+                    let reactor_y_height_px: f32 = 350.0;
+
+
+                    let reactor_rect_top_left: Pos2 = 
+                        Pos2 { 
+                            x: left_most_side + reactor_offset_x, 
+                            y: top_most_side + reactor_offset_y
+                        };
+                    let reactor_rect_bottom_right: Pos2 = 
+                        Pos2 { 
+                            x: reactor_rect_top_left.x + reactor_x_width_px, 
+                            y: reactor_rect_top_left.y + reactor_y_height_px
+                        };
+                    let reactor_rectangle: egui::Rect =
+                        egui::Rect{
+                            min: reactor_rect_top_left,
+                            max: reactor_rect_bottom_right,
+                        };
+
+
+                    let fhr_size = 
+                        vec2(reactor_rectangle.width(), reactor_rectangle.height());
+                    let mut fhr_widget = FHRReactorWidget::new(
+                        fhr_size
+                    );
+                    fhr_widget.set_left_cr_frac(left_control_rod_insertion_frac);
+                    fhr_widget.set_right_cr_frac(right_control_rod_insertion_frac);
+
+                    ui.put(reactor_rectangle, fhr_widget);
+
+                });
 
 
             let ui_rectangle: Rect = ui.min_rect();
@@ -74,30 +162,6 @@ impl eframe::App for FHRSimulatorApp {
 
             // obtain lock first 
 
-            let mut fhr_state_ptr = self.fhr_state.lock().unwrap();
-
-            let left_cr_slider = egui::Slider::new(
-                &mut fhr_state_ptr.left_cr_insertion_frac, 
-                0.0000..=1.0)
-                .logarithmic(false)
-                .text("Left Control Rod insertion Fraction")
-                .drag_value_speed(0.001);
-
-            ui.add(left_cr_slider);
-
-            let right_cr_slider = egui::Slider::new(
-                &mut fhr_state_ptr.right_cr_insertion_frac, 
-                0.0000..=1.0)
-                .logarithmic(false)
-                .text("Right Control Rod insertion Fraction")
-                .drag_value_speed(0.001);
-
-            ui.add(right_cr_slider);
-
-            let left_control_rod_insertion_frac 
-                = fhr_state_ptr.left_cr_insertion_frac;
-            let right_control_rod_insertion_frac 
-                = fhr_state_ptr.right_cr_insertion_frac;
 
             fhr_reactor_vessel_prototype(ui, reactor_rectangle,
                 left_control_rod_insertion_frac,
@@ -109,24 +173,7 @@ impl eframe::App for FHRSimulatorApp {
 
 
 
-            //
-            drop(fhr_state_ptr);
 
-            egui::ScrollArea::both()
-                .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::AlwaysVisible)
-                .drag_to_scroll(true)
-                .show(ui, |ui| {
-
-                    // for painting widgets
-                    // https://github.com/emilk/egui/blob/master/crates/egui_demo_lib/src/demo/misc_demo_window.rs
-                    //
-                    // the main thing is the painter class:
-                    // https://docs.rs/egui/latest/egui/struct.Painter.html
-                    //
-                    // here you can paint circles and rectangles 
-                    // images, line segments etc.
-
-                });
 
 
 
