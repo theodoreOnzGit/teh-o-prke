@@ -48,11 +48,16 @@ pub struct FHRSimulatorApp {
 pub struct FHRState {
     /// left control rod insertion fraction
     pub left_cr_insertion_frac: f32,
+    /// right control rod insertion fraction
+    pub right_cr_insertion_frac: f32,
 }
 
 impl Default for FHRState {
     fn default() -> Self {
-        FHRState { left_cr_insertion_frac: 1.0 }
+        FHRState { 
+            left_cr_insertion_frac: 1.0,
+            right_cr_insertion_frac: 1.0,
+        }
     }
 }
 

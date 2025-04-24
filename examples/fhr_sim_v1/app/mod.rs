@@ -108,25 +108,42 @@ impl eframe::App for FHRSimulatorApp {
 
             let mut fhr_state_ptr = self.fhr_state.lock().unwrap();
 
-            let timestep_slider_seconds = egui::Slider::new(
+            let left_cr_slider = egui::Slider::new(
                 &mut fhr_state_ptr.left_cr_insertion_frac, 
                 0.0000..=1.0)
                 .logarithmic(false)
                 .text("Left Control Rod insertion Fraction")
                 .drag_value_speed(0.001);
 
-            ui.add(timestep_slider_seconds);
+            ui.add(left_cr_slider);
 
-            let control_rod_insertion_frac = fhr_state_ptr.left_cr_insertion_frac;
-            drop(fhr_state_ptr);
+            let right_cr_slider = egui::Slider::new(
+                &mut fhr_state_ptr.right_cr_insertion_frac, 
+                0.0000..=1.0)
+                .logarithmic(false)
+                .text("Left Control Rod insertion Fraction")
+                .drag_value_speed(0.001);
+
+            ui.add(right_cr_slider);
+
+            let left_control_rod_insertion_frac 
+                = fhr_state_ptr.left_cr_insertion_frac;
+            let right_control_rod_insertion_frac 
+                = fhr_state_ptr.right_cr_insertion_frac;
+
+
+
             fhr_reactor_vessel_prototype(ui, reactor_rectangle,
-                control_rod_insertion_frac);
+                left_control_rod_insertion_frac,
+                right_control_rod_insertion_frac);
 
 
 
 
             
 
+            //
+            drop(fhr_state_ptr);
 
 
 

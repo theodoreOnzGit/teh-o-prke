@@ -12,15 +12,22 @@ use super::hot_to_cold_colour_mark_1;
 // and stuff for easy connection
 pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
     user_rect: egui::Rect,
-    mut control_rod_insertion_frac: f32){
+    mut left_control_rod_insertion_frac: f32,
+    mut right_control_rod_insertion_frac: f32,
+    ){
 
     // make a new painter first 
     //
 
-    if control_rod_insertion_frac > 1.0 {
-        control_rod_insertion_frac = 1.0;
-    } else if control_rod_insertion_frac < 0.0 {
-        control_rod_insertion_frac = 0.0;
+    if left_control_rod_insertion_frac > 1.0 {
+        left_control_rod_insertion_frac = 1.0;
+    } else if left_control_rod_insertion_frac < 0.0 {
+        left_control_rod_insertion_frac = 0.0;
+    };
+    if right_control_rod_insertion_frac > 1.0 {
+        right_control_rod_insertion_frac = 1.0;
+    } else if right_control_rod_insertion_frac < 0.0 {
+        right_control_rod_insertion_frac = 0.0;
     };
 
 
@@ -790,6 +797,8 @@ pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
 
     let cr_width_ratio = 0.08;
     let cr_colour = Color32::DARK_GRAY;
+
+
     let cr_rod_stroke = Stroke::new(
         cr_width_ratio * reactor_half_width_x, 
         cr_colour
@@ -798,12 +807,20 @@ pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
     let cr_length = reactor_half_length_y * 0.88;
 
     let cr_left_centre = cr_left_ref_pt 
-        + vec2(0.0, cr_length*control_rod_insertion_frac - cr_length*0.9);
+        + vec2(0.0, cr_length*left_control_rod_insertion_frac - cr_length*0.9);
+
+    let cr_right_centre = cr_right_ref_pt 
+        + vec2(0.0, cr_length*right_control_rod_insertion_frac - cr_length*0.9);
 
 
     painter.line_segment(
         [cr_left_centre - vec2(0.0, cr_length), 
         cr_left_centre + vec2(0.0, cr_length)], 
+        cr_rod_stroke
+    );
+    painter.line_segment(
+        [cr_right_centre - vec2(0.0, cr_length), 
+        cr_right_centre + vec2(0.0, cr_length)], 
         cr_rod_stroke
     );
 }
