@@ -317,13 +317,13 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         CubicBezierShape::from_points_stroke(reflector_bottom_graphite_pts, 
             true, 
             graphite_fill, 
-            stroke);
+            graphite_stroke);
 
     let reflector_top_graphite_semicircle = 
         CubicBezierShape::from_points_stroke(reflector_top_graphite_pts, 
             true, 
             graphite_fill, 
-            stroke);
+            graphite_stroke);
     let reflector_mid_graphite_rect = 
         PathShape::convex_polygon(reflector_mid_graphite_pts.into(), 
             graphite_fill, 
@@ -350,7 +350,7 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         PathShape::convex_polygon(
             core_mid_points, 
             coolant_fill, 
-            coolant_stroke);
+            stroke);
     let fhr_core_top_coolant_shape = 
         PathShape::convex_polygon(
             core_top_points, 
@@ -366,9 +366,9 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
 
     painter.add(fhr_core_bottom_coolant_shape);
     painter.add(fhr_core_inlet_coolant_shape);
-    painter.add(fhr_core_mid_coolant_shape);
     painter.add(fhr_core_top_coolant_shape);
     painter.add(fhr_core_outlet_coolant_shape);
+    painter.add(fhr_core_mid_coolant_shape);
 
     // now for pebble bed 
     //
