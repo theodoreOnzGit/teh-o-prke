@@ -436,6 +436,39 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         painter.circle_filled(*pebble_center, core_radius, Color32::DARK_RED);
     }
 
+    // next, downcomers
+
+    let downcomer_inlet_bottom_pt = 
+        fhr_coolant_inlet_bottom_left 
+        + vec2(0.0, -max_height_y * 0.02);
+
+    let downcomer_inlet_top_pt = 
+        fhr_coolant_inlet_bottom_left 
+        + vec2(0.0, -max_height_y * 0.04);
+
+    let downcomer_inlet_mid_bottom_pt = 
+        fhr_coolant_inlet_bottom_left 
+        + vec2(-max_width_x * 0.5, -max_height_y * 0.08);
+
+    let downcomer_inlet_mid_top_pt = 
+        fhr_coolant_inlet_bottom_left 
+        + vec2(-max_width_x * 0.5, -max_height_y * 0.16);
+
+    let downcomer_inlet_1_pts = 
+        vec![
+        downcomer_inlet_bottom_pt,
+        downcomer_inlet_mid_bottom_pt,
+        downcomer_inlet_mid_top_pt,
+        downcomer_inlet_top_pt
+        ];
+
+    let downcomer_inlet_1_shape = 
+        PathShape::convex_polygon(
+            downcomer_inlet_1_pts, 
+            coolant_fill, 
+            coolant_stroke);
+
+    painter.add(downcomer_inlet_1_shape);
 }
 
 
