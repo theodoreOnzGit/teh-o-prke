@@ -121,7 +121,7 @@ impl eframe::App for FHRSimulatorApp {
                 &mut fhr_state_ptr.right_cr_insertion_frac, 
                 0.0000..=1.0)
                 .logarithmic(false)
-                .text("Left Control Rod insertion Fraction")
+                .text("Right Control Rod insertion Fraction")
                 .drag_value_speed(0.001);
 
             ui.add(right_cr_slider);
