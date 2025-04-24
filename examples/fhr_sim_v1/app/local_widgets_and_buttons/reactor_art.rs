@@ -1,4 +1,3 @@
-use std::f32::consts::TAU;
 
 use egui::{epaint::{CubicBezierShape, PathShape}, vec2, Color32, Pos2, Rect, Sense, Stroke, Ui, Vec2};
 
@@ -13,10 +12,17 @@ use super::hot_to_cold_colour_mark_1;
 // and stuff for easy connection
 pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
     user_rect: egui::Rect,
-    control_rod_insertion_frac: f32){
+    mut control_rod_insertion_frac: f32){
 
     // make a new painter first 
     //
+
+    if control_rod_insertion_frac > 1.0 {
+        control_rod_insertion_frac = 1.0;
+    } else if control_rod_insertion_frac < 0.0 {
+        control_rod_insertion_frac = 0.0;
+    };
+
 
 
     // top_left
@@ -789,7 +795,7 @@ pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
         cr_colour
     );
 
-    let cr_length = reactor_half_length_y * 0.9;
+    let cr_length = reactor_half_length_y * 0.88;
 
     let cr_left_centre = cr_left_ref_pt 
         + vec2(0.0, cr_length*control_rod_insertion_frac - cr_length*0.9);

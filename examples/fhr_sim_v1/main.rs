@@ -1,4 +1,4 @@
-use std::thread;
+use std::{sync::{Arc, Mutex}, thread};
 
 
 /// this represents the first iteration 
@@ -40,7 +40,23 @@ pub fn fhr_simulator_v1() -> eframe::Result<()> {
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct FHRSimulatorApp {
 
+    pub fhr_state: Arc<Mutex<FHRState>>,
 }
+
+#[derive(serde::Deserialize, serde::Serialize)]
+#[serde(default)] // if we add new fields, give them default values when deserializing old state
+pub struct FHRState {
+    /// left control rod insertion fraction
+    pub left_cr_insertion_frac: f32,
+}
+
+impl Default for FHRState {
+    fn default() -> Self {
+        FHRState { left_cr_insertion_frac: 1.0 }
+    }
+}
+
+
 impl FHRSimulatorApp {
     /// Called once before the first frame.
     pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
@@ -74,10 +90,11 @@ impl FHRSimulatorApp {
 impl Default for FHRSimulatorApp {
     fn default() -> Self {
 
+        let fhr_state = FHRState::default();
+        let fhr_state_ptr = Arc::new(Mutex::new(fhr_state));
 
         Self {
-
-
+            fhr_state: fhr_state_ptr
         }
     }
 }
