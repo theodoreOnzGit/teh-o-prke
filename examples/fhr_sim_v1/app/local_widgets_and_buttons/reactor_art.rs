@@ -239,19 +239,20 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         reactor_curved_edge_bottom_right
         ];
 
+    let metal_stroke = Stroke::new(1.0, metal_fill);
     let fhr_bottom_metal_semicircle = 
         CubicBezierShape::from_points_stroke(fhr_bottom_metal_pts, 
             true, 
             metal_fill, 
-            stroke);
+            metal_stroke);
 
     let fhr_top_metal_semicircle = 
         CubicBezierShape::from_points_stroke(fhr_top_metal_pts, 
             true, 
             metal_fill, 
-            stroke);
+            metal_stroke);
     let fhr_mid_metal_rect = 
-        PathShape::convex_polygon(fhr_mid_metal_pts.into(), metal_fill, stroke);
+        PathShape::convex_polygon(fhr_mid_metal_pts.into(), metal_fill, metal_stroke);
 
     // fhr metal vessel
     painter.add(fhr_bottom_metal_semicircle);
@@ -309,36 +310,55 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         ];
     let graphite_fill = Color32::BLACK;
 
+    let graphite_stroke = Stroke::new(1.0, graphite_fill);
     let reflector_bottom_graphite_semicircle = 
         CubicBezierShape::from_points_stroke(reflector_bottom_graphite_pts, 
             true, 
             graphite_fill, 
-            stroke);
+            graphite_stroke);
 
     let reflector_top_graphite_semicircle = 
         CubicBezierShape::from_points_stroke(reflector_top_graphite_pts, 
             true, 
             graphite_fill, 
-            stroke);
+            graphite_stroke);
     let reflector_mid_graphite_rect = 
-        PathShape::convex_polygon(reflector_mid_graphite_pts.into(), graphite_fill, stroke);
+        PathShape::convex_polygon(reflector_mid_graphite_pts.into(), 
+            graphite_fill, 
+            graphite_stroke);
 
     // fhr reflector graphite
     painter.add(reflector_bottom_graphite_semicircle);
     painter.add(reflector_top_graphite_semicircle);
     painter.add(reflector_mid_graphite_rect);
     
+    let coolant_stroke = Stroke::new(1.0, coolant_fill);
     // fhr coolant 
     let fhr_core_bottom_coolant_shape = 
-        PathShape::convex_polygon(core_bottom_points, coolant_fill, stroke);
+        PathShape::convex_polygon(
+            core_bottom_points, 
+            coolant_fill, 
+            coolant_stroke);
     let fhr_core_inlet_coolant_shape = 
-        PathShape::convex_polygon(core_bottom_inlet_points, coolant_fill, stroke);
+        PathShape::convex_polygon(
+            core_bottom_inlet_points, 
+            coolant_fill, 
+            coolant_stroke);
     let fhr_core_mid_coolant_shape = 
-        PathShape::convex_polygon(core_mid_points, coolant_fill, stroke);
+        PathShape::convex_polygon(
+            core_mid_points, 
+            coolant_fill, 
+            coolant_stroke);
     let fhr_core_top_coolant_shape = 
-        PathShape::convex_polygon(core_top_points, coolant_fill, stroke);
+        PathShape::convex_polygon(
+            core_top_points, 
+            coolant_fill, 
+            coolant_stroke);
     let fhr_core_outlet_coolant_shape = 
-        PathShape::convex_polygon(core_outlet_points, coolant_fill, stroke);
+        PathShape::convex_polygon(
+            core_outlet_points, 
+            coolant_fill, 
+            coolant_stroke);
 
 
 
