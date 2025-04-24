@@ -460,7 +460,7 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
 
     let left_downcomer_mid_rect_bottom_right =
         reflector_curved_edge_bottom_left 
-        + vec2(-reactor_half_width_x *0.08, 0.0);
+        + vec2(-reactor_half_width_x *0.06, 0.0);
 
 
     let left_downcomer_mid_rect_top_left =
@@ -469,7 +469,7 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
 
     let left_downcomer_mid_rect_top_right =
         reflector_curved_edge_top_left 
-        + vec2(-reactor_half_width_x *0.08, 0.0);
+        + vec2(-reactor_half_width_x *0.06, 0.0);
 
 
 
