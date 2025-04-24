@@ -1,5 +1,5 @@
 use egui::{epaint::{CubicBezierShape, PathShape}, vec2, Color32, Pos2, Sense, Stroke, Vec2, Widget};
-use uom::si::f64::*;
+use uom::si::{f64::*, thermodynamic_temperature::degree_celsius};
 
 use super::hot_to_cold_colour_mark_1;
 
@@ -65,6 +65,28 @@ impl FHRReactorWidget {
             right_downcomer_lower_temp,
 
         }
+    }
+
+    /// returns hotness based on max and min temp of fhr 
+    pub fn hotness(&self, temp: ThermodynamicTemperature) -> f32 {
+
+        let button_temp_degc = temp.get::<degree_celsius>();
+        let min_temp_degc = self.min_temp.get::<degree_celsius>();
+        let max_temp_degc = self.max_temp.get::<degree_celsius>();
+
+        let hotness: f64 = 
+            (button_temp_degc - min_temp_degc)/(max_temp_degc- min_temp_degc);
+
+        return hotness as f32;
+    }
+
+    /// sets minimum temperature for colour
+    pub fn set_min_temp(&mut self, min_temp: ThermodynamicTemperature,){
+        self.min_temp = min_temp;
+    }
+    /// sets maximum temperature for colour
+    pub fn set_max_temp(&mut self, max_temp: ThermodynamicTemperature,){
+        self.max_temp = max_temp;
     }
 
     /// gets the size of the widget 
