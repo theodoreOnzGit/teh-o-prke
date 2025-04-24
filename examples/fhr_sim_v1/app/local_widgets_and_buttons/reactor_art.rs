@@ -159,6 +159,34 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         //fhr_core_inlet_bottom_right,
         //fhr_coolant_inlet_bottom_right,
     ];
+    let core_top_points = vec![
+        //fhr_coolant_inlet_bottom_left,
+        //fhr_core_inlet_bottom_left,
+        //fhr_core_fat_bottom_left,
+        fhr_core_fat_top_left,
+        fhr_core_outlet_top_left,
+        //fhr_coolant_outlet_top_left,
+        //fhr_coolant_outlet_top_right,
+        fhr_core_outlet_top_right,
+        fhr_core_fat_top_right,
+        //fhr_core_fat_bottom_right,
+        //fhr_core_inlet_bottom_right,
+        //fhr_coolant_inlet_bottom_right,
+    ];
+    let core_outlet_points = vec![
+        //fhr_coolant_inlet_bottom_left,
+        //fhr_core_inlet_bottom_left,
+        //fhr_core_fat_bottom_left,
+        //fhr_core_fat_top_left,
+        fhr_core_outlet_top_left,
+        fhr_coolant_outlet_top_left,
+        fhr_coolant_outlet_top_right,
+        fhr_core_outlet_top_right,
+        //fhr_core_fat_top_right,
+        //fhr_core_fat_bottom_right,
+        //fhr_core_inlet_bottom_right,
+        //fhr_coolant_inlet_bottom_right,
+    ];
     
     // fhr coolant 
     let fhr_core_bottom_coolant_shape = 
@@ -167,10 +195,16 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         PathShape::convex_polygon(core_bottom_inlet_points, fill, stroke);
     let fhr_core_mid_coolant_shape = 
         PathShape::convex_polygon(core_mid_points, fill, stroke);
+    let fhr_core_top_coolant_shape = 
+        PathShape::convex_polygon(core_top_points, fill, stroke);
+    let fhr_core_outlet_coolant_shape = 
+        PathShape::convex_polygon(core_outlet_points, fill, stroke);
 
     painter.add(fhr_core_bottom_coolant_shape);
     painter.add(fhr_core_inlet_coolant_shape);
     painter.add(fhr_core_mid_coolant_shape);
+    painter.add(fhr_core_top_coolant_shape);
+    painter.add(fhr_core_outlet_coolant_shape);
 
 }
 
