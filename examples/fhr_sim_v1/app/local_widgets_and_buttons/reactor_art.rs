@@ -317,13 +317,13 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         CubicBezierShape::from_points_stroke(reflector_bottom_graphite_pts, 
             true, 
             graphite_fill, 
-            graphite_stroke);
+            stroke);
 
     let reflector_top_graphite_semicircle = 
         CubicBezierShape::from_points_stroke(reflector_top_graphite_pts, 
             true, 
             graphite_fill, 
-            graphite_stroke);
+            stroke);
     let reflector_mid_graphite_rect = 
         PathShape::convex_polygon(reflector_mid_graphite_pts.into(), 
             graphite_fill, 
