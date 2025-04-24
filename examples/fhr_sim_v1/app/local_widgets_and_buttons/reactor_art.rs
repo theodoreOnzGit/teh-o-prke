@@ -438,6 +438,7 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
 
     // next, downcomers
 
+    // left downcomer inlet
     let left_downcomer_inlet_bottom_pt = 
         fhr_coolant_inlet_bottom_left 
         + vec2(0.0, -reactor_half_length_y * 0.04);
@@ -454,6 +455,8 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         fhr_coolant_inlet_bottom_left 
         + vec2(-reactor_half_width_x * 0.6, -reactor_half_length_y * 0.22);
 
+    // left downcomer mid rectangle
+    //
     let left_downcomer_mid_rect_bottom_left =
         reflector_curved_edge_bottom_left 
         + vec2(-reactor_half_width_x *0.16, 0.0);
@@ -470,6 +473,24 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     let left_downcomer_mid_rect_top_right =
         reflector_curved_edge_top_left 
         + vec2(-reactor_half_width_x *0.06, 0.0);
+
+    // left downcomer outlet
+
+    let left_downcomer_outlet_top_pt = 
+        fhr_coolant_outlet_top_left 
+        + vec2(0.0, reactor_half_length_y * 0.04);
+
+    let left_downcomer_outlet_bottom_pt = 
+        fhr_coolant_outlet_top_left 
+        + vec2(0.0, reactor_half_length_y * 0.12);
+
+    let left_downcomer_outlet_mid_bottom_pt = 
+        fhr_coolant_outlet_top_left 
+        + vec2(-reactor_half_width_x * 0.6, reactor_half_length_y * 0.22);
+
+    let left_downcomer_outlet_mid_top_pt = 
+        fhr_coolant_outlet_top_left 
+        + vec2(-reactor_half_width_x * 0.65, reactor_half_length_y * 0.16);
 
 
 
@@ -498,6 +519,22 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         left_downcomer_mid_rect_bottom_right,
         ];
 
+    let downcomer_outlet_left_1_pts = 
+        vec![
+        left_downcomer_outlet_bottom_pt,
+        left_downcomer_outlet_mid_bottom_pt,
+        left_downcomer_outlet_mid_top_pt,
+        left_downcomer_outlet_top_pt
+        ];
+
+    let downcomer_outlet_left_2_pts = 
+        vec![
+        left_downcomer_mid_rect_top_left,
+        left_downcomer_outlet_mid_top_pt,
+        left_downcomer_outlet_mid_bottom_pt,
+        left_downcomer_mid_rect_top_right,
+        ];
+
     let left_downcomer_inlet_1_shape = 
         PathShape::convex_polygon(
             downcomer_inlet_left_1_pts, 
@@ -513,10 +550,22 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
             downcomer_left_mid_pts, 
             coolant_fill, 
             coolant_stroke);
+    let left_downcomer_outlet_1_shape = 
+        PathShape::convex_polygon(
+            downcomer_outlet_left_1_pts, 
+            coolant_fill, 
+            coolant_stroke);
+    let left_downcomer_outlet_2_shape = 
+        PathShape::convex_polygon(
+            downcomer_outlet_left_2_pts, 
+            coolant_fill, 
+            coolant_stroke);
 
     painter.add(left_downcomer_inlet_1_shape);
     painter.add(left_downcomer_inlet_2_shape);
     painter.add(left_downcomer_mid_shape);
+    painter.add(left_downcomer_outlet_1_shape);
+    painter.add(left_downcomer_outlet_2_shape);
 }
 
 
