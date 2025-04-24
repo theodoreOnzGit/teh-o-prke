@@ -98,15 +98,15 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     let fhr_coolant_inlet_bottom_right = c + vec2(0.10*reactor_half_width_x, reactor_half_length_y* 0.9);
 
     // core part
-    let fhr_core_inlet_bottom_left = c + vec2(-0.10*reactor_half_width_x, reactor_half_length_y* 0.75);
-    let fhr_core_inlet_bottom_right = c + vec2(0.10*reactor_half_width_x, reactor_half_length_y* 0.75);
-    let fhr_core_fat_bottom_left = c + vec2(-0.50*reactor_half_width_x, reactor_half_length_y* 0.55);
-    let fhr_core_fat_bottom_right = c + vec2(0.50*reactor_half_width_x, reactor_half_length_y* 0.55);
+    let fhr_core_inlet_bottom_left = c + vec2(-0.10*reactor_half_width_x, reactor_half_length_y* 0.65);
+    let fhr_core_inlet_bottom_right = c + vec2(0.10*reactor_half_width_x, reactor_half_length_y* 0.65);
+    let fhr_core_fat_bottom_left = c + vec2(-0.50*reactor_half_width_x, reactor_half_length_y* 0.45);
+    let fhr_core_fat_bottom_right = c + vec2(0.50*reactor_half_width_x, reactor_half_length_y* 0.45);
 
-    let fhr_core_fat_top_left = c + vec2(-0.50*reactor_half_width_x, -reactor_half_length_y* 0.55);
-    let fhr_core_fat_top_right = c + vec2(0.50*reactor_half_width_x, -reactor_half_length_y* 0.55);
-    let fhr_core_outlet_top_left = c + vec2(-0.10*reactor_half_width_x, -reactor_half_length_y* 0.75);
-    let fhr_core_outlet_top_right = c + vec2(0.10*reactor_half_width_x, -reactor_half_length_y* 0.75);
+    let fhr_core_fat_top_left = c + vec2(-0.50*reactor_half_width_x, -reactor_half_length_y* 0.45);
+    let fhr_core_fat_top_right = c + vec2(0.50*reactor_half_width_x, -reactor_half_length_y* 0.45);
+    let fhr_core_outlet_top_left = c + vec2(-0.10*reactor_half_width_x, -reactor_half_length_y* 0.65);
+    let fhr_core_outlet_top_right = c + vec2(0.10*reactor_half_width_x, -reactor_half_length_y* 0.65);
 
     // top outlet
     let fhr_coolant_outlet_top_left = c + vec2(-0.10*reactor_half_width_x, -reactor_half_length_y* 0.9);
