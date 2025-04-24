@@ -206,5 +206,43 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     painter.add(fhr_core_top_coolant_shape);
     painter.add(fhr_core_outlet_coolant_shape);
 
+    // now for pebble bed 
+    //
+    let fhr_width = max_width_x * 0.4;
+    let pebble_radius = fhr_width * 0.08;
+    let core_radius = pebble_radius * 0.8;
+    let pebble_ctr = c;
+
+    painter.circle_filled(pebble_ctr, pebble_radius, Color32::BLACK);
+    painter.circle_filled(pebble_ctr, core_radius, Color32::DARK_RED);
+
+    let pebble_centers = vec![
+        c + vec2(2.0*pebble_radius,0.1*pebble_radius),
+        c + vec2(1.0*pebble_radius,-0.5*pebble_radius),
+        c + vec2(4.0*pebble_radius,-0.3*pebble_radius),
+        c + vec2(-2.0*pebble_radius,0.1*pebble_radius),
+        c + vec2(-1.0*pebble_radius,-0.5*pebble_radius),
+        c + vec2(-4.0*pebble_radius,-0.3*pebble_radius),
+        c + vec2(2.0*pebble_radius,1.1*pebble_radius),
+        c + vec2(1.0*pebble_radius,-1.5*pebble_radius),
+        c + vec2(4.0*pebble_radius,-2.3*pebble_radius),
+        c + vec2(-2.0*pebble_radius,1.1*pebble_radius),
+        c + vec2(-1.0*pebble_radius,-2.5*pebble_radius),
+        c + vec2(-4.0*pebble_radius,-2.3*pebble_radius),
+        c + vec2(2.0*pebble_radius,1.1*pebble_radius),
+        c + vec2(3.0*pebble_radius,-1.5*pebble_radius),
+        c + vec2(5.0*pebble_radius,-2.3*pebble_radius),
+        c + vec2(-2.0*pebble_radius,1.1*pebble_radius),
+        c + vec2(-3.0*pebble_radius,-2.5*pebble_radius),
+        c + vec2(-5.0*pebble_radius,-2.3*pebble_radius),
+    ];
+
+    for pebble_center in pebble_centers.iter(){
+        painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
+        painter.circle_filled(*pebble_center, core_radius, Color32::DARK_RED);
+    }
+    
+
 }
+
 
