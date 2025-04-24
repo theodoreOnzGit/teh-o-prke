@@ -7,17 +7,20 @@ use egui::{vec2, Color32, Pos2, Rect, Sense, Stroke, Ui, Vec2};
 // it needs a top left coordinate first
 // these will make the rectangle
 pub fn fhr_reactor_vessel(ui: &mut Ui,
-    rectangle: egui::Rect){
+    user_rect: egui::Rect){
 
     // make a new painter first 
     //
 
 
     // top_left
-    let left_most_side = rectangle.left();
-    let top_most_side = rectangle.top();
-    let right_most_side = rectangle.right();
-    let bottom_most_side = rectangle.bottom();
+    let left_most_side = user_rect.left();
+    let top_most_side = user_rect.top();
+    let right_most_side = user_rect.right();
+    let bottom_most_side = user_rect.bottom();
+
+    let max_height = (top_most_side - bottom_most_side).abs();
+    let max_width = (left_most_side - right_most_side).abs();
 
     let ui_rectangle: Rect = ui.min_rect();
     let breadth = ui_rectangle.right();
@@ -30,12 +33,11 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         size, Sense::hover()
     );
     let response_rect = response.rect;
-    let user_rect = rectangle;
     
     // what I want to do now is to shift the 
     // response rectangle
 
-    let shift: Pos2 = rectangle.min;
+    let shift: Pos2 = user_rect.min;
 
     // the rect here is 
     let rect: egui::Rect = 
@@ -45,11 +47,26 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         };
     
     let c = rect.center();
+    // circle radius is r
     let r = rect.width() / 2.0 - 1.0;
     let color = Color32::from_gray(128);
     let stroke = Stroke::new(1.0, color);
-    painter.circle_stroke(c, r, stroke);
-    painter.line_segment([c - vec2(0.0, r), c + vec2(0.0, r)], stroke);
+
+    let reactor_half_length = max_height * 0.5 * 0.8;
+    let reactor_half_width = max_width * 0.5 * 0.8;
+    //painter.circle_stroke(c, r, stroke);
+    
+    // now let's paint the reactor first
+    painter.line_segment(
+        [c + vec2(reactor_half_width, reactor_half_length), 
+        c + vec2(reactor_half_width, -reactor_half_length)], 
+        stroke
+    );
+    painter.line_segment(
+        [c + vec2(-reactor_half_width, reactor_half_length), 
+        c + vec2(-reactor_half_width, -reactor_half_length)], 
+        stroke
+    );
     //painter.line_segment([c, c + r * Vec2::angled(TAU * 1.0 / 8.0)], stroke);
     //painter.line_segment([c, c + r * Vec2::angled(TAU * 3.0 / 8.0)], stroke);
 

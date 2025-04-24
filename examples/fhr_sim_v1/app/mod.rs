@@ -82,8 +82,8 @@ impl eframe::App for FHRSimulatorApp {
 
             let reactor_offset_x: f32 = 120.0;
             let reactor_offset_y: f32 = 220.0;
-            let reactor_height_px: f32 = 200.0;
-            let reactor_width_px: f32 = 200.0;
+            let reactor_height_px: f32 = 400.0;
+            let reactor_width_px: f32 = 250.0;
 
             let reactor_rect_top_left: Pos2 = 
                 Pos2 { 
