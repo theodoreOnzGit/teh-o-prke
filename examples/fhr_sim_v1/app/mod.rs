@@ -61,6 +61,14 @@ impl eframe::App for FHRSimulatorApp {
                 });
 
 
+            egui::ScrollArea::both()
+                .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::AlwaysVisible)
+                .drag_to_scroll(true)
+                .show(ui, |ui| {
+
+
+                });
+
 
             //let size = egui::Vec2 { x: 150.0, y: 150.0 };
 
@@ -131,13 +139,23 @@ impl eframe::App for FHRSimulatorApp {
             let right_control_rod_insertion_frac 
                 = fhr_state_ptr.right_cr_insertion_frac;
 
-
-
             fhr_reactor_vessel_prototype(ui, reactor_rectangle,
                 left_control_rod_insertion_frac,
                 right_control_rod_insertion_frac);
 
 
+
+
+            egui::ScrollArea::both()
+                .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::AlwaysVisible)
+                .drag_to_scroll(true)
+                .show(ui, |ui| {
+
+
+                    fhr_reactor_vessel_prototype(ui, reactor_rectangle,
+                        left_control_rod_insertion_frac,
+                        right_control_rod_insertion_frac);
+                });
 
 
             
