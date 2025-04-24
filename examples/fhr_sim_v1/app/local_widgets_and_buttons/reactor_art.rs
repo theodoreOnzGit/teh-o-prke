@@ -244,15 +244,17 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         CubicBezierShape::from_points_stroke(fhr_bottom_metal_pts, 
             true, 
             metal_fill, 
-            metal_stroke);
+            stroke);
 
     let fhr_top_metal_semicircle = 
         CubicBezierShape::from_points_stroke(fhr_top_metal_pts, 
             true, 
             metal_fill, 
-            metal_stroke);
+            stroke);
     let fhr_mid_metal_rect = 
-        PathShape::convex_polygon(fhr_mid_metal_pts.into(), metal_fill, metal_stroke);
+        PathShape::convex_polygon(fhr_mid_metal_pts.into(), 
+            metal_fill, 
+            stroke);
 
     // fhr metal vessel
     painter.add(fhr_bottom_metal_semicircle);
