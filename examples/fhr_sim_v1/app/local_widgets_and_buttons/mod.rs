@@ -132,3 +132,4 @@ pub fn hot_to_cold_colour_mark_1(hotness: f32) -> Color32 {
 
 pub mod reactor_art;
 
+pub mod fhr_reactor_widget;
