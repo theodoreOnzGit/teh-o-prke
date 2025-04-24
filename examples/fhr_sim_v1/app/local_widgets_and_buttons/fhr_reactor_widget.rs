@@ -66,8 +66,8 @@ impl Widget for FHRReactorWidget {
         let rect_x = rect.width();
         let rect_y = rect.height();
 
-        let reactor_half_width_x = rect_x * 0.5;
-        let reactor_half_length_y = rect_y * 0.5;
+        let reactor_half_width_x = rect_x * 0.25;
+        let reactor_half_length_y = rect_y * 0.25;
         // bottom inlet
         let fhr_coolant_inlet_bottom_left = c + vec2(-0.10*reactor_half_width_x, reactor_half_length_y* 0.9);
         let fhr_coolant_inlet_bottom_right = c + vec2(0.10*reactor_half_width_x, reactor_half_length_y* 0.9);
@@ -93,60 +93,28 @@ impl Widget for FHRReactorWidget {
 
         // draw clockwise
         let core_bottom_points = vec![
-            //fhr_coolant_inlet_bottom_left,
             fhr_core_inlet_bottom_left,
             fhr_core_fat_bottom_left,
-            //fhr_core_fat_top_left,
-            //fhr_core_outlet_top_left,
-            //fhr_coolant_outlet_top_left,
-            //fhr_coolant_outlet_top_right,
-            //fhr_core_outlet_top_right,
-            //fhr_core_fat_top_right,
             fhr_core_fat_bottom_right,
             fhr_core_inlet_bottom_right,
-            //fhr_coolant_inlet_bottom_right,
         ];
         let core_bottom_inlet_points = vec![
             fhr_coolant_inlet_bottom_left,
             fhr_core_inlet_bottom_left,
-            //fhr_core_fat_bottom_left,
-            //fhr_core_fat_top_left,
-            //fhr_core_outlet_top_left,
-            //fhr_coolant_outlet_top_left,
-            //fhr_coolant_outlet_top_right,
-            //fhr_core_outlet_top_right,
-            //fhr_core_fat_top_right,
-            //fhr_core_fat_bottom_right,
             fhr_core_inlet_bottom_right,
             fhr_coolant_inlet_bottom_right,
         ];
         let core_mid_points = vec![
-            //fhr_coolant_inlet_bottom_left,
-            //fhr_core_inlet_bottom_left,
             fhr_core_fat_bottom_left,
             fhr_core_fat_top_left,
-            //fhr_core_outlet_top_left,
-            //fhr_coolant_outlet_top_left,
-            //fhr_coolant_outlet_top_right,
-            //fhr_core_outlet_top_right,
             fhr_core_fat_top_right,
             fhr_core_fat_bottom_right,
-            //fhr_core_inlet_bottom_right,
-            //fhr_coolant_inlet_bottom_right,
         ];
         let core_top_points = vec![
-            //fhr_coolant_inlet_bottom_left,
-            //fhr_core_inlet_bottom_left,
-            //fhr_core_fat_bottom_left,
             fhr_core_fat_top_left,
             fhr_core_outlet_top_left,
-            //fhr_coolant_outlet_top_left,
-            //fhr_coolant_outlet_top_right,
             fhr_core_outlet_top_right,
             fhr_core_fat_top_right,
-            //fhr_core_fat_bottom_right,
-            //fhr_core_inlet_bottom_right,
-            //fhr_coolant_inlet_bottom_right,
         ];
         let core_outlet_points = vec![
             //fhr_coolant_inlet_bottom_left,
