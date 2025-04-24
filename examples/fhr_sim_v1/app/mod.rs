@@ -48,7 +48,7 @@ impl eframe::App for FHRSimulatorApp {
 
             // next I want to have the reactor vessel 
 
-            let reactor_offset_x: f32 = 0.1 * x_width;
+            let reactor_offset_x: f32 = 0.15 * x_width;
             let reactor_offset_y: f32 = 0.4 * y_height;
             let reactor_width_px: f32 = 0.1 * x_width;
             let reactor_height_px: f32 = 0.35 * y_height;
@@ -125,42 +125,6 @@ impl eframe::App for FHRSimulatorApp {
                     //
                     // here you can paint circles and rectangles 
                     // images, line segments etc.
-
-                    CollapsingHeader::new("Misc")
-                        .default_open(false)
-                        .show(ui, |ui| {
-                            ui.horizontal(|ui| {
-                                ui.label("You can pretty easily paint your own small icons:");
-                                use std::f32::consts::TAU;
-                                let size = Vec2::splat(16.0);
-                                let (response, painter) = ui.allocate_painter(size, Sense::hover());
-                                let rect = response.rect;
-                                let c = rect.center();
-                                let r = rect.width() / 2.0 - 1.0;
-                                let color = Color32::from_gray(128);
-                                let stroke = Stroke::new(1.0, color);
-                                painter.circle_stroke(c, r, stroke);
-                                painter.line_segment([c - vec2(0.0, r), c + vec2(0.0, r)], stroke);
-                                painter.line_segment([c, c + r * Vec2::angled(TAU * 1.0 / 8.0)], stroke);
-                                painter.line_segment([c, c + r * Vec2::angled(TAU * 3.0 / 8.0)], stroke);
-                            });
-                        });
-
-
-
-
-                    //let size = egui::Vec2 { x: 150.0, y: 150.0 };
-
-                    //let tchx_pic = Image::new(
-                    //    include_image!("../../cooler.png")
-                    //    ).rounding(5.0).max_size(size);
-                    //ui.add(tchx_pic);
-
-                    // i want the UI top left... 
-                    ui.separator();
-                    ui.horizontal(
-                        |ui|{
-                        });
 
                 });
 

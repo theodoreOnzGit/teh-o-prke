@@ -824,17 +824,17 @@ pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
         cr_rod_stroke
     );
 
-    let label = egui::Label::new("dummy label");
+    //let label = egui::Label::new("dummy label");
 
-    let label_top_left = reactor_box_bottom_left;
-    let label_top_right = reactor_box_top_right;
-    let label_bottom_right = label_top_right 
-        + vec2(0.0, -reactor_half_length_y*0.08);
-    let label_rect = egui::Rect {
-        min: label_top_left,
-        max: label_bottom_right,
-    };
-    ui.put(label_rect, label);
+    //let label_top_left = reactor_box_bottom_left;
+    //let label_top_right = reactor_box_top_right;
+    //let label_bottom_right = label_top_right 
+    //    + vec2(0.0, -reactor_half_length_y*0.08);
+    //let label_rect = egui::Rect {
+    //    min: label_top_left,
+    //    max: label_bottom_right,
+    //};
+    //ui.put(label_rect, label);
 }
 
 
