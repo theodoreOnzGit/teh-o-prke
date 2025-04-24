@@ -6,6 +6,9 @@ use egui::{vec2, Color32, Pos2, Rect, Sense, Stroke, Ui, Vec2};
 //
 // it needs a top left coordinate first
 // these will make the rectangle
+//
+// i think for easy gui connections, I can start making classes 
+// and stuff for easy connection
 pub fn fhr_reactor_vessel(ui: &mut Ui,
     user_rect: egui::Rect){
 
@@ -69,6 +72,9 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     );
     //painter.line_segment([c, c + r * Vec2::angled(TAU * 1.0 / 8.0)], stroke);
     //painter.line_segment([c, c + r * Vec2::angled(TAU * 3.0 / 8.0)], stroke);
+    //
+    // if wanting filled shapes:
+    // https://docs.rs/epaint/0.31.1/epaint/struct.PathShape.html
 
 
 }
