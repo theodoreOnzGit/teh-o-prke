@@ -66,7 +66,7 @@ impl Widget for FHRReactorWidget {
         let rect_x = rect.width();
         let rect_y = rect.height();
 
-        let reactor_half_width_x = rect_x * 0.25;
+        let reactor_half_width_x = rect_x * 0.5;
         let reactor_half_length_y = rect_y * 0.25;
         // bottom inlet
         let fhr_coolant_inlet_bottom_left = c + vec2(-0.10*reactor_half_width_x, reactor_half_length_y* 0.9);
@@ -182,7 +182,6 @@ impl Widget for FHRReactorWidget {
             reactor_curved_edge_bottom_right
             ];
 
-        let metal_stroke = Stroke::new(1.0, metal_fill);
         let color = Color32::from_gray(128);
         let stroke = Stroke::new(1.0, color);
         let fhr_bottom_metal_semicircle = 
@@ -315,9 +314,9 @@ impl Widget for FHRReactorWidget {
 
         // now for pebble bed 
         //
-        let fhr_width = rect_x * 0.4;
-        let fhr_height = rect_y * 0.8;
-        let pebble_radius = fhr_width * 0.08;
+        let fhr_width = reactor_half_width_x * 2.0;
+        let fhr_height = reactor_half_length_y * 2.0;
+        let pebble_radius = fhr_width * 0.04;
         let core_radius = pebble_radius * 0.8;
         let pebble_ctr = c;
 
