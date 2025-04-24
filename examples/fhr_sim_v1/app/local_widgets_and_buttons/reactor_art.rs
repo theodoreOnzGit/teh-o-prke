@@ -566,6 +566,136 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     painter.add(left_downcomer_mid_shape);
     painter.add(left_downcomer_outlet_1_shape);
     painter.add(left_downcomer_outlet_2_shape);
+
+    // right downcomer 
+
+    // right downcomer inlet
+    let right_downcomer_inlet_bottom_pt = 
+        fhr_coolant_inlet_bottom_right 
+        + vec2(0.0, -reactor_half_length_y * 0.04);
+
+    let right_downcomer_inlet_top_pt = 
+        fhr_coolant_inlet_bottom_right 
+        + vec2(0.0, -reactor_half_length_y * 0.12);
+
+    let right_downcomer_inlet_mid_bottom_pt = 
+        fhr_coolant_inlet_bottom_right 
+        + vec2(reactor_half_width_x * 0.65, -reactor_half_length_y * 0.16);
+
+    let right_downcomer_inlet_mid_top_pt = 
+        fhr_coolant_inlet_bottom_right 
+        + vec2(reactor_half_width_x * 0.6, -reactor_half_length_y * 0.22);
+
+    // right downcomer mid rectangle
+    //
+    let right_downcomer_mid_rect_bottom_left =
+        reactor_curved_edge_bottom_right 
+        + vec2(-reactor_half_width_x *0.16, 0.0);
+
+    let right_downcomer_mid_rect_bottom_right =
+        reactor_curved_edge_bottom_right 
+        + vec2(-reactor_half_width_x *0.06, 0.0);
+
+
+    let right_downcomer_mid_rect_top_left =
+        reactor_curved_edge_top_right 
+        + vec2(-reactor_half_width_x *0.16, 0.0);
+
+    let right_downcomer_mid_rect_top_right =
+        reactor_curved_edge_top_right 
+        + vec2(-reactor_half_width_x *0.06, 0.0);
+
+    // right downcomer outlet
+
+    let right_downcomer_outlet_top_pt = 
+        fhr_coolant_outlet_top_right 
+        + vec2(0.0, reactor_half_length_y * 0.04);
+
+    let right_downcomer_outlet_bottom_pt = 
+        fhr_coolant_outlet_top_right 
+        + vec2(0.0, reactor_half_length_y * 0.12);
+
+    let right_downcomer_outlet_mid_bottom_pt = 
+        fhr_coolant_outlet_top_right 
+        + vec2(reactor_half_width_x * 0.6, reactor_half_length_y * 0.22);
+
+    let right_downcomer_outlet_mid_top_pt = 
+        fhr_coolant_outlet_top_right 
+        + vec2(reactor_half_width_x * 0.65, reactor_half_length_y * 0.16);
+
+    let downcomer_inlet_right_1_pts = 
+        vec![
+        right_downcomer_inlet_bottom_pt,
+        right_downcomer_inlet_mid_bottom_pt,
+        right_downcomer_inlet_mid_top_pt,
+        right_downcomer_inlet_top_pt
+        ];
+
+    let downcomer_inlet_right_2_pts = 
+        vec![
+        right_downcomer_inlet_mid_top_pt,
+        right_downcomer_mid_rect_bottom_left,
+        right_downcomer_mid_rect_bottom_right,
+        right_downcomer_inlet_mid_bottom_pt,
+        ];
+
+
+    let downcomer_right_mid_pts = 
+        vec![
+        right_downcomer_mid_rect_bottom_left,
+        right_downcomer_mid_rect_top_left,
+        right_downcomer_mid_rect_top_right,
+        right_downcomer_mid_rect_bottom_right,
+        ];
+
+    let downcomer_outlet_right_1_pts = 
+        vec![
+        right_downcomer_outlet_bottom_pt,
+        right_downcomer_outlet_mid_bottom_pt,
+        right_downcomer_outlet_mid_top_pt,
+        right_downcomer_outlet_top_pt
+        ];
+
+    let downcomer_outlet_right_2_pts = 
+        vec![
+        right_downcomer_outlet_mid_top_pt,
+        right_downcomer_mid_rect_top_right,
+        right_downcomer_mid_rect_top_left,
+        right_downcomer_outlet_mid_bottom_pt,
+        ];
+
+    let right_downcomer_inlet_1_shape = 
+        PathShape::convex_polygon(
+            downcomer_inlet_right_1_pts, 
+            coolant_fill, 
+            coolant_stroke);
+    let right_downcomer_inlet_2_shape = 
+        PathShape::convex_polygon(
+            downcomer_inlet_right_2_pts, 
+            coolant_fill, 
+            coolant_stroke);
+    let right_downcomer_mid_shape = 
+        PathShape::convex_polygon(
+            downcomer_right_mid_pts, 
+            coolant_fill, 
+            coolant_stroke);
+    let right_downcomer_outlet_1_shape = 
+        PathShape::convex_polygon(
+            downcomer_outlet_right_1_pts, 
+            coolant_fill, 
+            coolant_stroke);
+    let right_downcomer_outlet_2_shape = 
+        PathShape::convex_polygon(
+            downcomer_outlet_right_2_pts, 
+            coolant_fill, 
+            coolant_stroke);
+
+    painter.add(right_downcomer_inlet_1_shape);
+    painter.add(right_downcomer_inlet_2_shape);
+    painter.add(right_downcomer_mid_shape);
+    painter.add(right_downcomer_outlet_1_shape);
+    painter.add(right_downcomer_outlet_2_shape);
+
 }
 
 
