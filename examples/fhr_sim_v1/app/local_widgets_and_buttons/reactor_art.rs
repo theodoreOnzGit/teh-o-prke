@@ -1,6 +1,6 @@
 use std::f32::consts::TAU;
 
-use egui::{epaint::PathShape, vec2, Color32, Pos2, Rect, Sense, Stroke, Ui, Vec2};
+use egui::{epaint::{CubicBezierShape, PathShape}, vec2, Color32, Pos2, Rect, Sense, Stroke, Ui, Vec2};
 
 use super::hot_to_cold_colour_mark_1;
 
@@ -114,7 +114,7 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
 
     // colour fill
     let hotness: f32 = 0.1;
-    let fill = hot_to_cold_colour_mark_1(hotness);
+    let coolant_fill = hot_to_cold_colour_mark_1(hotness);
 
     // draw clockwise
     let core_bottom_points = vec![
@@ -187,18 +187,90 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         //fhr_core_inlet_bottom_right,
         //fhr_coolant_inlet_bottom_right,
     ];
+
+    // fhr metal container (grey colour)
+    //
+    // we will use a cubic Beizier curve
+
+
+    let reactor_box_top_left = 
+        c + vec2(-reactor_half_width_x, -reactor_half_length_y);
+    let reactor_box_bottom_left = 
+        c + vec2(-reactor_half_width_x, reactor_half_length_y);
+    let reactor_box_top_right = 
+        c + vec2(reactor_half_width_x, -reactor_half_length_y);
+    let reactor_box_bottom_right = 
+        c + vec2(reactor_half_width_x, reactor_half_length_y);
+
+    
+    let reactor_curved_edge_fraction = 0.55;
+
+    let reactor_curved_edge_top_left = 
+        c + vec2(-reactor_half_width_x, -reactor_curved_edge_fraction * reactor_half_length_y);
+    let reactor_curved_edge_bottom_left = 
+        c + vec2(-reactor_half_width_x, reactor_curved_edge_fraction * reactor_half_length_y);
+    let reactor_curved_edge_top_right = 
+        c + vec2(reactor_half_width_x, -reactor_curved_edge_fraction * reactor_half_length_y);
+    let reactor_curved_edge_bottom_right = 
+        c + vec2(reactor_half_width_x, reactor_curved_edge_fraction * reactor_half_length_y);
+
+    let metal_fill = Color32::GRAY;
+
+    let fhr_bottom_metal_pts = 
+        [
+        reactor_curved_edge_bottom_left,
+        reactor_box_bottom_left,
+        reactor_box_bottom_right,
+        reactor_curved_edge_bottom_right
+        ];
+    let fhr_top_metal_pts = 
+        [
+        reactor_curved_edge_top_left,
+        reactor_box_top_left,
+        reactor_box_top_right,
+        reactor_curved_edge_top_right
+        ];
+
+    let fhr_mid_metal_pts = 
+        [
+        reactor_curved_edge_bottom_left,
+        reactor_curved_edge_top_left,
+        reactor_curved_edge_top_right,
+        reactor_curved_edge_bottom_right
+        ];
+
+    let fhr_bottom_metal_semicircle = 
+        CubicBezierShape::from_points_stroke(fhr_bottom_metal_pts, 
+            true, 
+            metal_fill, 
+            stroke);
+
+    let fhr_top_metal_semicircle = 
+        CubicBezierShape::from_points_stroke(fhr_top_metal_pts, 
+            true, 
+            metal_fill, 
+            stroke);
+    let fhr_mid_metal_rect = 
+        PathShape::convex_polygon(fhr_mid_metal_pts.into(), metal_fill, stroke);
+
+    // fhr metal vessel
+    painter.add(fhr_bottom_metal_semicircle);
+    painter.add(fhr_top_metal_semicircle);
+    painter.add(fhr_mid_metal_rect);
     
     // fhr coolant 
     let fhr_core_bottom_coolant_shape = 
-        PathShape::convex_polygon(core_bottom_points, fill, stroke);
+        PathShape::convex_polygon(core_bottom_points, coolant_fill, stroke);
     let fhr_core_inlet_coolant_shape = 
-        PathShape::convex_polygon(core_bottom_inlet_points, fill, stroke);
+        PathShape::convex_polygon(core_bottom_inlet_points, coolant_fill, stroke);
     let fhr_core_mid_coolant_shape = 
-        PathShape::convex_polygon(core_mid_points, fill, stroke);
+        PathShape::convex_polygon(core_mid_points, coolant_fill, stroke);
     let fhr_core_top_coolant_shape = 
-        PathShape::convex_polygon(core_top_points, fill, stroke);
+        PathShape::convex_polygon(core_top_points, coolant_fill, stroke);
     let fhr_core_outlet_coolant_shape = 
-        PathShape::convex_polygon(core_outlet_points, fill, stroke);
+        PathShape::convex_polygon(core_outlet_points, coolant_fill, stroke);
+
+
 
     painter.add(fhr_core_bottom_coolant_shape);
     painter.add(fhr_core_inlet_coolant_shape);
