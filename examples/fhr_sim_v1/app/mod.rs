@@ -31,34 +31,6 @@ impl eframe::App for FHRSimulatorApp {
 
                 egui::widgets::global_theme_preference_buttons(ui);
             });
-            // for painting widgets
-            // https://github.com/emilk/egui/blob/master/crates/egui_demo_lib/src/demo/misc_demo_window.rs
-            //
-            // the main thing is the painter class:
-            // https://docs.rs/egui/latest/egui/struct.Painter.html
-            //
-            // here you can paint circles and rectangles 
-            // images, line segments etc.
-
-            CollapsingHeader::new("Misc")
-                .default_open(false)
-                .show(ui, |ui| {
-                    ui.horizontal(|ui| {
-                        ui.label("You can pretty easily paint your own small icons:");
-                        use std::f32::consts::TAU;
-                        let size = Vec2::splat(16.0);
-                        let (response, painter) = ui.allocate_painter(size, Sense::hover());
-                        let rect = response.rect;
-                        let c = rect.center();
-                        let r = rect.width() / 2.0 - 1.0;
-                        let color = Color32::from_gray(128);
-                        let stroke = Stroke::new(1.0, color);
-                        painter.circle_stroke(c, r, stroke);
-                        painter.line_segment([c - vec2(0.0, r), c + vec2(0.0, r)], stroke);
-                        painter.line_segment([c, c + r * Vec2::angled(TAU * 1.0 / 8.0)], stroke);
-                        painter.line_segment([c, c + r * Vec2::angled(TAU * 3.0 / 8.0)], stroke);
-                    });
-                });
 
 
             egui::ScrollArea::both()
@@ -66,102 +38,132 @@ impl eframe::App for FHRSimulatorApp {
                 .drag_to_scroll(true)
                 .show(ui, |ui| {
 
+                    // for painting widgets
+                    // https://github.com/emilk/egui/blob/master/crates/egui_demo_lib/src/demo/misc_demo_window.rs
+                    //
+                    // the main thing is the painter class:
+                    // https://docs.rs/egui/latest/egui/struct.Painter.html
+                    //
+                    // here you can paint circles and rectangles 
+                    // images, line segments etc.
 
-                });
-
-
-            //let size = egui::Vec2 { x: 150.0, y: 150.0 };
-
-            //let tchx_pic = Image::new(
-            //    include_image!("../../cooler.png")
-            //    ).rounding(5.0).max_size(size);
-            //ui.add(tchx_pic);
-
-            // i want the UI top left... 
-
-            let ui_rectangle: Rect = ui.min_rect();
-
-            // this gives coordinates of top and left of the ui
-            // for relative placement
-            let left_most_side = ui_rectangle.left();
-            let top_most_side = ui_rectangle.top();
-
-            // next I want to have the reactor vessel 
-
-            let reactor_offset_x: f32 = 120.0;
-            let reactor_offset_y: f32 = 420.0;
-            let reactor_height_px: f32 = 500.0;
-            let reactor_width_px: f32 = 300.0;
-
-            let reactor_rect_top_left: Pos2 = 
-                Pos2 { 
-                    x: left_most_side + reactor_offset_x, 
-                    y:  top_most_side + reactor_offset_y
-                };
-            let reactor_rect_bottom_right: Pos2 = 
-                Pos2 { 
-                    x: reactor_rect_top_left.x + reactor_width_px, 
-                    y: reactor_rect_top_left.y + reactor_height_px
-                };
-
-            let reactor_rectangle: egui::Rect =
-                egui::Rect{
-                    min: reactor_rect_top_left,
-                    max: reactor_rect_bottom_right,
-                };
-
-
-
-            // obtain lock first 
-
-            let mut fhr_state_ptr = self.fhr_state.lock().unwrap();
-
-            let left_cr_slider = egui::Slider::new(
-                &mut fhr_state_ptr.left_cr_insertion_frac, 
-                0.0000..=1.0)
-                .logarithmic(false)
-                .text("Left Control Rod insertion Fraction")
-                .drag_value_speed(0.001);
-
-            ui.add(left_cr_slider);
-
-            let right_cr_slider = egui::Slider::new(
-                &mut fhr_state_ptr.right_cr_insertion_frac, 
-                0.0000..=1.0)
-                .logarithmic(false)
-                .text("Right Control Rod insertion Fraction")
-                .drag_value_speed(0.001);
-
-            ui.add(right_cr_slider);
-
-            let left_control_rod_insertion_frac 
-                = fhr_state_ptr.left_cr_insertion_frac;
-            let right_control_rod_insertion_frac 
-                = fhr_state_ptr.right_cr_insertion_frac;
-
-            fhr_reactor_vessel_prototype(ui, reactor_rectangle,
-                left_control_rod_insertion_frac,
-                right_control_rod_insertion_frac);
+                    CollapsingHeader::new("Misc")
+                        .default_open(false)
+                        .show(ui, |ui| {
+                            ui.horizontal(|ui| {
+                                ui.label("You can pretty easily paint your own small icons:");
+                                use std::f32::consts::TAU;
+                                let size = Vec2::splat(16.0);
+                                let (response, painter) = ui.allocate_painter(size, Sense::hover());
+                                let rect = response.rect;
+                                let c = rect.center();
+                                let r = rect.width() / 2.0 - 1.0;
+                                let color = Color32::from_gray(128);
+                                let stroke = Stroke::new(1.0, color);
+                                painter.circle_stroke(c, r, stroke);
+                                painter.line_segment([c - vec2(0.0, r), c + vec2(0.0, r)], stroke);
+                                painter.line_segment([c, c + r * Vec2::angled(TAU * 1.0 / 8.0)], stroke);
+                                painter.line_segment([c, c + r * Vec2::angled(TAU * 3.0 / 8.0)], stroke);
+                            });
+                        });
 
 
 
 
-            egui::ScrollArea::both()
-                .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::AlwaysVisible)
-                .drag_to_scroll(true)
-                .show(ui, |ui| {
+                    //let size = egui::Vec2 { x: 150.0, y: 150.0 };
 
+                    //let tchx_pic = Image::new(
+                    //    include_image!("../../cooler.png")
+                    //    ).rounding(5.0).max_size(size);
+                    //ui.add(tchx_pic);
+
+                    // i want the UI top left... 
+
+                    let ui_rectangle: Rect = ui.min_rect();
+
+                    // this gives coordinates of top and left of the ui
+                    // for relative placement
+                    let left_most_side = ui_rectangle.left();
+                    let top_most_side = ui_rectangle.top();
+
+                    // next I want to have the reactor vessel 
+
+                    let reactor_offset_x: f32 = 120.0;
+                    let reactor_offset_y: f32 = 420.0;
+                    let reactor_height_px: f32 = 500.0;
+                    let reactor_width_px: f32 = 300.0;
+
+                    let reactor_rect_top_left: Pos2 = 
+                        Pos2 { 
+                            x: left_most_side + reactor_offset_x, 
+                            y:  top_most_side + reactor_offset_y
+                        };
+                    let reactor_rect_bottom_right: Pos2 = 
+                        Pos2 { 
+                            x: reactor_rect_top_left.x + reactor_width_px, 
+                            y: reactor_rect_top_left.y + reactor_height_px
+                        };
+
+                    let reactor_rectangle: egui::Rect =
+                        egui::Rect{
+                            min: reactor_rect_top_left,
+                            max: reactor_rect_bottom_right,
+                        };
+
+
+
+                    // obtain lock first 
+
+                    let mut fhr_state_ptr = self.fhr_state.lock().unwrap();
+
+                    let left_cr_slider = egui::Slider::new(
+                        &mut fhr_state_ptr.left_cr_insertion_frac, 
+                        0.0000..=1.0)
+                        .logarithmic(false)
+                        .text("Left Control Rod insertion Fraction")
+                        .drag_value_speed(0.001);
+
+                    ui.add(left_cr_slider);
+
+                    let right_cr_slider = egui::Slider::new(
+                        &mut fhr_state_ptr.right_cr_insertion_frac, 
+                        0.0000..=1.0)
+                        .logarithmic(false)
+                        .text("Right Control Rod insertion Fraction")
+                        .drag_value_speed(0.001);
+
+                    ui.add(right_cr_slider);
+
+                    let left_control_rod_insertion_frac 
+                        = fhr_state_ptr.left_cr_insertion_frac;
+                    let right_control_rod_insertion_frac 
+                        = fhr_state_ptr.right_cr_insertion_frac;
 
                     fhr_reactor_vessel_prototype(ui, reactor_rectangle,
                         left_control_rod_insertion_frac,
                         right_control_rod_insertion_frac);
+
+
+
+
+                    egui::ScrollArea::both()
+                        .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::AlwaysVisible)
+                        .drag_to_scroll(true)
+                        .show(ui, |ui| {
+
+
+                            fhr_reactor_vessel_prototype(ui, reactor_rectangle,
+                                left_control_rod_insertion_frac,
+                                right_control_rod_insertion_frac);
+                        });
+
+
+
+
+                    //
+                    drop(fhr_state_ptr);
+
                 });
-
-
-            
-
-            //
-            drop(fhr_state_ptr);
 
 
 
