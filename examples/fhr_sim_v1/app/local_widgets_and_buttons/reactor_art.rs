@@ -440,19 +440,19 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
 
     let downcomer_inlet_bottom_pt = 
         fhr_coolant_inlet_bottom_left 
-        + vec2(0.0, -max_height_y * 0.02);
+        + vec2(0.0, -reactor_half_length_y * 0.04);
 
     let downcomer_inlet_top_pt = 
         fhr_coolant_inlet_bottom_left 
-        + vec2(0.0, -max_height_y * 0.04);
+        + vec2(0.0, -reactor_half_length_y * 0.12);
 
     let downcomer_inlet_mid_bottom_pt = 
         fhr_coolant_inlet_bottom_left 
-        + vec2(-max_width_x * 0.5, -max_height_y * 0.08);
+        + vec2(-reactor_half_width_x * 0.65, -reactor_half_length_y * 0.14);
 
     let downcomer_inlet_mid_top_pt = 
         fhr_coolant_inlet_bottom_left 
-        + vec2(-max_width_x * 0.5, -max_height_y * 0.16);
+        + vec2(-reactor_half_width_x * 0.6, -reactor_half_length_y * 0.22);
 
     let downcomer_inlet_1_pts = 
         vec![
