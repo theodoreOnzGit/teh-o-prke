@@ -705,31 +705,35 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         reflector_curved_edge_top_left 
         + vec2(reactor_half_width_x * 0.15, 0.0);
 
-    let cr_channel_top_left = 
+    let left_cr_channel_top_left = 
         cr_left_ref_pt 
         + vec2(-reactor_half_width_x * cr_channel_width_ratio, 0.0);
 
-    let cr_channel_top_right = 
+    let left_cr_channel_top_right = 
         cr_left_ref_pt 
         + vec2(reactor_half_width_x * cr_channel_width_ratio, 0.0);
 
-    let cr_channel_bottom_left = 
+    let left_cr_channel_bottom_left = 
         cr_left_ref_pt 
         + vec2(-reactor_half_width_x * 0.08, 
             reactor_half_length_y * cr_channel_length_ratio);
 
-    let cr_channel_bottom_right = 
+    let left_cr_channel_bottom_right = 
         cr_left_ref_pt 
         + vec2(reactor_half_width_x * 0.08, 
             reactor_half_length_y * cr_channel_length_ratio);
+
     let cr_channel_fill = Color32::LIGHT_BLUE;
+
+
+
 
     let left_cr_channel_pts = 
         vec![
-        cr_channel_top_left,
-        cr_channel_top_right,
-        cr_channel_bottom_right,
-        cr_channel_bottom_left,
+        left_cr_channel_top_left,
+        left_cr_channel_top_right,
+        left_cr_channel_bottom_right,
+        left_cr_channel_bottom_left,
         ];
 
     let cr_left_channel_shape = 
@@ -738,7 +742,43 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
             cr_channel_fill, 
             coolant_stroke);
 
+
+    let cr_right_ref_pt = 
+        reflector_curved_edge_top_right 
+        + vec2(-reactor_half_width_x * 0.15, 0.0);
+
+    let right_cr_channel_top_left = 
+        cr_right_ref_pt 
+        + vec2(-reactor_half_width_x * cr_channel_width_ratio, 0.0);
+
+    let right_cr_channel_top_right = 
+        cr_right_ref_pt 
+        + vec2(reactor_half_width_x * cr_channel_width_ratio, 0.0);
+
+    let right_cr_channel_bottom_left = 
+        cr_right_ref_pt 
+        + vec2(-reactor_half_width_x * 0.08, 
+            reactor_half_length_y * cr_channel_length_ratio);
+
+    let right_cr_channel_bottom_right = 
+        cr_right_ref_pt 
+        + vec2(reactor_half_width_x * 0.08, 
+            reactor_half_length_y * cr_channel_length_ratio);
+    let right_cr_channel_pts = 
+        vec![
+        right_cr_channel_top_left,
+        right_cr_channel_top_right,
+        right_cr_channel_bottom_right,
+        right_cr_channel_bottom_left,
+        ];
+
+    let cr_right_channel_shape = 
+        PathShape::convex_polygon(
+            right_cr_channel_pts, 
+            cr_channel_fill, 
+            coolant_stroke);
     painter.add(cr_left_channel_shape);
+    painter.add(cr_right_channel_shape);
 
 }
 
