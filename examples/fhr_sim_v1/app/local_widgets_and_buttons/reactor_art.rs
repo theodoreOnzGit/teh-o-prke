@@ -117,7 +117,7 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
     let fill = hot_to_cold_colour_mark_1(hotness);
 
     // draw clockwise
-    let points = vec![
+    let core_bottom_points = vec![
         //fhr_coolant_inlet_bottom_left,
         fhr_core_inlet_bottom_left,
         fhr_core_fat_bottom_left,
@@ -131,12 +131,46 @@ pub fn fhr_reactor_vessel(ui: &mut Ui,
         fhr_core_inlet_bottom_right,
         //fhr_coolant_inlet_bottom_right,
     ];
+    let core_bottom_inlet_points = vec![
+        fhr_coolant_inlet_bottom_left,
+        fhr_core_inlet_bottom_left,
+        //fhr_core_fat_bottom_left,
+        //fhr_core_fat_top_left,
+        //fhr_core_outlet_top_left,
+        //fhr_coolant_outlet_top_left,
+        //fhr_coolant_outlet_top_right,
+        //fhr_core_outlet_top_right,
+        //fhr_core_fat_top_right,
+        //fhr_core_fat_bottom_right,
+        fhr_core_inlet_bottom_right,
+        fhr_coolant_inlet_bottom_right,
+    ];
+    let core_mid_points = vec![
+        //fhr_coolant_inlet_bottom_left,
+        //fhr_core_inlet_bottom_left,
+        fhr_core_fat_bottom_left,
+        fhr_core_fat_top_left,
+        //fhr_core_outlet_top_left,
+        //fhr_coolant_outlet_top_left,
+        //fhr_coolant_outlet_top_right,
+        //fhr_core_outlet_top_right,
+        fhr_core_fat_top_right,
+        fhr_core_fat_bottom_right,
+        //fhr_core_inlet_bottom_right,
+        //fhr_coolant_inlet_bottom_right,
+    ];
     
     // fhr coolant 
     let fhr_core_bottom_coolant_shape = 
-        PathShape::convex_polygon(points, fill, stroke);
+        PathShape::convex_polygon(core_bottom_points, fill, stroke);
+    let fhr_core_inlet_coolant_shape = 
+        PathShape::convex_polygon(core_bottom_inlet_points, fill, stroke);
+    let fhr_core_mid_coolant_shape = 
+        PathShape::convex_polygon(core_mid_points, fill, stroke);
 
     painter.add(fhr_core_bottom_coolant_shape);
+    painter.add(fhr_core_inlet_coolant_shape);
+    painter.add(fhr_core_mid_coolant_shape);
 
 }
 
