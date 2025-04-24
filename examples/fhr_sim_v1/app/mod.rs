@@ -49,7 +49,7 @@ impl eframe::App for FHRSimulatorApp {
             // next I want to have the reactor vessel 
 
             let reactor_offset_x: f32 = 0.15 * x_width;
-            let reactor_offset_y: f32 = 0.4 * y_height;
+            let reactor_offset_y: f32 = 0.6 * y_height;
             let reactor_width_px: f32 = 0.1 * x_width;
             let reactor_height_px: f32 = 0.35 * y_height;
 
