@@ -76,16 +76,16 @@ pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
     //painter.circle_stroke(c, r, stroke);
     
     // now let's paint the reactor first
-    painter.line_segment(
-        [c + vec2(reactor_half_width_x, reactor_half_length_y), 
-        c + vec2(reactor_half_width_x, -reactor_half_length_y)], 
-        stroke
-    );
-    painter.line_segment(
-        [c + vec2(-reactor_half_width_x, reactor_half_length_y), 
-        c + vec2(-reactor_half_width_x, -reactor_half_length_y)], 
-        stroke
-    );
+    //painter.line_segment(
+    //    [c + vec2(reactor_half_width_x, reactor_half_length_y), 
+    //    c + vec2(reactor_half_width_x, -reactor_half_length_y)], 
+    //    stroke
+    //);
+    //painter.line_segment(
+    //    [c + vec2(-reactor_half_width_x, reactor_half_length_y), 
+    //    c + vec2(-reactor_half_width_x, -reactor_half_length_y)], 
+    //    stroke
+    //);
     //painter.line_segment([c, c + r * Vec2::angled(TAU * 1.0 / 8.0)], stroke);
     //painter.line_segment([c, c + r * Vec2::angled(TAU * 3.0 / 8.0)], stroke);
     //

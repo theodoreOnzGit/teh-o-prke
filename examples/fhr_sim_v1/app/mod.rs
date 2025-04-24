@@ -40,13 +40,18 @@ impl eframe::App for FHRSimulatorApp {
             // for relative placement
             let left_most_side = ui_rectangle.left();
             let top_most_side = ui_rectangle.top();
+            let right_most_side = ui_rectangle.right();
+            let bottom_most_side = ui_rectangle.bottom();
+
+            let x_width = (left_most_side - right_most_side).abs();
+            let y_height = (top_most_side - bottom_most_side).abs();
 
             // next I want to have the reactor vessel 
 
-            let reactor_offset_x: f32 = 120.0;
-            let reactor_offset_y: f32 = 420.0;
-            let reactor_height_px: f32 = 500.0;
-            let reactor_width_px: f32 = 300.0;
+            let reactor_offset_x: f32 = 0.1 * x_width;
+            let reactor_offset_y: f32 = 0.4 * y_height;
+            let reactor_width_px: f32 = 0.1 * x_width;
+            let reactor_height_px: f32 = 0.35 * y_height;
 
             let reactor_rect_top_left: Pos2 = 
                 Pos2 { 
