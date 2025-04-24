@@ -122,50 +122,6 @@ impl eframe::App for FHRSimulatorApp {
                 });
 
 
-            let ui_rectangle: Rect = ui.min_rect();
-
-            // this gives coordinates of top and left of the ui
-            // for relative placement
-            let left_most_side = ui_rectangle.left();
-            let top_most_side = ui_rectangle.top();
-            let right_most_side = ui_rectangle.right();
-            let bottom_most_side = ui_rectangle.bottom();
-
-            let x_width = (left_most_side - right_most_side).abs();
-            let y_height = (top_most_side - bottom_most_side).abs();
-
-            // next I want to have the reactor vessel 
-
-            let reactor_offset_x: f32 = 0.15 * x_width;
-            let reactor_offset_y: f32 = 0.6 * y_height;
-            let reactor_width_px: f32 = 0.1 * x_width;
-            let reactor_height_px: f32 = 0.35 * y_height;
-
-            let reactor_rect_top_left: Pos2 = 
-                Pos2 { 
-                    x: left_most_side + reactor_offset_x, 
-                    y:  top_most_side + reactor_offset_y
-                };
-            let reactor_rect_bottom_right: Pos2 = 
-                Pos2 { 
-                    x: reactor_rect_top_left.x + reactor_width_px, 
-                    y: reactor_rect_top_left.y + reactor_height_px
-                };
-
-            let reactor_rectangle: egui::Rect =
-                egui::Rect{
-                    min: reactor_rect_top_left,
-                    max: reactor_rect_bottom_right,
-                };
-
-
-
-            // obtain lock first 
-
-
-            fhr_reactor_vessel_prototype(ui, reactor_rectangle,
-                left_control_rod_insertion_frac,
-                right_control_rod_insertion_frac);
 
 
 

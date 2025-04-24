@@ -253,7 +253,6 @@ pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
         reactor_curved_edge_bottom_right
         ];
 
-    let metal_stroke = Stroke::new(1.0, metal_fill);
     let fhr_bottom_metal_semicircle = 
         CubicBezierShape::from_points_stroke(fhr_bottom_metal_pts, 
             true, 

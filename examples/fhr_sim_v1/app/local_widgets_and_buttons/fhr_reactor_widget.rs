@@ -1,4 +1,4 @@
-use egui::{epaint::{CubicBezierShape, PathShape}, vec2, Color32, Pos2, Rect, Sense, Stroke, Vec2, Widget};
+use egui::{epaint::{CubicBezierShape, PathShape}, vec2, Color32, Pos2, Sense, Stroke, Vec2, Widget};
 
 use super::hot_to_cold_colour_mark_1;
 
