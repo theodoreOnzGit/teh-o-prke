@@ -121,19 +121,19 @@ impl eframe::App for FHRSimulatorApp {
                         vec2(reactor_rectangle.width(), reactor_rectangle.height());
 
                     let min_temp = ThermodynamicTemperature::new::<degree_celsius>(450.0);
-                    let max_temp = ThermodynamicTemperature::new::<degree_celsius>(1500.0);
-                    let pebble_core_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let core_curved_inlet_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let core_curved_outlet_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let core_inlet_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let max_temp = ThermodynamicTemperature::new::<degree_celsius>(800.0);
+                    let pebble_core_temp = ThermodynamicTemperature::new::<degree_celsius>(1200.0);
+                    let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(700.0);
+                    let core_bottom_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
+                    let core_top_temp = ThermodynamicTemperature::new::<degree_celsius>(680.0);
+                    let core_inlet_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
                     let core_outlet_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let left_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let left_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let left_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let right_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let right_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let right_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let left_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
+                    let left_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
+                    let left_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
+                    let right_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
+                    let right_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
+                    let right_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
 
 
                     let mut fhr_widget = FHRReactorWidget::new(
@@ -142,8 +142,8 @@ impl eframe::App for FHRSimulatorApp {
                         max_temp,
                         pebble_core_temp,
                         pebble_bed_coolant_temp,
-                        core_curved_inlet_temp,
-                        core_curved_outlet_temp,
+                        core_bottom_temp,
+                        core_top_temp,
                         core_inlet_temp,
                         core_outlet_temp,
                         left_downcomer_upper_temp,

@@ -10,9 +10,9 @@ pub struct FHRReactorWidget {
     min_temp: ThermodynamicTemperature,
     max_temp: ThermodynamicTemperature,
     pebble_core_temp: ThermodynamicTemperature,
-    pebble_bed_coolant_temp: ThermodynamicTemperature,
-    core_curved_inlet_temp: ThermodynamicTemperature,
-    core_curved_outlet_temp: ThermodynamicTemperature,
+    core_mid_temp: ThermodynamicTemperature,
+    core_bottom_temp: ThermodynamicTemperature,
+    core_top_temp: ThermodynamicTemperature,
     core_inlet_temp: ThermodynamicTemperature,
     core_outlet_temp: ThermodynamicTemperature,
     left_downcomer_upper_temp: ThermodynamicTemperature,
@@ -33,8 +33,8 @@ impl FHRReactorWidget {
         max_temp: ThermodynamicTemperature,
         pebble_core_temp: ThermodynamicTemperature,
         pebble_bed_coolant_temp: ThermodynamicTemperature,
-        core_curved_inlet_temp: ThermodynamicTemperature,
-        core_curved_outlet_temp: ThermodynamicTemperature,
+        core_bottom_temp: ThermodynamicTemperature,
+        core_top_temp: ThermodynamicTemperature,
         core_inlet_temp: ThermodynamicTemperature,
         core_outlet_temp: ThermodynamicTemperature,
         left_downcomer_upper_temp: ThermodynamicTemperature,
@@ -52,9 +52,9 @@ impl FHRReactorWidget {
             min_temp,
             max_temp,
             pebble_core_temp,
-            pebble_bed_coolant_temp,
-            core_curved_inlet_temp,
-            core_curved_outlet_temp,
+            core_mid_temp: pebble_bed_coolant_temp,
+            core_bottom_temp,
+            core_top_temp,
             core_inlet_temp,
             core_outlet_temp,
             left_downcomer_upper_temp,
@@ -349,7 +349,7 @@ impl Widget for FHRReactorWidget {
         let coolant_stroke = Stroke::new(1.0, coolant_fill);
         // fhr coolant 
         let core_bottom_hotness = 
-            self.hotness(self.core_curved_inlet_temp);
+            self.hotness(self.core_bottom_temp);
         let core_bottom_colour = hot_to_cold_colour_mark_1(
             core_bottom_hotness
         );
@@ -358,15 +358,26 @@ impl Widget for FHRReactorWidget {
                 core_bottom_points, 
                 core_bottom_colour, 
                 coolant_stroke);
+
+        let core_inlet_hotness = 
+            self.hotness(self.core_inlet_temp);
+        let core_inlet_colour = hot_to_cold_colour_mark_1(
+            core_inlet_hotness
+        );
         let fhr_core_inlet_coolant_shape = 
             PathShape::convex_polygon(
                 core_bottom_inlet_points, 
-                coolant_fill, 
+                core_inlet_colour, 
                 coolant_stroke);
+        let core_mid_hotness = 
+            self.hotness(self.core_mid_temp);
+        let core_mid_colour = hot_to_cold_colour_mark_1(
+            core_mid_hotness
+        );
         let fhr_core_mid_coolant_shape = 
             PathShape::convex_polygon(
                 core_mid_points, 
-                coolant_fill, 
+                core_mid_colour, 
                 stroke);
         let fhr_core_top_coolant_shape = 
             PathShape::convex_polygon(
