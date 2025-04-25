@@ -1,4 +1,5 @@
 use std::{sync::{Arc, Mutex}, thread};
+use uom::si::{f64::*, thermodynamic_temperature::degree_celsius};
 
 
 /// this represents the first iteration 
@@ -38,6 +39,7 @@ pub fn fhr_simulator_v1() -> eframe::Result<()> {
 }
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
+#[derive(Clone, Debug)]
 pub struct FHRSimulatorApp {
 
     pub fhr_state: Arc<Mutex<FHRState>>,
@@ -45,18 +47,45 @@ pub struct FHRSimulatorApp {
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
+#[derive(Clone,Copy, Debug)]
 pub struct FHRState {
     /// left control rod insertion fraction
     pub left_cr_insertion_frac: f32,
     /// right control rod insertion fraction
     pub right_cr_insertion_frac: f32,
+    pub pebble_core_temp_degc: f64,
+    pub pebble_bed_coolant_temp_degc: f64,
+    pub core_bottom_temp_degc: f64,
+    pub core_top_temp_degc: f64,
+    pub core_inlet_temp_degc: f64,
+    pub core_outlet_temp_degc: f64,
+    pub left_downcomer_upper_temp_degc: f64,
+    pub left_downcomer_mid_temp_degc: f64,
+    pub left_downcomer_lower_temp_degc: f64,
+    pub right_downcomer_upper_temp_degc: f64,
+    pub right_downcomer_mid_temp_degc: f64,
+    pub right_downcomer_lower_temp_degc: f64,
 }
 
 impl Default for FHRState {
     fn default() -> Self {
+        let default_temperature_degc = 500.0;
         FHRState { 
             left_cr_insertion_frac: 1.0,
             right_cr_insertion_frac: 1.0,
+            pebble_core_temp_degc: default_temperature_degc,
+            pebble_bed_coolant_temp_degc: default_temperature_degc,
+            core_bottom_temp_degc: default_temperature_degc,
+            core_top_temp_degc: default_temperature_degc,
+            core_inlet_temp_degc: default_temperature_degc,
+            core_outlet_temp_degc: default_temperature_degc,
+            left_downcomer_upper_temp_degc: default_temperature_degc,
+            left_downcomer_mid_temp_degc: default_temperature_degc,
+            left_downcomer_lower_temp_degc: default_temperature_degc,
+            right_downcomer_upper_temp_degc: default_temperature_degc,
+            right_downcomer_mid_temp_degc: default_temperature_degc,
+            right_downcomer_lower_temp_degc: default_temperature_degc,
+
         }
     }
 }

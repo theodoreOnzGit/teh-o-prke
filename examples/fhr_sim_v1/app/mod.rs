@@ -5,7 +5,7 @@ use local_widgets_and_buttons::fhr_reactor_widget::FHRReactorWidget;
 use uom::si::f64::*;
 use uom::si::thermodynamic_temperature::degree_celsius;
 
-use crate::FHRSimulatorApp;
+use crate::{FHRSimulatorApp, FHRState};
 
 impl eframe::App for FHRSimulatorApp {
     /// Called by the frame work to save state before shutdown.
@@ -76,15 +76,17 @@ impl eframe::App for FHRSimulatorApp {
                     // obtain lock first 
 
                     ui.separator();
+                    // quickly clone the fhr state and drop ptr asap 
+                    // just to read
                     let fhr_state_ptr = self.fhr_state.lock().unwrap();
-
+                    let fhr_state_clone: FHRState = fhr_state_ptr.clone();
+                    drop(fhr_state_ptr);
 
                     left_control_rod_insertion_frac 
-                        = fhr_state_ptr.left_cr_insertion_frac;
+                        = fhr_state_clone.left_cr_insertion_frac;
                     right_control_rod_insertion_frac 
-                        = fhr_state_ptr.right_cr_insertion_frac;
-                    //
-                    drop(fhr_state_ptr);
+                        = fhr_state_clone.right_cr_insertion_frac;
+                    
 
 
                     let ui_rectangle: Rect = ui.min_rect();
@@ -122,17 +124,39 @@ impl eframe::App for FHRSimulatorApp {
 
                     let min_temp = ThermodynamicTemperature::new::<degree_celsius>(450.0);
                     let max_temp = ThermodynamicTemperature::new::<degree_celsius>(800.0);
-                    let pebble_core_temp = ThermodynamicTemperature::new::<degree_celsius>(1200.0);
-                    let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(700.0);
-                    let core_bottom_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
-                    let core_top_temp = ThermodynamicTemperature::new::<degree_celsius>(680.0);
-                    let core_inlet_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
-                    let core_outlet_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let left_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
-                    let left_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
-                    let left_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
-                    let right_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(873.0);
-                    let right_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(773.0);
+                    let pebble_core_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.pebble_core_temp_degc
+                    );
+                    let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.pebble_bed_coolant_temp_degc
+                    );
+                    let core_bottom_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.core_bottom_temp_degc
+                    );
+                    let core_top_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.core_top_temp_degc
+                    );
+                    let core_inlet_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.core_inlet_temp_degc
+                    );
+                    let core_outlet_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.core_outlet_temp_degc
+                    );
+                    let left_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.left_downcomer_upper_temp_degc
+                    );
+                    let left_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.left_downcomer_mid_temp_degc
+                    );
+                    let left_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.left_downcomer_lower_temp_degc
+                    );
+                    let right_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.right_downcomer_upper_temp_degc
+                    );
+                    let right_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.right_downcomer_mid_temp_degc
+                    );
                     let right_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
 
 
