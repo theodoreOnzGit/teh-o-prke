@@ -719,30 +719,45 @@ impl Widget for FHRReactorWidget {
             right_downcomer_outlet_mid_bottom_pt,
             ];
 
+        let downcomer_right_lower_hotness = 
+            self.hotness(self.right_downcomer_lower_temp);
+        let downcomer_right_lower_colour = hot_to_cold_colour_mark_1(
+            downcomer_right_lower_hotness
+        );
         let right_downcomer_inlet_1_shape = 
             PathShape::convex_polygon(
                 downcomer_inlet_right_1_pts, 
-                coolant_fill, 
+                downcomer_right_lower_colour, 
                 coolant_stroke);
         let right_downcomer_inlet_2_shape = 
             PathShape::convex_polygon(
                 downcomer_inlet_right_2_pts, 
-                coolant_fill, 
+                downcomer_right_lower_colour, 
                 coolant_stroke);
+        let downcomer_right_mid_hotness = 
+            self.hotness(self.right_downcomer_mid_temp);
+        let downcomer_right_mid_colour = hot_to_cold_colour_mark_1(
+            downcomer_right_mid_hotness
+        );
         let right_downcomer_mid_shape = 
             PathShape::convex_polygon(
                 downcomer_right_mid_pts, 
-                coolant_fill, 
+                downcomer_right_mid_colour, 
                 coolant_stroke);
+        let downcomer_right_upper_hotness = 
+            self.hotness(self.right_downcomer_upper_temp);
+        let downcomer_right_upper_colour = hot_to_cold_colour_mark_1(
+            downcomer_right_upper_hotness
+        );
         let right_downcomer_outlet_1_shape = 
             PathShape::convex_polygon(
                 downcomer_outlet_right_1_pts, 
-                coolant_fill, 
+                downcomer_right_upper_colour, 
                 coolant_stroke);
         let right_downcomer_outlet_2_shape = 
             PathShape::convex_polygon(
                 downcomer_outlet_right_2_pts, 
-                coolant_fill, 
+                downcomer_right_upper_colour, 
                 coolant_stroke);
 
         painter.add(right_downcomer_inlet_1_shape);

@@ -131,9 +131,9 @@ impl eframe::App for FHRSimulatorApp {
                     let left_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
                     let left_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
                     let left_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
-                    let right_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
-                    let right_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
-                    let right_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(550.0);
+                    let right_downcomer_upper_temp = ThermodynamicTemperature::new::<degree_celsius>(873.0);
+                    let right_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(773.0);
+                    let right_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
 
 
                     let mut fhr_widget = FHRReactorWidget::new(
