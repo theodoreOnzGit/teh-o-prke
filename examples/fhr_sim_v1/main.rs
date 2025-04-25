@@ -53,6 +53,8 @@ pub struct FHRState {
     pub left_cr_insertion_frac: f32,
     /// right control rod insertion fraction
     pub right_cr_insertion_frac: f32,
+
+    // temperatures for both reactor feedback and display
     pub pebble_core_temp_degc: f64,
     pub pebble_bed_coolant_temp_degc: f64,
     pub core_bottom_temp_degc: f64,
@@ -110,13 +112,13 @@ impl FHRSimulatorApp {
         let fhr_state_thermal_hydraulics_ptr: Arc<Mutex<FHRState>> = 
             new_fhr_app.fhr_state.clone();
 
-        // now spawn a thread moving in the pointer 
+        // now spawn a thread to do the kinetics
         //
         thread::spawn(move ||{
             fhr_state_prke_ptr
         });
 
-        // spawn a thread to update the plotting bits
+        // spawn a thread to do the thermal hydraulics
         thread::spawn(move ||{
             fhr_state_thermal_hydraulics_ptr
         });
