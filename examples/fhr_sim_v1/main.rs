@@ -103,20 +103,25 @@ impl FHRSimulatorApp {
         //    return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         //}
 
-        let new_ciet_app: FHRSimulatorApp = Default::default();
+        let new_fhr_app: FHRSimulatorApp = Default::default();
+
+        let fhr_state_prke_ptr: Arc<Mutex<FHRState>> = 
+            new_fhr_app.fhr_state.clone();
+        let fhr_state_thermal_hydraulics_ptr: Arc<Mutex<FHRState>> = 
+            new_fhr_app.fhr_state.clone();
 
         // now spawn a thread moving in the pointer 
         //
         thread::spawn(move ||{
-
+            fhr_state_prke_ptr
         });
 
         // spawn a thread to update the plotting bits
         thread::spawn(move ||{
-
+            fhr_state_thermal_hydraulics_ptr
         });
 
-        new_ciet_app
+        new_fhr_app
     }
 
     
