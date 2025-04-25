@@ -7,6 +7,9 @@ use uom::si::thermodynamic_temperature::degree_celsius;
 
 use crate::{FHRSimulatorApp, FHRState};
 
+pub mod prke_backend;
+pub mod thermal_hydraulics_backend;
+
 impl eframe::App for FHRSimulatorApp {
     /// Called by the frame work to save state before shutdown.
     fn save(&mut self, storage: &mut dyn eframe::Storage) {

@@ -1,5 +1,4 @@
 use std::{sync::{Arc, Mutex}, thread};
-use uom::si::{f64::*, thermodynamic_temperature::degree_celsius};
 
 
 /// this represents the first iteration 
