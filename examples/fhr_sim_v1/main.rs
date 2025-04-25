@@ -22,7 +22,7 @@ pub fn fhr_simulator_v1() -> eframe::Result<()> {
         ..Default::default()
     };
     eframe::run_native(
-        "FHR Simulator V1 Powered by TUAS, tampines-steam-tables and teh-o-prke",
+        "FHR Simulator V1 Powered by TUAS and teh-o-prke",
         native_options,
         Box::new(|cc| {
             // image support,
