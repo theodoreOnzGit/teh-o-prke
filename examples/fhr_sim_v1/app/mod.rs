@@ -95,9 +95,9 @@ impl eframe::App for FHRSimulatorApp {
                     let top_most_side = ui_rectangle.top();
 
                     let reactor_offset_x: f32 = 100.0;
-                    let reactor_offset_y: f32 = 400.0;
-                    let reactor_x_width_px: f32 = 150.0;
-                    let reactor_y_height_px: f32 = 700.0;
+                    let reactor_offset_y: f32 = 200.0;
+                    let reactor_x_width_px: f32 = 150.0 * 1.5;
+                    let reactor_y_height_px: f32 = 700.0 * 1.5;
 
 
                     let reactor_rect_top_left: Pos2 = 
