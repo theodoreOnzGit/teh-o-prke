@@ -157,7 +157,9 @@ impl eframe::App for FHRSimulatorApp {
                     let right_downcomer_mid_temp = ThermodynamicTemperature::new::<degree_celsius>(
                         fhr_state_clone.right_downcomer_mid_temp_degc
                     );
-                    let right_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let right_downcomer_lower_temp = ThermodynamicTemperature::new::<degree_celsius>(
+                        fhr_state_clone.right_downcomer_lower_temp_degc
+                    );
 
 
                     let mut fhr_widget = FHRReactorWidget::new(
