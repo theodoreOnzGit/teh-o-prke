@@ -269,10 +269,6 @@ impl Widget for FHRReactorWidget {
                 metal_fill, 
                 stroke);
 
-        // fhr metal vessel
-        painter.add(fhr_bottom_metal_semicircle);
-        painter.add(fhr_top_metal_semicircle);
-        painter.add(fhr_mid_metal_rect);
         // inner graphite reflector 
 
         let graphite_width_fraction = 0.8;
@@ -340,10 +336,6 @@ impl Widget for FHRReactorWidget {
                 graphite_fill, 
                 graphite_stroke);
 
-        // fhr reflector graphite
-        painter.add(reflector_bottom_graphite_semicircle);
-        painter.add(reflector_top_graphite_semicircle);
-        painter.add(reflector_mid_graphite_rect);
 
         
         let coolant_stroke = Stroke::new(1.0, coolant_fill);
@@ -402,11 +394,6 @@ impl Widget for FHRReactorWidget {
 
 
 
-        painter.add(fhr_core_bottom_coolant_shape);
-        painter.add(fhr_core_inlet_coolant_shape);
-        painter.add(fhr_core_top_coolant_shape);
-        painter.add(fhr_core_outlet_coolant_shape);
-        painter.add(fhr_core_mid_coolant_shape);
 
         // now for pebble bed 
         //
@@ -459,20 +446,12 @@ impl Widget for FHRReactorWidget {
                 *pebble_center + vec2(0.0, -fhr_height * 0.1);
         }
 
+        let pebble_bed_hotness = 
+            self.hotness(self.pebble_core_temp);
+        let pebble_bed_colour = 
+            hot_to_cold_colour_mark_1(pebble_bed_hotness);
 
-        for pebble_center in pebble_centers.iter(){
-            painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
-            painter.circle_filled(*pebble_center, core_radius, Color32::DARK_RED);
-        }
 
-        for pebble_center in pebble_centres_bottom.iter(){
-            painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
-            painter.circle_filled(*pebble_center, core_radius, Color32::DARK_RED);
-        }
-        for pebble_center in pebble_centres_top.iter(){
-            painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
-            painter.circle_filled(*pebble_center, core_radius, Color32::DARK_RED);
-        }
 
         // next, downcomers
 
@@ -616,11 +595,6 @@ impl Widget for FHRReactorWidget {
                 downcomer_left_upper_colour, 
                 coolant_stroke);
 
-        painter.add(left_downcomer_inlet_1_shape);
-        painter.add(left_downcomer_inlet_2_shape);
-        painter.add(left_downcomer_mid_shape);
-        painter.add(left_downcomer_outlet_1_shape);
-        painter.add(left_downcomer_outlet_2_shape);
 
         // right downcomer 
 
@@ -760,11 +734,6 @@ impl Widget for FHRReactorWidget {
                 downcomer_right_upper_colour, 
                 coolant_stroke);
 
-        painter.add(right_downcomer_inlet_1_shape);
-        painter.add(right_downcomer_inlet_2_shape);
-        painter.add(right_downcomer_mid_shape);
-        painter.add(right_downcomer_outlet_1_shape);
-        painter.add(right_downcomer_outlet_2_shape);
 
         // now control rods
 
@@ -868,136 +837,95 @@ impl Widget for FHRReactorWidget {
         let cr_right_centre = cr_right_ref_pt 
             + vec2(0.0, cr_length*self.right_control_rod_insertion_frac - cr_length*0.9);
 
+        // now paint everything,
+        // NOTE: the order of painting is important!
+
+        // first: 
+        // control rod line segments (peripheral)
+        //
+        
 
         painter.line_segment(
-            [cr_left_centre - vec2(0.0, cr_length), 
-            cr_left_centre + vec2(0.0, cr_length)], 
+            [cr_left_centre - vec2(-0.20*reactor_half_width_x, cr_length), 
+            cr_left_centre + vec2(0.20*reactor_half_width_x, cr_length)], 
             cr_rod_stroke
         );
+        painter.line_segment(
+            [cr_left_centre - vec2(-0.40*reactor_half_width_x, cr_length), 
+            cr_left_centre + vec2(0.40*reactor_half_width_x, cr_length)], 
+            cr_rod_stroke
+        );
+
+        painter.line_segment(
+            [cr_right_centre - vec2(0.20*reactor_half_width_x, cr_length), 
+            cr_right_centre + vec2(-0.20*reactor_half_width_x, cr_length)], 
+            cr_rod_stroke
+        );
+        painter.line_segment(
+            [cr_right_centre - vec2(0.40*reactor_half_width_x, cr_length), 
+            cr_right_centre + vec2(-0.40*reactor_half_width_x, cr_length)], 
+            cr_rod_stroke
+        );
+        // next metallic and graphite structures
+        // fhr metal vessel
+        painter.add(fhr_bottom_metal_semicircle);
+        painter.add(fhr_top_metal_semicircle);
+        painter.add(fhr_mid_metal_rect);
+        // fhr reflector graphite
+        painter.add(reflector_bottom_graphite_semicircle);
+        painter.add(reflector_top_graphite_semicircle);
+        painter.add(reflector_mid_graphite_rect);
+
+        // then coolants
+        painter.add(fhr_core_bottom_coolant_shape);
+        painter.add(fhr_core_inlet_coolant_shape);
+        painter.add(fhr_core_top_coolant_shape);
+        painter.add(fhr_core_outlet_coolant_shape);
+        painter.add(fhr_core_mid_coolant_shape);
+
+
+        painter.add(left_downcomer_inlet_1_shape);
+        painter.add(left_downcomer_inlet_2_shape);
+        painter.add(left_downcomer_mid_shape);
+        painter.add(left_downcomer_outlet_1_shape);
+        painter.add(left_downcomer_outlet_2_shape);
+
+
+        painter.add(right_downcomer_inlet_1_shape);
+        painter.add(right_downcomer_inlet_2_shape);
+        painter.add(right_downcomer_mid_shape);
+        painter.add(right_downcomer_outlet_1_shape);
+        painter.add(right_downcomer_outlet_2_shape);
+
+        // then pebble bed
+        for pebble_center in pebble_centers.iter(){
+            painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
+            painter.circle_filled(*pebble_center, core_radius, pebble_bed_colour);
+        }
+
+        for pebble_center in pebble_centres_bottom.iter(){
+            painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
+            painter.circle_filled(*pebble_center, core_radius, pebble_bed_colour);
+        }
+        for pebble_center in pebble_centres_top.iter(){
+            painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
+            painter.circle_filled(*pebble_center, core_radius, pebble_bed_colour);
+        }
+
+        // control rod line segments (foreground)
         painter.line_segment(
             [cr_right_centre - vec2(0.0, cr_length), 
             cr_right_centre + vec2(0.0, cr_length)], 
             cr_rod_stroke
         );
+        painter.line_segment(
+            [cr_left_centre - vec2(0.0, cr_length), 
+            cr_left_centre + vec2(0.0, cr_length)], 
+            cr_rod_stroke
+        );
 
+        // finally return response as per what ui requested
         response
 
-            //let (rect, mut response) = ui.allocate_at_least(desired_size, sense);
-
-            //response.widget_info(|| {
-            //    if let Some(galley) = &galley {
-            //        WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), galley.text())
-            //    } else {
-            //        WidgetInfo::new(WidgetType::Button)
-            //    }
-            //});
-
-
-            //if ui.is_rect_visible(rect) {
-            //    let visuals = ui.style().interact(&response);
-            //    let (frame_expansion, frame_cr, frame_fill, frame_stroke) = if selected {
-            //        let selection = ui.visuals().selection;
-        //        (
-        //            Vec2::ZERO,
-        //            CornerRadius::ZERO,
-        //            selection.bg_fill,
-        //            selection.stroke,
-        //        )
-        //    } else if frame {
-        //        let expansion = Vec2::splat(visuals.expansion);
-        //        (
-        //            expansion,
-        //            visuals.corner_radius,
-        //            visuals.weak_bg_fill,
-        //            visuals.bg_stroke,
-        //        )
-        //    } else {
-        //        Default::default()
-        //    };
-        //
-        //    let frame_cr = corner_radius.unwrap_or(frame_cr);
-        //    let frame_fill = fill.unwrap_or(frame_fill);
-        //    let frame_stroke = stroke.unwrap_or(frame_stroke);
-        //    ui.painter().rect(
-        //        rect.expand2(frame_expansion),
-        //        frame_cr,
-        //        frame_fill,
-        //        frame_stroke,
-        //        epaint::StrokeKind::Inside,
-        //    );
-
-
-        //    let mut cursor_x = rect.min.x + button_padding.x;
-        //    if let Some(image) = &image {
-        //        let mut image_pos = ui
-        //            .layout()
-        //            .align_size_within_rect(image_size, rect.shrink2(button_padding))
-        //            .min;
-        //        if galley.is_some() || shortcut_galley.is_some() {
-        //            image_pos.x = cursor_x;
-        //        }
-        //        let image_rect = Rect::from_min_size(image_pos, image_size);
-        //        cursor_x += image_size.x;
-        //        let tlr = image.load_for_size(ui.ctx(), image_size);
-        //        let mut image_options = image.image_options().clone();
-        //        if image_tint_follows_text_color {
-        //            image_options.tint = image_options.tint * visuals.text_color();
-        //        }
-        //        widgets::image::paint_texture_load_result(
-        //            ui,
-        //            &tlr,
-        //            image_rect,
-        //            image.show_loading_spinner,
-        //            &image_options,
-        //            None,
-        //        );
-
-        //        response = widgets::image::texture_load_result_response(
-        //            &image.source(ui.ctx()),
-        //            &tlr,
-        //            response,
-        //        );
-        //    }
-        //    if image.is_some() && galley.is_some() {
-        //        cursor_x += ui.spacing().icon_spacing;
-        //    }
-        //    if let Some(galley) = galley {
-        //        let mut text_pos = ui
-        //            .layout()
-        //            .align_size_within_rect(galley.size(), rect.shrink2(button_padding))
-        //            .min;
-        //        if image.is_some() || shortcut_galley.is_some() {
-        //            text_pos.x = cursor_x;
-        //        }
-        //        ui.painter().galley(text_pos, galley, visuals.text_color());
-        //    }
-
-
-        //    if let Some(shortcut_galley) = shortcut_galley {
-        //        // Always align to the right
-        //        let layout = if ui.layout().is_horizontal() {
-        //            ui.layout().with_main_align(Align::Max)
-        //        } else {
-        //            ui.layout().with_cross_align(Align::Max)
-        //        };
-        //        let shortcut_text_pos = layout
-        //            .align_size_within_rect(shortcut_galley.size(), rect.shrink2(button_padding))
-        //            .min;
-        //        ui.painter().galley(
-        //            shortcut_text_pos,
-        //            shortcut_galley,
-        //            ui.visuals().weak_text_color(),
-        //        );
-        //    }
-        //}
-
-
-        //if let Some(cursor) = ui.visuals().interact_cursor {
-        //    if response.hovered() {
-        //        ui.ctx().set_cursor_icon(cursor);
-        //    }
-        //}
-
-        //response
     }
 }
