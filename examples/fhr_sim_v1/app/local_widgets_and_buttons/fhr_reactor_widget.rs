@@ -345,12 +345,18 @@ impl Widget for FHRReactorWidget {
         painter.add(reflector_top_graphite_semicircle);
         painter.add(reflector_mid_graphite_rect);
 
+        
         let coolant_stroke = Stroke::new(1.0, coolant_fill);
         // fhr coolant 
+        let core_bottom_hotness = 
+            self.hotness(self.core_curved_inlet_temp);
+        let core_bottom_colour = hot_to_cold_colour_mark_1(
+            core_bottom_hotness
+        );
         let fhr_core_bottom_coolant_shape = 
             PathShape::convex_polygon(
                 core_bottom_points, 
-                coolant_fill, 
+                core_bottom_colour, 
                 coolant_stroke);
         let fhr_core_inlet_coolant_shape = 
             PathShape::convex_polygon(

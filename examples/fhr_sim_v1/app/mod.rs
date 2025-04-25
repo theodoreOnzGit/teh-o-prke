@@ -24,6 +24,28 @@ impl eframe::App for FHRSimulatorApp {
         });
 
         egui::SidePanel::right("Supplementary Info").show(ctx, |ui|{
+            let mut fhr_state_ptr = self.fhr_state.lock().unwrap();
+
+            let left_cr_slider = egui::Slider::new(
+                &mut fhr_state_ptr.left_cr_insertion_frac, 
+                0.0000..=1.0)
+                .logarithmic(false)
+                .text("Left Control Rod insertion Fraction")
+                .drag_value_speed(0.001);
+
+            ui.add(left_cr_slider);
+
+            let right_cr_slider = egui::Slider::new(
+                &mut fhr_state_ptr.right_cr_insertion_frac, 
+                0.0000..=1.0)
+                .logarithmic(false)
+                .text("Right Control Rod insertion Fraction")
+                .drag_value_speed(0.001);
+
+            ui.add(right_cr_slider);
+
+            //
+            drop(fhr_state_ptr);
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
@@ -53,25 +75,9 @@ impl eframe::App for FHRSimulatorApp {
                     // images, line segments etc.
                     // obtain lock first 
 
-                    let mut fhr_state_ptr = self.fhr_state.lock().unwrap();
+                    ui.separator();
+                    let fhr_state_ptr = self.fhr_state.lock().unwrap();
 
-                    let left_cr_slider = egui::Slider::new(
-                        &mut fhr_state_ptr.left_cr_insertion_frac, 
-                        0.0000..=1.0)
-                        .logarithmic(false)
-                        .text("Left Control Rod insertion Fraction")
-                        .drag_value_speed(0.001);
-
-                    ui.add(left_cr_slider);
-
-                    let right_cr_slider = egui::Slider::new(
-                        &mut fhr_state_ptr.right_cr_insertion_frac, 
-                        0.0000..=1.0)
-                        .logarithmic(false)
-                        .text("Right Control Rod insertion Fraction")
-                        .drag_value_speed(0.001);
-
-                    ui.add(right_cr_slider);
 
                     left_control_rod_insertion_frac 
                         = fhr_state_ptr.left_cr_insertion_frac;
@@ -114,8 +120,8 @@ impl eframe::App for FHRSimulatorApp {
                     let fhr_size = 
                         vec2(reactor_rectangle.width(), reactor_rectangle.height());
 
-                    let min_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
-                    let max_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
+                    let min_temp = ThermodynamicTemperature::new::<degree_celsius>(450.0);
+                    let max_temp = ThermodynamicTemperature::new::<degree_celsius>(1500.0);
                     let pebble_core_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
                     let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
                     let core_curved_inlet_temp = ThermodynamicTemperature::new::<degree_celsius>(673.0);
@@ -152,6 +158,7 @@ impl eframe::App for FHRSimulatorApp {
 
                     ui.put(reactor_rectangle, fhr_widget);
 
+                    ui.separator();
                 });
 
 
