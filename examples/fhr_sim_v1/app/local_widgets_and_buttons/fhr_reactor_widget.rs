@@ -817,8 +817,6 @@ impl Widget for FHRReactorWidget {
                 cr_channel_fill, 
                 coolant_stroke);
 
-        painter.add(cr_left_channel_shape);
-        painter.add(cr_right_channel_shape);
 
         let cr_width_ratio = 0.08;
         let cr_colour = Color32::DARK_GRAY;
@@ -911,6 +909,10 @@ impl Widget for FHRReactorWidget {
             painter.circle_filled(*pebble_center, pebble_radius, Color32::BLACK);
             painter.circle_filled(*pebble_center, core_radius, pebble_bed_colour);
         }
+
+        // control rod channels
+        painter.add(cr_left_channel_shape);
+        painter.add(cr_right_channel_shape);
 
         // control rod line segments (foreground)
         painter.line_segment(
