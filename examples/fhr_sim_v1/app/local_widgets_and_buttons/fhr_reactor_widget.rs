@@ -910,11 +910,10 @@ impl Widget for FHRReactorWidget {
             painter.circle_filled(*pebble_center, core_radius, pebble_bed_colour);
         }
 
-        // control rod channels
+        // control rod channels and
+        // control rod line segments (foreground)
         painter.add(cr_left_channel_shape);
         painter.add(cr_right_channel_shape);
-
-        // control rod line segments (foreground)
         painter.line_segment(
             [cr_right_centre - vec2(0.0, cr_length), 
             cr_right_centre + vec2(0.0, cr_length)], 
