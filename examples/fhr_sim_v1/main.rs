@@ -114,7 +114,7 @@ impl FHRSimulatorApp {
         // now spawn a thread to do the kinetics
         //
         thread::spawn(move ||{
-            fhr_state_prke_ptr
+            FHRSimulatorApp::calculate_prke_loop(fhr_state_prke_ptr);
         });
 
         // spawn a thread to do the thermal hydraulics
