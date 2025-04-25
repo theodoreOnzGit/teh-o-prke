@@ -10,7 +10,7 @@ pub struct FHRReactorWidget {
     min_temp: ThermodynamicTemperature,
     max_temp: ThermodynamicTemperature,
     pebble_core_temp: ThermodynamicTemperature,
-    core_mid_temp: ThermodynamicTemperature,
+    core_mid_coolant_temp: ThermodynamicTemperature,
     core_bottom_temp: ThermodynamicTemperature,
     core_top_temp: ThermodynamicTemperature,
     core_inlet_temp: ThermodynamicTemperature,
@@ -52,7 +52,7 @@ impl FHRReactorWidget {
             min_temp,
             max_temp,
             pebble_core_temp,
-            core_mid_temp: pebble_bed_coolant_temp,
+            core_mid_coolant_temp: pebble_bed_coolant_temp,
             core_bottom_temp,
             core_top_temp,
             core_inlet_temp,
@@ -370,7 +370,7 @@ impl Widget for FHRReactorWidget {
                 core_inlet_colour, 
                 coolant_stroke);
         let core_mid_hotness = 
-            self.hotness(self.core_mid_temp);
+            self.hotness(self.core_mid_coolant_temp);
         let core_mid_colour = hot_to_cold_colour_mark_1(
             core_mid_hotness
         );
@@ -379,15 +379,25 @@ impl Widget for FHRReactorWidget {
                 core_mid_points, 
                 core_mid_colour, 
                 stroke);
+        let core_top_hotness = 
+            self.hotness(self.core_top_temp);
+        let core_top_colour = hot_to_cold_colour_mark_1(
+            core_top_hotness
+        );
         let fhr_core_top_coolant_shape = 
             PathShape::convex_polygon(
                 core_top_points, 
-                coolant_fill, 
+                core_top_colour, 
                 coolant_stroke);
+        let core_outlet_hotness = 
+            self.hotness(self.core_outlet_temp);
+        let core_outlet_colour = hot_to_cold_colour_mark_1(
+            core_outlet_hotness
+        );
         let fhr_core_outlet_coolant_shape = 
             PathShape::convex_polygon(
                 core_outlet_points, 
-                coolant_fill, 
+                core_outlet_colour, 
                 coolant_stroke);
 
 
@@ -563,30 +573,47 @@ impl Widget for FHRReactorWidget {
             left_downcomer_mid_rect_top_right,
             ];
 
+        let downcomer_left_lower_hotness = 
+            self.hotness(self.left_downcomer_lower_temp);
+        let downcomer_left_lower_colour = hot_to_cold_colour_mark_1(
+            downcomer_left_lower_hotness
+        );
         let left_downcomer_inlet_1_shape = 
             PathShape::convex_polygon(
                 downcomer_inlet_left_1_pts, 
-                coolant_fill, 
+                downcomer_left_lower_colour, 
                 coolant_stroke);
         let left_downcomer_inlet_2_shape = 
             PathShape::convex_polygon(
                 downcomer_inlet_left_2_pts, 
-                coolant_fill, 
+                downcomer_left_lower_colour, 
                 coolant_stroke);
+
+        let downcomer_left_mid_hotness = 
+            self.hotness(self.left_downcomer_mid_temp);
+        let downcomer_left_mid_colour = hot_to_cold_colour_mark_1(
+            downcomer_left_mid_hotness
+        );
         let left_downcomer_mid_shape = 
             PathShape::convex_polygon(
                 downcomer_left_mid_pts, 
-                coolant_fill, 
+                downcomer_left_mid_colour, 
                 coolant_stroke);
+
+        let downcomer_left_upper_hotness = 
+            self.hotness(self.left_downcomer_upper_temp);
+        let downcomer_left_upper_colour = hot_to_cold_colour_mark_1(
+            downcomer_left_upper_hotness
+        );
         let left_downcomer_outlet_1_shape = 
             PathShape::convex_polygon(
                 downcomer_outlet_left_1_pts, 
-                coolant_fill, 
+                downcomer_left_upper_colour, 
                 coolant_stroke);
         let left_downcomer_outlet_2_shape = 
             PathShape::convex_polygon(
                 downcomer_outlet_left_2_pts, 
-                coolant_fill, 
+                downcomer_left_upper_colour, 
                 coolant_stroke);
 
         painter.add(left_downcomer_inlet_1_shape);
