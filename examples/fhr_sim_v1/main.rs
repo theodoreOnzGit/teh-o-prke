@@ -114,6 +114,7 @@ impl FHRSimulatorApp {
         // now spawn a thread to do the kinetics
         //
         thread::spawn(move ||{
+            // now I also have a PRKE data which lives inside this loop
             FHRSimulatorApp::calculate_prke_loop(fhr_state_prke_ptr);
         });
 
