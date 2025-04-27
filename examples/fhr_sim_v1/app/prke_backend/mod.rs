@@ -121,23 +121,23 @@ impl FHRSimulatorApp {
         // so we need Sigma_f * phi 
         let neutron_speed: Velocity = Velocity::new::<meter_per_second>(2200.0);
         let current_neutron_flux: ArealNumberRate = 
-            current_neutron_pop_density * current_neutron_pop_density;
+            (current_neutron_pop_density * neutron_speed).into();
 
         // then fission rate
         // should be a number Rate
         // per unit vol
-        let fission_rate_density = 
-            current_neutron_flux * macroscopic_fission_xs;
+        let fission_rate_density: VolumetricNumberRate = 
+            (current_neutron_flux * macroscopic_fission_xs).into();
 
         // should be a frequency
-        let fission_rate = 
+        let fission_rate: Frequency  = 
             fission_rate_density * reactor_volume;
 
         let power_per_fission = 
             Energy::new::<megaelectronvolt>(200.0);
 
-        //let fission_power: Power = 
-        //    power_per_fission * fission_rate_density;
+        let fission_power: Power = 
+            power_per_fission * fission_rate;
 
 
 
