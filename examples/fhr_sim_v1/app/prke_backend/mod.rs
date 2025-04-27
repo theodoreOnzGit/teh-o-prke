@@ -136,6 +136,7 @@ impl FHRSimulatorApp {
         let power_per_fission = 
             Energy::new::<megaelectronvolt>(200.0);
 
+        // immediate power from fission
         let fission_power: Power = 
             power_per_fission * fission_rate;
 
