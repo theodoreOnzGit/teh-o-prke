@@ -89,7 +89,7 @@ pub fn prke_test_zero_reactivity(){
     let background_source_rate = VolumetricNumberRate::ZERO;
 
     // now before running a timestep, we should get a neutron pop of 1 per m3
-    let initial_neutron_pop_float = prke_test.get_current_neutron_population().
+    let initial_neutron_pop_float = prke_test.get_current_neutron_population_density().
         get::<per_cubic_meter>();
 
     assert_eq!(initial_neutron_pop_float,1.0);
@@ -131,7 +131,7 @@ pub fn prke_test_zero_reactivity(){
 
     // now the neutron population after 50 ms * 10000 timesteps is:
     assert_abs_diff_eq!(
-        prke_test.get_current_neutron_population().value,
+        prke_test.get_current_neutron_population_density().value,
         1.17917639e-7,
         epsilon = 1e-11);
 
@@ -149,7 +149,7 @@ pub fn prke_test_zero_reactivity(){
     // now the neutron population after another 50 ms * 10000 timesteps is:
     // or else 500s should be the same
     assert_abs_diff_eq!(
-        prke_test.get_current_neutron_population().value,
+        prke_test.get_current_neutron_population_density().value,
         1.17917639e-7,
         epsilon = 1e-11);
 }

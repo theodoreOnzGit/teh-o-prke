@@ -116,7 +116,7 @@ impl Default for SixGroupPRKE {
 impl SixGroupPRKE {
 
     /// obtains current neutron population 
-    pub fn get_current_neutron_population(&self) -> VolumetricNumberDensity {
+    pub fn get_current_neutron_population_density(&self) -> VolumetricNumberDensity {
         self.precursor_and_neutron_pop_and_source_array[0]
     }
 

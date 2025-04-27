@@ -226,7 +226,7 @@ pub fn construct_and_run_fuel_temp_control_rod_prke_server_delayed_critical(run_
                 //
                 // phi is n * v
                 let neutron_conc: VolumetricNumberDensity 
-                    = prke_lock_deref_ptr.deref_mut().get_current_neutron_population();
+                    = prke_lock_deref_ptr.deref_mut().get_current_neutron_population_density();
 
                 let thermal_neutron_speed = Velocity::new::<meter_per_second>(2200.0);
 
