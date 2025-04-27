@@ -1,4 +1,6 @@
 use std::sync::{Arc, Mutex};
+use std::thread;
+use std::time::Duration;
 
 use teh_o_prke::{feedback_mechanisms::SixFactorFormulaFeedback, zero_power_prke::six_group::SixGroupPRKE};
 use uom::si::{f64::*, ratio::ratio};
@@ -14,6 +16,8 @@ impl FHRSimulatorApp {
         fhr_state: Arc<Mutex<FHRState>>){
 
         // construct a prke six group object
+        // probably want to use a u235 group or u233 group
+        // default
         let mut prke_six_group :SixGroupPRKE = SixGroupPRKE::default();
         // now this is arbitrary, user can set
         let mut keff_six_factor = SixFactorFormulaFeedback::default();
@@ -38,14 +42,21 @@ impl FHRSimulatorApp {
 
         let mut fhr_state_clone = fhr_state.lock().unwrap().clone();
         loop {
-            Self::calculate_prke_for_one_timestep(&mut fhr_state_clone);
+            Self::calculate_prke_for_one_timestep(&mut fhr_state_clone,
+                &mut keff_six_factor,
+                &mut prke_six_group,
+            );
+            let dur = Duration::from_millis(40);
+            thread::sleep(dur);
         }
 
     }
     /// associated function for PRKE calculation 
     /// for single timestep
     pub fn calculate_prke_for_one_timestep(
-        fhr_state_ref: &mut FHRState){
+        fhr_state_ref: &mut FHRState,
+        keff_six_factor: &mut SixFactorFormulaFeedback,
+        prke_six_group: &mut SixGroupPRKE){
 
         // within each timestep, I need to obtain feedback
         // so basically for now, fuel temperature and control rod insertion 
