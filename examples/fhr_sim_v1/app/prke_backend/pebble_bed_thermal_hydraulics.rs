@@ -39,7 +39,7 @@ impl PebbleBedThermalHydraulics {
 
         let net_power_gain = 
             fission_power_adjusted_for_decay_heat 
-            + heat_rate_transferred_from_pebble_bed_to_coolant;
+            - heat_rate_transferred_from_pebble_bed_to_coolant;
 
         let new_pebble_bed_enthalpy = 
             self.current_fuel_specific_enthalpy * pebble_bed_mass 

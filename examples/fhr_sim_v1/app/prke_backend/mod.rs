@@ -179,8 +179,8 @@ impl FHRSimulatorApp {
         // These are arbitrary values, will adjust later
 
         let pebble_bed_mass = Mass::new::<kilogram>(50.0);
-        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(20.0);
-        let pebble_bed_overall_htc = HeatTransfer::new::<watt_per_square_meter_kelvin>(400.0);
+        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(2000.0);
+        let pebble_bed_overall_htc = HeatTransfer::new::<watt_per_square_meter_kelvin>(4000.0);
         let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(
             fhr_state_ref.pebble_bed_coolant_temp_degc
         );
@@ -211,7 +211,12 @@ impl FHRSimulatorApp {
             += prke_timestep.get::<second>();
 
         // that settles thermal hydraulics
-        dbg!(&(pebble_bed_fuel_temp, reactivity));
+        dbg!(&(
+                pebble_bed_fuel_temp, 
+                reactivity,
+                fission_power,
+                heat_removal_from_pebble_bed
+                ));
 
 
     }
