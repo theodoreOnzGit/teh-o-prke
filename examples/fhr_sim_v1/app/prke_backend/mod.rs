@@ -273,7 +273,7 @@ impl FHRSimulatorApp {
         //
         // I get a trendline in LibreOffice
 
-        return Ratio::new::<ratio>(-2.4220e-4 * fuel_temp_degc + 1.1716e0);
+        return Ratio::new::<ratio>(-2.3077e-4 * fuel_temp_degc + 1.2462e0);
 
 
     }
