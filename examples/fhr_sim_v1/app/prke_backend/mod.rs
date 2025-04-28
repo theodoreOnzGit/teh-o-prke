@@ -169,9 +169,15 @@ impl FHRSimulatorApp {
             power_per_fission * fission_rate;
 
         // add to decay heat precursors 
-        fhr_decay_heat.add_decay_heat_precursor1(fission_power_instantaneous * 0.04);
-        fhr_decay_heat.add_decay_heat_precursor2(fission_power_instantaneous * 0.04);
-        fhr_decay_heat.add_decay_heat_precursor3(fission_power_instantaneous * 0.02);
+        fhr_decay_heat.add_decay_heat_precursor1(
+            fission_power_instantaneous * 0.04, prke_timestep
+        );
+        fhr_decay_heat.add_decay_heat_precursor2(
+            fission_power_instantaneous * 0.04, prke_timestep
+        );
+        fhr_decay_heat.add_decay_heat_precursor3(
+            fission_power_instantaneous * 0.02, prke_timestep
+        );
 
 
         // adjust fission power for decay heat 
