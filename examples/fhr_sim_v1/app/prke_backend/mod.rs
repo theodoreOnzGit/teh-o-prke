@@ -165,21 +165,21 @@ impl FHRSimulatorApp {
             Energy::new::<megaelectronvolt>(200.0);
 
         // immediate power from fission
-        let mut fission_power: Power = 
+        let fission_power_instantaneous: Power = 
             power_per_fission * fission_rate;
 
         // add to decay heat precursors 
-        fhr_decay_heat.add_decay_heat_precursor1(fission_power * 0.04);
-        fhr_decay_heat.add_decay_heat_precursor2(fission_power * 0.04);
-        fhr_decay_heat.add_decay_heat_precursor3(fission_power * 0.02);
+        fhr_decay_heat.add_decay_heat_precursor1(fission_power_instantaneous * 0.04);
+        fhr_decay_heat.add_decay_heat_precursor2(fission_power_instantaneous * 0.04);
+        fhr_decay_heat.add_decay_heat_precursor3(fission_power_instantaneous * 0.02);
 
 
         // adjust fission power for decay heat 
         // fission power less decay heat = 1.0 - 0.04 - 0.04 - 0.02 = 0.9
-        fission_power *= 0.9;
-        fission_power += fhr_decay_heat.calc_decay_heat_power_1(prke_timestep);
-        fission_power += fhr_decay_heat.calc_decay_heat_power_2(prke_timestep);
-        fission_power += fhr_decay_heat.calc_decay_heat_power_3(prke_timestep);
+        let mut fission_power_corrected_for_decay_heat = fission_power_instantaneous * 0.9;
+        fission_power_corrected_for_decay_heat += fhr_decay_heat.calc_decay_heat_power_1(prke_timestep);
+        fission_power_corrected_for_decay_heat += fhr_decay_heat.calc_decay_heat_power_2(prke_timestep);
+        fission_power_corrected_for_decay_heat += fhr_decay_heat.calc_decay_heat_power_3(prke_timestep);
 
         // with the correct fission power now, we can 
         // calc temperature
@@ -197,7 +197,7 @@ impl FHRSimulatorApp {
         let heat_removal_from_pebble_bed = 
             pebble_bed_th_struct.calc_th_and_return_heat_removal_from_pebble_bed(
                 prke_timestep, 
-                fission_power, 
+                fission_power_corrected_for_decay_heat, 
                 pebble_bed_mass, 
                 pebble_bed_heat_transfer_area, 
                 pebble_bed_overall_htc, 
@@ -219,11 +219,15 @@ impl FHRSimulatorApp {
         fhr_state_ref.prke_loop_accumulated_timestep_seconds
             += prke_timestep.get::<second>();
 
+        let keff = keff_six_factor.calc_keff();
+
         // that settles thermal hydraulics
         dbg!(&(
-                pebble_bed_fuel_temp, 
+                pebble_bed_fuel_temp,
+                keff,
                 reactivity,
-                fission_power,
+                fission_power_instantaneous,
+                fission_power_corrected_for_decay_heat,
                 heat_removal_from_pebble_bed
                 ));
 
