@@ -7,6 +7,11 @@ use uom::ConstZero;
 /// similar to how delayed neutron precursors are handled,
 /// I have some groups for decay heat precursors. 
 /// These are loosely coupled (semi-implicit)
+///
+///
+/// i think this is slightly buggy, need to change code
+///
+/// maybe the units and equations are wrong...
 #[derive(Clone, Debug, Copy)]
 pub struct FHRDecayHeat {
     decay_heat_precursor1: Power,
