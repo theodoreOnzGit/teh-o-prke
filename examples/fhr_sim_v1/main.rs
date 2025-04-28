@@ -1,5 +1,7 @@
 use std::{sync::{Arc, Mutex}, thread};
 
+use uom::si::{f64::*, power::kilowatt};
+
 
 /// this represents the first iteration 
 /// of the fhr simulator
@@ -66,6 +68,11 @@ pub struct FHRState {
     pub right_downcomer_upper_temp_degc: f64,
     pub right_downcomer_mid_temp_degc: f64,
     pub right_downcomer_lower_temp_degc: f64,
+
+    // this is important for coupling between prke loop and thermal 
+    // hydraulics loop
+    pub prke_loop_accumulated_timestep_seconds: f64,
+    pub prke_loop_accumulated_heat_removal_kilojoules: f64,
 }
 
 impl Default for FHRState {
@@ -86,8 +93,24 @@ impl Default for FHRState {
             right_downcomer_upper_temp_degc: default_temperature_degc,
             right_downcomer_mid_temp_degc: default_temperature_degc,
             right_downcomer_lower_temp_degc: default_temperature_degc,
+            prke_loop_accumulated_timestep_seconds: 0.0,
+            prke_loop_accumulated_heat_removal_kilojoules: 0.0,
 
         }
+    }
+}
+
+impl FHRState {
+
+    pub fn obtain_average_heat_removal_rate_from_pebble_bed_and_reset_counter(
+        &mut self) -> Power {
+        let heat_removal_rate_kilowatts = 
+            self.prke_loop_accumulated_heat_removal_kilojoules/
+            self.prke_loop_accumulated_timestep_seconds;
+
+        self.prke_loop_accumulated_timestep_seconds = 0.0;
+        self.prke_loop_accumulated_heat_removal_kilojoules = 0.0;
+        return Power::new::<kilowatt>(heat_removal_rate_kilowatts);
     }
 }
 
@@ -125,6 +148,7 @@ impl FHRSimulatorApp {
 
         new_fhr_app
     }
+
 
     
 }
