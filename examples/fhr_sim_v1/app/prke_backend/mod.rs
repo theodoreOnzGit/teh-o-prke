@@ -107,9 +107,18 @@ impl FHRSimulatorApp {
             fhr_state_ref.right_cr_insertion_frac;
 
         // now based on this, calculate feedback
+        //
+        let left_cr_insertion_ratio = 
+            Ratio::new::<ratio>(left_cr_insertion_frac as f64);
+        let right_cr_insertion_ratio = 
+            Ratio::new::<ratio>(right_cr_insertion_frac as f64);
 
         keff_six_factor.fuel_temp_feedback(fuel_temp, 
             FHRSimulatorApp::fuel_temp_resonance_esc_feedback_linear);
+        keff_six_factor.control_rod_feedback(
+            left_cr_insertion_ratio, FHRSimulatorApp::fuel_utilisation_factor_chg_for_control_rod_polynomial);
+        keff_six_factor.control_rod_feedback(
+            right_cr_insertion_ratio, FHRSimulatorApp::fuel_utilisation_factor_chg_for_control_rod_polynomial);
 
         // after feedback we should get the reactivity 
         let reactivity: Ratio = keff_six_factor.calc_rho();
@@ -179,8 +188,8 @@ impl FHRSimulatorApp {
         // These are arbitrary values, will adjust later
 
         let pebble_bed_mass = Mass::new::<kilogram>(50.0);
-        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(2000.0);
-        let pebble_bed_overall_htc = HeatTransfer::new::<watt_per_square_meter_kelvin>(4000.0);
+        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(20000.0);
+        let pebble_bed_overall_htc = HeatTransfer::new::<watt_per_square_meter_kelvin>(400.0);
         let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(
             fhr_state_ref.pebble_bed_coolant_temp_degc
         );
@@ -258,7 +267,43 @@ impl FHRSimulatorApp {
 
 
     }
+
+    pub fn fuel_utilisation_factor_chg_for_control_rod_polynomial(
+        cr_insertion_factor: Ratio) -> Ratio {
+
+        //this is an arbitrary map, but just useful for 
+        //simulation
+        //control rod insertion frac,fuel utilisation factor change
+        // 0,1.03
+        // 0.1,1.0275
+        // 0.2,1.02
+        // 0.3,1.005
+        // 0.4,0.975
+        // 0.5,0.875
+        // 0.6,0.82
+        // 0.7,0.775
+        // 0.8,0.77
+        // 0.9,0.76
+        // 1,0.75
+
+        let cr_insertion_factor_f64: f64 = 
+            cr_insertion_factor.get::<ratio>();
+        let term1 = -8.413e0 * cr_insertion_factor_f64.powi(5);
+        let term2 = 2.064e1 * cr_insertion_factor_f64.powi(4);
+        let term3 = -1.639e1 * cr_insertion_factor_f64.powi(3);
+        let term4 = 4.238e0 * cr_insertion_factor_f64.powi(2);
+        let term5 = -3.626e-1 * cr_insertion_factor_f64.powi(1);
+        let term6 = 1.031e0 * cr_insertion_factor_f64.powi(0);
+
+
+        return Ratio::new::<ratio>(term1 + term2 + term3 + term4 + term5 + term6);
+    }
     
+    // this is a dummy function so that no 
+    // matter what you input, no change is given
+    pub fn constant_ratio_no_change_function(_: Ratio) -> Ratio {
+        return Ratio::new::<ratio>(1.0);
+    }
     
 }
 
