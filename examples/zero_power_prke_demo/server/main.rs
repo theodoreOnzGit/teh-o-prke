@@ -425,7 +425,7 @@ pub fn construct_and_run_zero_power_prke_server_delayed_critical(run_server: boo
                 (0.01*f32::MAX).into());
 
             let current_neutron_conc: VolumetricNumberDensity 
-                = prke_lock_deref_ptr.get_current_neutron_population();
+                = prke_lock_deref_ptr.get_current_neutron_population_density();
 
             //dbg!(&current_neutron_conc);
             //dbg!(&max_neutron_conc);
