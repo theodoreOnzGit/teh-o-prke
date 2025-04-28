@@ -13,7 +13,7 @@ use uom::si::velocity::meter_per_second;
 use uom::si::volume::cubic_meter;
 use uom::si::volumetric_number_rate::per_cubic_meter_second;
 use uom::si::{f64::*, ratio::ratio};
-use uom::si::thermodynamic_temperature::{degree_celsius, kelvin};
+use uom::si::thermodynamic_temperature::degree_celsius;
 
 use crate::{FHRSimulatorApp, FHRState};
 
@@ -28,27 +28,6 @@ impl FHRSimulatorApp {
         // probably want to use a u235 group or u233 group
         // default
         let mut prke_six_group :SixGroupPRKE = SixGroupPRKE::default();
-        // now this is arbitrary, user can set
-        let mut keff_six_factor = SixFactorFormulaFeedback::default();
-        // start from keff = 1
-        // all terms = 1
-        // start with leakage
-        keff_six_factor.p_tnl = Ratio::new::<ratio>(0.9);
-        keff_six_factor.p_fnl = Ratio::new::<ratio>(0.7);
-        // then fuel reproduction
-        keff_six_factor.eta = Ratio::new::<ratio>(2.2);
-        // resonance esc probability 
-        keff_six_factor.p = Ratio::new::<ratio>(0.8);
-        // thermal utilisation 
-        keff_six_factor.f = Ratio::new::<ratio>(0.9);
-        // fast fission 
-        keff_six_factor.epsilon = Ratio::new::<ratio>(1.03);
-        // keff total is about 1.0278
-        // excess reactivity is about 0.0278
-        //
-        // basically control rod should be about this much 
-        // and fuel temp feedback about this much also
-        // some of these are arbitrary
 
         let timestep = Time::new::<second>(1.0e-4);
         let reactor_volume = Volume::new::<cubic_meter>(0.5);
@@ -61,6 +40,27 @@ impl FHRSimulatorApp {
         let mut fhr_decay_heat = FHRDecayHeat::default();
 
         loop {
+            // now this is arbitrary, user can set
+            let mut keff_six_factor = SixFactorFormulaFeedback::default();
+            // start from keff = 1
+            // all terms = 1
+            // start with leakage
+            keff_six_factor.p_tnl = Ratio::new::<ratio>(0.9);
+            keff_six_factor.p_fnl = Ratio::new::<ratio>(0.7);
+            // then fuel reproduction
+            keff_six_factor.eta = Ratio::new::<ratio>(2.2);
+            // resonance esc probability 
+            keff_six_factor.p = Ratio::new::<ratio>(0.8);
+            // thermal utilisation 
+            keff_six_factor.f = Ratio::new::<ratio>(0.9);
+            // fast fission 
+            keff_six_factor.epsilon = Ratio::new::<ratio>(1.03);
+            // keff total is about 1.0278
+            // excess reactivity is about 0.0278
+            //
+            // basically control rod should be about this much 
+            // and fuel temp feedback about this much also
+            // some of these are arbitrary
             Self::calculate_prke_for_one_timestep(
                 &mut fhr_state_clone.lock().unwrap(),
                 &mut keff_six_factor,
@@ -211,6 +211,7 @@ impl FHRSimulatorApp {
             += prke_timestep.get::<second>();
 
         // that settles thermal hydraulics
+        dbg!(&(pebble_bed_fuel_temp, reactivity));
 
 
     }
