@@ -67,7 +67,7 @@ impl eframe::App for FHRSimulatorApp {
                 fhr_state_clone.reactor_power_megawatts;
 
             ui.label("Reactor Power (MW-thermal):");
-            ui.label(reactor_power_megawatts.to_string());
+            ui.label(((1000.0*reactor_power_megawatts).round() / 1000.0).to_string());
 
             ui.label("Fuel Temperature Pebble Core/TRISO (deg C):");
             ui.label(((10.0*pebble_core_temp_degc).round() / 10.0).to_string());
