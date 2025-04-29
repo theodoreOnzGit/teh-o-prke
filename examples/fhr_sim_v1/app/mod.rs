@@ -74,7 +74,7 @@ impl eframe::App for FHRSimulatorApp {
             ui.label("Pebble Bed Coolant Temp (deg C):");
             ui.label(((10.0*pebble_bed_coolant_temp_degc).round() / 10.0).to_string());
             ui.label("k_eff");
-            ui.label(((1000.0*keff).round() / 1000.0).to_string());
+            ui.label(((1.0e6*keff).round() / 1.0e6).to_string());
 
             
             // then temperature scale 
