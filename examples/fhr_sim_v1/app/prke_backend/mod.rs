@@ -258,7 +258,7 @@ impl FHRSimulatorApp {
         //
         // These are arbitrary values, will adjust later
 
-        let pebble_bed_mass = Mass::new::<kilogram>(5000.0);
+        let pebble_bed_mass = Mass::new::<kilogram>(8000.0);
         let pebble_bed_heat_transfer_area = Area::new::<square_meter>(2000.0);
         let pebble_bed_overall_htc = HeatTransfer::new::<watt_per_square_meter_kelvin>(400.0);
         let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(
@@ -292,7 +292,7 @@ impl FHRSimulatorApp {
 
         let keff = keff_six_factor.calc_keff();
 
-        let debug_settings = true;
+        let debug_settings = false;
         if debug_settings {
             // that settles thermal hydraulics
             dbg!(&(
@@ -302,6 +302,8 @@ impl FHRSimulatorApp {
                     fission_power_instantaneous,
                     fission_power_corrected_for_decay_heat,
                     heat_removal_from_pebble_bed
+
+
             ));
         }
 
