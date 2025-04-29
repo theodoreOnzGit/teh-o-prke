@@ -63,7 +63,7 @@ impl FHRDecayHeat {
 
         self.decay_heat_precursor1 = e_decay_t_plus_delta_t;
 
-        return -(e_decay_t_plus_delta_t - e_decay_t)/timestep;
+        return (e_decay_t_plus_delta_t - e_decay_t)/timestep;
 
         
 
@@ -88,7 +88,7 @@ impl FHRDecayHeat {
 
         self.decay_heat_precursor2 = e_decay_t_plus_delta_t;
 
-        return -(e_decay_t_plus_delta_t - e_decay_t)/timestep;
+        return (e_decay_t_plus_delta_t - e_decay_t)/timestep;
 
         
 
@@ -113,7 +113,7 @@ impl FHRDecayHeat {
 
         self.decay_heat_precursor3 = e_decay_t_plus_delta_t;
 
-        return -(e_decay_t_plus_delta_t - e_decay_t)/timestep;
+        return (e_decay_t_plus_delta_t - e_decay_t)/timestep;
 
         
 

@@ -31,7 +31,7 @@ impl FHRSimulatorApp {
         // default
         let mut prke_six_group :SixGroupPRKE = SixGroupPRKE::default();
 
-        let prke_timestep = Time::new::<second>(1.0e-3);
+        let prke_timestep = Time::new::<second>(5.0e-4);
         let reactor_volume = Volume::new::<cubic_meter>(0.5);
         let macroscopic_fission_xs = LinearNumberDensity::new::<per_meter>(1.0);
         let mut pebble_bed_th_struct = 
@@ -249,9 +249,9 @@ impl FHRSimulatorApp {
         // adjust fission power for decay heat 
         // fission power less decay heat = 1.0 - 0.04 - 0.04 - 0.02 = 0.9
         let mut fission_power_corrected_for_decay_heat = fission_power_instantaneous * 0.9;
-        fission_power_corrected_for_decay_heat += fhr_decay_heat.calc_decay_heat_power_1(prke_timestep);
-        fission_power_corrected_for_decay_heat += fhr_decay_heat.calc_decay_heat_power_2(prke_timestep);
-        fission_power_corrected_for_decay_heat += fhr_decay_heat.calc_decay_heat_power_3(prke_timestep);
+        fission_power_corrected_for_decay_heat -= fhr_decay_heat.calc_decay_heat_power_1(prke_timestep);
+        fission_power_corrected_for_decay_heat -= fhr_decay_heat.calc_decay_heat_power_2(prke_timestep);
+        fission_power_corrected_for_decay_heat -= fhr_decay_heat.calc_decay_heat_power_3(prke_timestep);
 
         // with the correct fission power now, we can 
         // calc temperature
