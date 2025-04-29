@@ -69,6 +69,13 @@ pub struct FHRState {
     pub right_downcomer_mid_temp_degc: f64,
     pub right_downcomer_lower_temp_degc: f64,
 
+    // for diagnostics
+    /// this displays reactor thermal power in megawatts,
+    /// including decay heat
+    pub reactor_power_megawatts: f64,
+    /// this displays reactor keff
+    pub keff: f64,
+
     // this is important for coupling between prke loop and thermal 
     // hydraulics loop
     pub prke_loop_accumulated_timestep_seconds: f64,
@@ -95,6 +102,8 @@ impl Default for FHRState {
             right_downcomer_lower_temp_degc: default_temperature_degc,
             prke_loop_accumulated_timestep_seconds: 0.0,
             prke_loop_accumulated_heat_removal_kilojoules: 0.0,
+            reactor_power_megawatts: 0.0,
+            keff: 0.0,
 
         }
     }

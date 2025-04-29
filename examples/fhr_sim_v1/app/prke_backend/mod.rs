@@ -8,6 +8,7 @@ use uom::si::energy::{kilojoule, megaelectronvolt};
 use uom::si::heat_transfer::watt_per_square_meter_kelvin;
 use uom::si::linear_number_density::per_meter;
 use uom::si::mass::kilogram;
+use uom::si::power::megawatt;
 use uom::si::time::{microsecond, second};
 use uom::si::velocity::meter_per_second;
 use uom::si::volume::cubic_meter;
@@ -259,7 +260,7 @@ impl FHRSimulatorApp {
         // These are arbitrary values, will adjust later
 
         let pebble_bed_mass = Mass::new::<kilogram>(8000.0);
-        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(2000.0);
+        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(100.0);
         let pebble_bed_overall_htc = HeatTransfer::new::<watt_per_square_meter_kelvin>(400.0);
         let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(
             fhr_state_ref.pebble_bed_coolant_temp_degc
@@ -290,7 +291,13 @@ impl FHRSimulatorApp {
         fhr_state_ref.prke_loop_accumulated_timestep_seconds
             += prke_timestep.get::<second>();
 
+        // reactor power 
+        //
+
         let keff = keff_six_factor.calc_keff();
+        fhr_state_ref.keff = keff.get::<ratio>();
+        fhr_state_ref.reactor_power_megawatts = 
+            fission_power_corrected_for_decay_heat.get::<megawatt>();
 
         let debug_settings = false;
         if debug_settings {
@@ -302,8 +309,6 @@ impl FHRSimulatorApp {
                     fission_power_instantaneous,
                     fission_power_corrected_for_decay_heat,
                     heat_removal_from_pebble_bed
-
-
             ));
         }
 
