@@ -172,12 +172,18 @@ impl FHRSimulatorApp {
         let right_cr_insertion_ratio = 
             Ratio::new::<ratio>(right_cr_insertion_frac as f64);
 
-        keff_six_factor.fuel_temp_feedback(fuel_temp, 
-            FHRSimulatorApp::fuel_temp_resonance_esc_feedback_linear);
+        keff_six_factor.fuel_temp_feedback(
+            fuel_temp, 
+            FHRSimulatorApp::fuel_temp_resonance_esc_feedback_linear
+        );
         keff_six_factor.control_rod_feedback(
-            left_cr_insertion_ratio, FHRSimulatorApp::fuel_utilisation_factor_chg_for_control_rod_polynomial);
+            left_cr_insertion_ratio, 
+            FHRSimulatorApp::fuel_utilisation_factor_chg_for_control_rod_polynomial
+        );
         keff_six_factor.control_rod_feedback(
-            right_cr_insertion_ratio, FHRSimulatorApp::fuel_utilisation_factor_chg_for_control_rod_polynomial);
+            right_cr_insertion_ratio, 
+            FHRSimulatorApp::fuel_utilisation_factor_chg_for_control_rod_polynomial
+        );
 
         // after feedback we should get the reactivity 
         let reactivity: Ratio = keff_six_factor.calc_rho();
@@ -252,8 +258,8 @@ impl FHRSimulatorApp {
         //
         // These are arbitrary values, will adjust later
 
-        let pebble_bed_mass = Mass::new::<kilogram>(50.0);
-        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(20000.0);
+        let pebble_bed_mass = Mass::new::<kilogram>(5000.0);
+        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(2000.0);
         let pebble_bed_overall_htc = HeatTransfer::new::<watt_per_square_meter_kelvin>(400.0);
         let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(
             fhr_state_ref.pebble_bed_coolant_temp_degc
@@ -286,15 +292,18 @@ impl FHRSimulatorApp {
 
         let keff = keff_six_factor.calc_keff();
 
-        //// that settles thermal hydraulics
-        //dbg!(&(
-        //        pebble_bed_fuel_temp,
-        //        keff,
-        //        reactivity,
-        //        fission_power_instantaneous,
-        //        fission_power_corrected_for_decay_heat,
-        //        heat_removal_from_pebble_bed
-        //        ));
+        let debug_settings = true;
+        if debug_settings {
+            // that settles thermal hydraulics
+            dbg!(&(
+                    pebble_bed_fuel_temp,
+                    keff,
+                    reactivity,
+                    fission_power_instantaneous,
+                    fission_power_corrected_for_decay_heat,
+                    heat_removal_from_pebble_bed
+            ));
+        }
 
 
     }
