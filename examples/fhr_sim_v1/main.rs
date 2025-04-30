@@ -24,7 +24,7 @@ pub fn fhr_simulator_v1() -> eframe::Result<()> {
         ..Default::default()
     };
     eframe::run_native(
-        "FHR Simulator V1 Powered by TUAS and teh-o-prke",
+        "FHR Core / Primary Simulator V1 Powered by TUAS and teh-o-prke",
         native_options,
         Box::new(|cc| {
             // image support,
