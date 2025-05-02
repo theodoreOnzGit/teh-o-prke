@@ -1,4 +1,6 @@
+use uom::si::area::barn;
 use uom::si::frequency::hertz;
+use uom::si::velocity::meter_per_second;
 use uom::ConstZero;
 use uom::si::{f64::*, ratio::ratio};
 
@@ -110,6 +112,12 @@ impl Xenon135Poisoning {
 
     }
 
+    /// tentatively got from AI, but need to cite...
+    #[inline]
+    pub fn xe135_thermal_abs_xs() -> Area {
+        Area::new::<barn>(2.65e6)
+    }
+
 
     /// (dX/dt) = gamma_X * fission rate + lambda_I * I -  lambda_X * X - sigma_aX * X *
     /// thermal_flux
@@ -141,11 +149,31 @@ impl Xenon135Poisoning {
         };
 
         let xe135_addition_rate_from_fission: VolumetricNumberRate = 
-            (gamma_x * fission_rate).into();;
+            (gamma_x * fission_rate).into();
 
         let xe135_conc_last_timestep = self.xenon_135_concentration;
 
-        todo!()
+        let mut rhs: VolumetricNumberDensity = xe135_conc_last_timestep;
+        rhs += VolumetricNumberDensity::into((xe135_addition_rate_from_iodine * timestep).into());
+        rhs += VolumetricNumberDensity::into((xe135_addition_rate_from_fission * timestep).into());
+
+        // neutron flux  = n(t) * v
+        let thermal_neutron_flux = 
+            thermal_neutron_conc * Velocity::new::<meter_per_second>(2200.0);
+
+        let micro_xs_abs_xe_135: Area = Self::xe135_thermal_abs_xs();
+
+        let denominator = 
+            Ratio::new::<ratio>(1.0) 
+            + lambda_x * timestep
+            + thermal_neutron_flux * micro_xs_abs_xe_135 * timestep;
+
+        let xe_conc_next_timestep: VolumetricNumberDensity = 
+            (rhs/denominator).into();
+
+        self.xenon_135_concentration = xe_conc_next_timestep;
+
+        return xe_conc_next_timestep;
     }
 
 }
