@@ -1,4 +1,4 @@
-use std::{ops::Deref, time::Duration};
+use std::time::Duration;
 
 use egui::{vec2, Pos2, Rect};
 use local_widgets_and_buttons::fhr_reactor_widget::FHRReactorWidget;
@@ -27,59 +27,7 @@ impl eframe::App for FHRSimulatorApp {
         });
 
         egui::SidePanel::right("Supplementary Info").show(ctx, |ui|{
-            ui.heading("Fluoride Salt Cooled High Temperature Reactor (FHR) Controls");
-            let mut fhr_state_ptr = self.fhr_state.lock().unwrap();
-
-            let left_cr_slider = egui::Slider::new(
-                &mut fhr_state_ptr.left_cr_insertion_frac, 
-                0.0000..=1.0)
-                .logarithmic(false)
-                .text("Left Control Rod insertion Fraction")
-                .drag_value_speed(0.001);
-
-            ui.add(left_cr_slider);
-
-            let right_cr_slider = egui::Slider::new(
-                &mut fhr_state_ptr.right_cr_insertion_frac, 
-                0.0000..=1.0)
-                .logarithmic(false)
-                .text("Right Control Rod insertion Fraction")
-                .drag_value_speed(0.001);
-
-            ui.add(right_cr_slider);
-
-            // cloning the entire fhr state for diagnostics
-            let fhr_state_clone: FHRState = fhr_state_ptr.deref().clone();
-            //
-            drop(fhr_state_ptr);
-            ui.heading("FHR Diagnostics");
-
-            let pebble_core_temp_degc = 
-                fhr_state_clone.pebble_core_temp_degc;
-
-            let pebble_bed_coolant_temp_degc = 
-                fhr_state_clone.pebble_bed_coolant_temp_degc;
-
-            // need pebble bed power and/or heat removal
-            // and keff
-            let keff = fhr_state_clone.keff;
-            let reactor_power_megawatts = 
-                fhr_state_clone.reactor_power_megawatts;
-
-            ui.label("Reactor Power (MW-thermal):");
-            ui.label(((1000.0*reactor_power_megawatts).round() / 1000.0).to_string());
-
-            ui.label("Fuel Temperature Pebble Core/TRISO (deg C):");
-            ui.label(((10.0*pebble_core_temp_degc).round() / 10.0).to_string());
-            ui.label("Pebble Bed Coolant Temp (deg C):");
-            ui.label(((10.0*pebble_bed_coolant_temp_degc).round() / 10.0).to_string());
-            ui.label("k_eff");
-            ui.label(((1.0e6*keff).round() / 1.0e6).to_string());
-
-            
-            // then temperature scale 
-
-            // then acknowledgements/citing
+            self.side_panel(ui);
 
 
 
@@ -160,7 +108,7 @@ impl eframe::App for FHRSimulatorApp {
                         vec2(reactor_rectangle.width(), reactor_rectangle.height());
 
                     let min_temp = ThermodynamicTemperature::new::<degree_celsius>(450.0);
-                    let max_temp = ThermodynamicTemperature::new::<degree_celsius>(800.0);
+                    let max_temp = ThermodynamicTemperature::new::<degree_celsius>(1000.0);
                     let pebble_core_temp = ThermodynamicTemperature::new::<degree_celsius>(
                         fhr_state_clone.pebble_core_temp_degc
                     );
@@ -273,3 +221,5 @@ fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
 }
 
 pub mod local_widgets_and_buttons;
+
+pub mod side_panel;
