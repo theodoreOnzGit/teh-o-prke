@@ -189,6 +189,7 @@ impl FHRSimulatorApp {
         // after feedback we should get the reactivity 
         let reactivity: Ratio = keff_six_factor.calc_rho();
         let neutron_generation_time = Time::new::<second>(2.31e-4);
+        let mean_neutron_time = neutron_generation_time/keff_six_factor.calc_keff();
         let background_source_rate = 
             VolumetricNumberRate::new::<per_cubic_meter_second>(5.0);
 
@@ -198,7 +199,7 @@ impl FHRSimulatorApp {
             prke_six_group.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
                 prke_timestep, 
                 reactivity, 
-                neutron_generation_time, 
+                mean_neutron_time, 
                 background_source_rate
             );
 
