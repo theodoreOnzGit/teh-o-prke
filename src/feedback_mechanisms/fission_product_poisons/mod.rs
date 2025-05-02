@@ -82,7 +82,7 @@ impl Xenon135Poisoning {
     /// (I ^(t + delta t) + delta t * lambda_I I^(t + delta t)) = I^t + delta t * gamma_I * fission_rate 
     /// I ^(t + delta t)(1 + delta t * lambda_I ) = I^t + delta t * gamma_I * fission_rate 
     #[inline]
-    pub fn calc_iodine_135_and_return_conc(&mut self,
+    fn calc_iodine_135_and_return_conc(&mut self,
         timestep: Time,
         fission_rate: VolumetricNumberRate,
         fissioning_nuclide: FissioningNuclideType) -> VolumetricNumberDensity {
@@ -108,6 +108,44 @@ impl Xenon135Poisoning {
 
         return new_iodine_conc;
 
+    }
+
+
+    /// (dX/dt) = gamma_X * fission rate + lambda_I * I -  lambda_X * X - sigma_aX * X *
+    /// thermal_flux
+    #[inline]
+    pub fn calc_xe_135_and_return_conc(
+        &mut self,
+        timestep: Time,
+        fission_rate: VolumetricNumberRate,
+        fissioning_nuclide: FissioningNuclideType,
+        thermal_neutron_conc: VolumetricNumberDensity,
+        ) -> VolumetricNumberDensity {
+
+        let lambda_i = Self::iodine_135_decay_const();
+        let lambda_x = Self::xe_135_decay_const();
+
+        let iodine_conc = self.calc_iodine_135_and_return_conc(
+            timestep, 
+            fission_rate, 
+            fissioning_nuclide
+        );
+
+        let xe135_addition_rate_from_iodine: VolumetricNumberRate = 
+            (iodine_conc * lambda_i).into();
+
+        let gamma_x = match fissioning_nuclide {
+            FissioningNuclideType::U233 => Self::fp_yield_xe_135_from_u233_thermal_fission(),
+            FissioningNuclideType::U235 => Self::fp_yield_xe_135_from_u235_thermal_fission(),
+            FissioningNuclideType::Pu239 => Self::fp_yield_xe_135_from_pu239_thermal_fission(),
+        };
+
+        let xe135_addition_rate_from_fission: VolumetricNumberRate = 
+            (gamma_x * fission_rate).into();;
+
+        let xe135_conc_last_timestep = self.xenon_135_concentration;
+
+        todo!()
     }
 
 }
