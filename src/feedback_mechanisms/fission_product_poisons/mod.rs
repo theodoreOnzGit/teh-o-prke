@@ -121,6 +121,24 @@ impl Xenon135Poisoning {
 
     /// (dX/dt) = gamma_X * fission rate + lambda_I * I -  lambda_X * X - sigma_aX * X *
     /// thermal_flux
+    ///
+    /// upon discretisation (implicit)
+    ///
+    /// (X^(t + delta t) - X^t)/(delta t) = gamma_X * fission rate + lambda_I * I 
+    /// -  lambda_X * X^(t + delta t) 
+    /// - sigma_aX *  thermal_flux * X^(t + delta t)
+    ///
+    /// (X^(t + delta t) - X^t) = 
+    /// delta t * gamma_X * fission rate 
+    /// + delta t * lambda_I * I 
+    /// -  delta t *lambda_X * X^(t + delta t)
+    /// - delta t * sigma_aX *  thermal_flux * X^(t + delta t)
+    ///
+    ///
+    /// (X^(t + delta t)) (1 +delta t *lambda_X + delta t * sigma_aX *  thermal_flux) = 
+    /// delta t * gamma_X * fission rate 
+    /// + delta t * lambda_I * I 
+    /// + X^t
     #[inline]
     pub fn calc_xe_135_and_return_conc(
         &mut self,
