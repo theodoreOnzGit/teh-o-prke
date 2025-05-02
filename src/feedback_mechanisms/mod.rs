@@ -302,3 +302,8 @@ impl Default for SixFactorFormulaFeedback {
         }
     }
 }
+
+/// fission product poisoning 
+/// includes but not limited to xenon-iodine 135 poisoning
+/// 
+pub mod fission_product_poisons;
