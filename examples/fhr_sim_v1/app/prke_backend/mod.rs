@@ -188,7 +188,7 @@ impl FHRSimulatorApp {
 
         // after feedback we should get the reactivity 
         let reactivity: Ratio = keff_six_factor.calc_rho();
-        let neutron_generation_time = Time::new::<second>(1.0e-4);
+        let neutron_generation_time = Time::new::<second>(2.31e-4);
         let background_source_rate = 
             VolumetricNumberRate::new::<per_cubic_meter_second>(5.0);
 
