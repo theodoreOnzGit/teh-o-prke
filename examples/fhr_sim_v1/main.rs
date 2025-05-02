@@ -75,6 +75,8 @@ pub struct FHRState {
     pub reactor_power_megawatts: f64,
     /// this displays reactor keff
     pub keff: f64,
+    /// this displays reactivity in dollars 
+    pub reactivity_dollars: f64,
 
     // this is important for coupling between prke loop and thermal 
     // hydraulics loop
@@ -104,6 +106,7 @@ impl Default for FHRState {
             prke_loop_accumulated_heat_removal_kilojoules: 0.0,
             reactor_power_megawatts: 0.0,
             keff: 0.0,
+            reactivity_dollars: 0.0,
 
         }
     }

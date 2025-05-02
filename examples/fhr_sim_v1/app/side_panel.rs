@@ -61,6 +61,10 @@ impl FHRSimulatorApp {
         ui.label("k_eff");
         ui.label(((1.0e6*keff).round() / 1.0e6).to_string());
 
+        let reactivity_dollars = fhr_state_clone.reactivity_dollars;
+        ui.label("Reactivity ($ dollars)");
+        ui.label(((1.0e3*reactivity_dollars).round() / 1.0e3).to_string());
+
 
         // then temperature scale 
 

@@ -300,6 +300,13 @@ impl FHRSimulatorApp {
         fhr_state_ref.reactor_power_megawatts = 
             fission_power_corrected_for_decay_heat.get::<megawatt>();
 
+        // reactivity in dollars 
+        let beta_delayed_frac_total = prke_six_group.get_total_delayed_fraction();
+        let reactivity_dollars: f64 
+            = (reactivity/beta_delayed_frac_total).get::<ratio>();
+
+        fhr_state_ref.reactivity_dollars = reactivity_dollars;
+
         let debug_settings = false;
         if debug_settings {
             // that settles thermal hydraulics
