@@ -1,5 +1,5 @@
 use std::f64::consts::LN_2;
-use uom::si::time::{day, hour};
+use uom::si::time::{day, hour, second, year};
 use uom::si::{f64::*, ratio::ratio};
 use uom::ConstZero;
 /// this struct helps to manage decay heat calculations
@@ -274,13 +274,13 @@ impl Default for DecayHeat {
             decay_heat_precursor3: Energy::ZERO, 
             decay_heat_precursor3_half_life: Time::new::<day>(30.0),
             decay_heat_precursor4: Energy::ZERO, 
-            decay_heat_precursor4_half_life: Time::new::<day>(40.0),
+            decay_heat_precursor4_half_life: Time::new::<year>(1.0),
             decay_heat_precursor5: Energy::ZERO, 
-            decay_heat_precursor5_half_life: Time::new::<day>(50.0),
+            decay_heat_precursor5_half_life: Time::new::<year>(30.0),
             decay_heat_precursor6: Energy::ZERO, 
-            decay_heat_precursor6_half_life: Time::new::<day>(60.0),
+            decay_heat_precursor6_half_life: Time::new::<year>(1000.0),
             decay_heat_precursor7: Energy::ZERO, 
-            decay_heat_precursor7_half_life: Time::new::<day>(70.0),
+            decay_heat_precursor7_half_life: Time::new::<second>(1.0),
         }
     }
 }
