@@ -2,6 +2,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::{Duration, SystemTime};
 
+use teh_o_prke::decay_heat::DecayHeat;
 use teh_o_prke::{feedback_mechanisms::SixFactorFormulaFeedback, zero_power_prke::six_group::SixGroupPRKE};
 use uom::si::area::square_meter;
 use uom::si::energy::{kilojoule, megaelectronvolt};
@@ -39,7 +40,7 @@ impl FHRSimulatorApp {
         let fhr_state_clone = fhr_state.clone();
 
         // then decay heat struct 
-        let mut fhr_decay_heat = FHRDecayHeat::default();
+        let mut fhr_decay_heat = DecayHeat::default();
 
 
         // now, time controls 
@@ -148,7 +149,7 @@ impl FHRSimulatorApp {
         prke_timestep: Time,
         reactor_volume: Volume,
         macroscopic_fission_xs: LinearNumberDensity,
-        fhr_decay_heat: &mut FHRDecayHeat,
+        fhr_decay_heat: &mut DecayHeat,
         pebble_bed_th_struct: &mut PebbleBedThermalHydraulics,
         ){
 
@@ -400,8 +401,6 @@ impl FHRSimulatorApp {
     
 }
 
-pub mod decay_heat;
-pub use decay_heat::*;
 
 
 pub mod pebble_bed_thermal_hydraulics;
