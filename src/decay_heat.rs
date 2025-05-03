@@ -20,6 +20,14 @@ pub struct DecayHeat {
     pub decay_heat_precursor2_half_life: Time,
     decay_heat_precursor3: Energy,
     pub decay_heat_precursor3_half_life: Time,
+    decay_heat_precursor4: Energy,
+    pub decay_heat_precursor4_half_life: Time,
+    decay_heat_precursor5: Energy,
+    pub decay_heat_precursor5_half_life: Time,
+    decay_heat_precursor6: Energy,
+    pub decay_heat_precursor6_half_life: Time,
+    decay_heat_precursor7: Energy,
+    pub decay_heat_precursor7_half_life: Time,
 }
 
 impl DecayHeat {
@@ -40,6 +48,30 @@ impl DecayHeat {
         timestep: Time){
 
         self.decay_heat_precursor3 += decay_precursor_power * timestep;
+    }
+    pub fn add_decay_heat_precursor4(&mut self, 
+        decay_precursor_power: Power,
+        timestep: Time){
+
+        self.decay_heat_precursor4 += decay_precursor_power * timestep;
+    }
+    pub fn add_decay_heat_precursor5(&mut self, 
+        decay_precursor_power: Power,
+        timestep: Time){
+
+        self.decay_heat_precursor5 += decay_precursor_power * timestep;
+    }
+    pub fn add_decay_heat_precursor6(&mut self, 
+        decay_precursor_power: Power,
+        timestep: Time){
+
+        self.decay_heat_precursor6 += decay_precursor_power * timestep;
+    }
+    pub fn add_decay_heat_precursor7(&mut self, 
+        decay_precursor_power: Power,
+        timestep: Time){
+
+        self.decay_heat_precursor7 += decay_precursor_power * timestep;
     }
 
 
@@ -118,6 +150,106 @@ impl DecayHeat {
         
 
     }
+    /// basically 
+    ///
+    /// (E_decay^(t + Delta t) - E_decay^t)/ Delta t = - lambda_i E_decay^(t + Delta t)
+    pub fn calc_decay_heat_power_4(&mut self,
+        timestep: Time) -> Power {
+
+        let decay_constant: Frequency = 
+            LN_2/self.decay_heat_precursor4_half_life;
+        // (E_decay^(t + Delta t) - E_decay^t)/ Delta t = - lambda_i E_decay^(t + Delta t)
+        //
+        // E_decay^(t + Delta t) (1 + lambda_i * Delta t) = E_decay^t
+        //
+
+        let e_decay_t = self.decay_heat_precursor4;
+        let coeff = Ratio::new::<ratio>(1.0) + decay_constant * timestep;
+
+        let e_decay_t_plus_delta_t = e_decay_t / coeff;
+
+        self.decay_heat_precursor4 = e_decay_t_plus_delta_t;
+
+        return (e_decay_t_plus_delta_t - e_decay_t)/timestep;
+
+        
+
+    }
+    /// basically 
+    ///
+    /// (E_decay^(t + Delta t) - E_decay^t)/ Delta t = - lambda_i E_decay^(t + Delta t)
+    pub fn calc_decay_heat_power_5(&mut self,
+        timestep: Time) -> Power {
+
+        let decay_constant: Frequency = 
+            LN_2/self.decay_heat_precursor5_half_life;
+        // (E_decay^(t + Delta t) - E_decay^t)/ Delta t = - lambda_i E_decay^(t + Delta t)
+        //
+        // E_decay^(t + Delta t) (1 + lambda_i * Delta t) = E_decay^t
+        //
+
+        let e_decay_t = self.decay_heat_precursor5;
+        let coeff = Ratio::new::<ratio>(1.0) + decay_constant * timestep;
+
+        let e_decay_t_plus_delta_t = e_decay_t / coeff;
+
+        self.decay_heat_precursor5 = e_decay_t_plus_delta_t;
+
+        return (e_decay_t_plus_delta_t - e_decay_t)/timestep;
+
+        
+
+    }
+    /// basically 
+    ///
+    /// (E_decay^(t + Delta t) - E_decay^t)/ Delta t = - lambda_i E_decay^(t + Delta t)
+    pub fn calc_decay_heat_power_6(&mut self,
+        timestep: Time) -> Power {
+
+        let decay_constant: Frequency = 
+            LN_2/self.decay_heat_precursor6_half_life;
+        // (E_decay^(t + Delta t) - E_decay^t)/ Delta t = - lambda_i E_decay^(t + Delta t)
+        //
+        // E_decay^(t + Delta t) (1 + lambda_i * Delta t) = E_decay^t
+        //
+
+        let e_decay_t = self.decay_heat_precursor6;
+        let coeff = Ratio::new::<ratio>(1.0) + decay_constant * timestep;
+
+        let e_decay_t_plus_delta_t = e_decay_t / coeff;
+
+        self.decay_heat_precursor6 = e_decay_t_plus_delta_t;
+
+        return (e_decay_t_plus_delta_t - e_decay_t)/timestep;
+
+        
+
+    }
+    /// basically 
+    ///
+    /// (E_decay^(t + Delta t) - E_decay^t)/ Delta t = - lambda_i E_decay^(t + Delta t)
+    pub fn calc_decay_heat_power_7(&mut self,
+        timestep: Time) -> Power {
+
+        let decay_constant: Frequency = 
+            LN_2/self.decay_heat_precursor7_half_life;
+        // (E_decay^(t + Delta t) - E_decay^t)/ Delta t = - lambda_i E_decay^(t + Delta t)
+        //
+        // E_decay^(t + Delta t) (1 + lambda_i * Delta t) = E_decay^t
+        //
+
+        let e_decay_t = self.decay_heat_precursor7;
+        let coeff = Ratio::new::<ratio>(1.0) + decay_constant * timestep;
+
+        let e_decay_t_plus_delta_t = e_decay_t / coeff;
+
+        self.decay_heat_precursor7 = e_decay_t_plus_delta_t;
+
+        return (e_decay_t_plus_delta_t - e_decay_t)/timestep;
+
+        
+
+    }
 
 }
 
@@ -141,6 +273,14 @@ impl Default for DecayHeat {
             decay_heat_precursor2_half_life: Time::new::<hour>(8.0), 
             decay_heat_precursor3: Energy::ZERO, 
             decay_heat_precursor3_half_life: Time::new::<day>(30.0),
+            decay_heat_precursor4: Energy::ZERO, 
+            decay_heat_precursor4_half_life: Time::new::<day>(40.0),
+            decay_heat_precursor5: Energy::ZERO, 
+            decay_heat_precursor5_half_life: Time::new::<day>(50.0),
+            decay_heat_precursor6: Energy::ZERO, 
+            decay_heat_precursor6_half_life: Time::new::<day>(60.0),
+            decay_heat_precursor7: Energy::ZERO, 
+            decay_heat_precursor7_half_life: Time::new::<day>(70.0),
         }
     }
 }
