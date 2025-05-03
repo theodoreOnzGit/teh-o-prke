@@ -206,10 +206,10 @@ impl SixFactorFormulaFeedback {
     /// Xenon, Samarium or some other poison
     pub fn reactor_poison_feedback(&mut self,
         reactor_poison_concentration: MassConcentration,
-        ctrl_rod_feedback: fn(MassConcentration) -> Ratio,
+        reactor_poison_conc_feedback: fn(MassConcentration) -> Ratio,
         ){
 
-        let f_chg = ctrl_rod_feedback(reactor_poison_concentration);
+        let f_chg = reactor_poison_conc_feedback(reactor_poison_concentration);
         self.f *= f_chg.get::<ratio>();
 
     }
@@ -224,10 +224,10 @@ impl SixFactorFormulaFeedback {
     /// Xenon, Samarium or some other poison
     pub fn burnable_absorber_posion_feedback(&mut self,
         burnable_poison_concentration: MassConcentration,
-        ctrl_rod_feedback: fn(MassConcentration) -> Ratio,
+        poison_conc_feedback: fn(MassConcentration) -> Ratio,
         ){
 
-        let f_chg = ctrl_rod_feedback(burnable_poison_concentration);
+        let f_chg = poison_conc_feedback(burnable_poison_concentration);
         self.f *= f_chg.get::<ratio>();
 
     }
@@ -305,3 +305,4 @@ impl Default for SixFactorFormulaFeedback {
 /// includes but not limited to xenon-iodine 135 poisoning
 /// 
 pub mod fission_product_poisons;
+
