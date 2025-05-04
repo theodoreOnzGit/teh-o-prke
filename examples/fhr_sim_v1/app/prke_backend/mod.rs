@@ -3,6 +3,8 @@ use std::thread;
 use std::time::{Duration, SystemTime};
 
 use teh_o_prke::decay_heat::DecayHeat;
+use teh_o_prke::feedback_mechanisms::fission_product_poisons::Xenon135Poisoning;
+use teh_o_prke::zero_power_prke::six_group::FissioningNuclideType;
 use teh_o_prke::{feedback_mechanisms::SixFactorFormulaFeedback, zero_power_prke::six_group::SixGroupPRKE};
 use uom::si::area::square_meter;
 use uom::si::energy::{kilojoule, megaelectronvolt};
@@ -42,6 +44,9 @@ impl FHRSimulatorApp {
         // then decay heat struct 
         let mut fhr_decay_heat = DecayHeat::default();
 
+        // then xenon poisoning struct 
+        let mut fhr_xe135_poisoning = Xenon135Poisoning::default();
+
 
         // now, time controls 
         let loop_time = SystemTime::now();
@@ -71,6 +76,8 @@ impl FHRSimulatorApp {
             keff_six_factor.p = Ratio::new::<ratio>(0.8);
             // thermal utilisation 
             keff_six_factor.f = Ratio::new::<ratio>(0.9);
+
+            
             // fast fission 
             keff_six_factor.epsilon = Ratio::new::<ratio>(1.03);
             // keff total is about 1.0278
@@ -88,7 +95,10 @@ impl FHRSimulatorApp {
                 macroscopic_fission_xs,
                 &mut fhr_decay_heat,
                 &mut pebble_bed_th_struct,
+                &mut fhr_xe135_poisoning,
             );
+
+
 
             current_simulation_time += prke_timestep;
 
@@ -151,6 +161,7 @@ impl FHRSimulatorApp {
         macroscopic_fission_xs: LinearNumberDensity,
         fhr_decay_heat: &mut DecayHeat,
         pebble_bed_th_struct: &mut PebbleBedThermalHydraulics,
+        fhr_xe135_poisoning: &mut Xenon135Poisoning,
         ){
 
         // within each timestep, I need to obtain feedback
@@ -186,6 +197,12 @@ impl FHRSimulatorApp {
             right_cr_insertion_ratio, 
             FHRSimulatorApp::fuel_utilisation_factor_chg_for_control_rod_polynomial
         );
+
+        // next xenon poisoning feedback
+        //
+        //
+        // adjust for xenon poisoning
+        let xe135_mass_conc = fhr_xe135_poisoning.get_current_xe135_conc();
 
         // after feedback we should get the reactivity 
         let reactivity: Ratio = keff_six_factor.calc_rho();
@@ -228,6 +245,16 @@ impl FHRSimulatorApp {
         // should be a frequency
         let fission_rate: Frequency  = 
             fission_rate_density * reactor_volume;
+
+        // note: it's convenient here to calc xe135 feedback 
+
+        let fissioning_nuclide = FissioningNuclideType::U235;
+        let _xe135_conc_next_timestep = 
+            fhr_xe135_poisoning.calc_xe_135_and_return_num_density(
+                prke_timestep, 
+                fission_rate_density, 
+                fissioning_nuclide, 
+                current_neutron_pop_density);
 
         let power_per_fission = 
             Energy::new::<megaelectronvolt>(200.0);

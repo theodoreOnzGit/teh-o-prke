@@ -144,7 +144,7 @@ impl Xenon135Poisoning {
     /// + delta t * lambda_I * I 
     /// + X^t
     #[inline]
-    pub fn calc_xe_135_and_return_conc(
+    pub fn calc_xe_135_and_return_num_density(
         &mut self,
         timestep: Time,
         fission_rate: VolumetricNumberRate,
