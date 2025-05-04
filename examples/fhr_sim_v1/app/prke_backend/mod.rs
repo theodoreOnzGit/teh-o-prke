@@ -344,14 +344,14 @@ impl FHRSimulatorApp {
         fhr_state_ref.reactivity_dollars = reactivity_dollars;
 
         let xenon135_feedback_dollars_approx = 
+            (thermal_utilisation_feedback_fractional_chg_from_xenon-1.0)/
             thermal_utilisation_feedback_fractional_chg_from_xenon/
             beta_delayed_frac_total;
 
         fhr_state_ref.xenon135_feedback_dollars = 
             xenon135_feedback_dollars_approx.get::<ratio>();
 
-        fhr_state_ref.xenon135_feedback_dollars = 
-            xenon135_feedback_dollars_approx.get::<ratio>();
+
         let debug_settings = false;
         if debug_settings {
             // that settles thermal hydraulics
