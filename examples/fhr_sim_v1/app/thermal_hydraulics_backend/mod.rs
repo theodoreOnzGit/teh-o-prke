@@ -105,6 +105,33 @@ impl FHRSimulatorApp {
             thermal_hydraulics_timestep: Time,
         ){
 
+            // over here, I will have four parallel branches in the 
+            // main loop 
+            //
+            // two deal with downcomer
+            // one with the main core 
+            // and the last one is the main outside loop with 
+            // the pump
+            //
+            // the left and right downcomer can be represented with  
+            // one vertical pipe each for simplicity 
+            // the core part can be represented with 
+            // one vertical pipe too 
+            //
+            // the outside loop can be represented with two  
+            // horizontal pipes and one vertical pipe 
+            //
+            // there will be no DRACS loop, as heat is removed via 
+            // radiation. 
+            // In the ARVACS system for KP-FHR it is removed to ambient 
+            // surroundings through use of radiant heat transfer.
+            //
+            // these then transfer heat to thin thimbles containing water 
+            // which boils
+            //
+            // this can be heat transferred to some outside boundary condition
+            //
+            // now, just like CIET, we have a top and bottom mixing node
         }
 
     }
