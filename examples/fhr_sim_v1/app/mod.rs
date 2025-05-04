@@ -45,6 +45,7 @@ impl eframe::App for FHRSimulatorApp {
             let mut right_control_rod_insertion_frac 
                 = 0.0;
 
+            ui.separator();
             egui::ScrollArea::both()
                 .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::AlwaysVisible)
                 .drag_to_scroll(true)
@@ -60,7 +61,6 @@ impl eframe::App for FHRSimulatorApp {
                     // images, line segments etc.
                     // obtain lock first 
 
-                    ui.separator();
                     // quickly clone the fhr state and drop ptr asap 
                     // just to read
                     let fhr_state_ptr = self.fhr_state.lock().unwrap();
@@ -256,3 +256,5 @@ fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
 pub mod local_widgets_and_buttons;
 
 pub mod side_panel;
+
+pub mod panel_enum;
