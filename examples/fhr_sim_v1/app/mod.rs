@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use egui::{vec2, Pos2, Rect};
-use local_widgets_and_buttons::fhr_reactor_widget::FHRReactorWidget;
+use local_widgets_and_buttons::{fhr_reactor_widget::FHRReactorWidget, pipes::SinglePipe};
 use uom::si::f64::*;
 use uom::si::thermodynamic_temperature::degree_celsius;
 
@@ -168,6 +168,36 @@ impl eframe::App for FHRSimulatorApp {
                     fhr_widget.set_right_cr_frac(right_control_rod_insertion_frac);
 
                     ui.put(reactor_rectangle, fhr_widget);
+
+                    let temp = right_downcomer_lower_temp;
+
+                    let pipe_size = 
+                        vec2(100.0, 100.0);
+
+                    let pipe_1_start = 
+                        vec2(
+                            0.5 * reactor_rectangle.left() + 0.5 * reactor_rectangle.right(),
+                            reactor_rectangle.bottom() - reactor_rectangle.height() * 0.28,
+                        );
+                    let pipe_2_start = 
+                        vec2(
+                            pipe_1_start.x + pipe_size.x,
+                            pipe_1_start.y + pipe_size.y,
+                        );
+                    let pipe_1_rect = 
+                        egui::Rect {
+                            min: Pos2 { x: 0.0, y: 0.0 } + pipe_1_start,
+                            max: Pos2 { x: 0.0, y: 0.0 } + pipe_2_start,
+                        };
+
+
+                    let pipe_1_widget = SinglePipe::new(
+                        pipe_size, 
+                        min_temp, 
+                        max_temp, 
+                        temp
+                    );
+                    ui.put(pipe_1_rect, pipe_1_widget);
 
                     ui.separator();
                 });
