@@ -2,6 +2,14 @@ use crate::FHRSimulatorApp;
 
 use egui::{Color32, Pos2, Rect, Ui, Widget};
 
+pub mod reactor_art;
+
+pub mod fhr_reactor_widget;
+
+pub mod pipes;
+
+pub mod pumps;
+
 
 impl FHRSimulatorApp {
     // places a widget at some area
@@ -129,7 +137,3 @@ pub fn hot_to_cold_colour_mark_1(hotness: f32) -> Color32 {
         green as u8, 
         blue as u8);
 }
-
-pub mod reactor_art;
-
-pub mod fhr_reactor_widget;
