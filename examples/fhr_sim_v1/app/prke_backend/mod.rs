@@ -203,11 +203,13 @@ impl FHRSimulatorApp {
         //
         // adjust for xenon poisoning
         let xe135_mass_conc = fhr_xe135_poisoning.get_current_xe135_conc();
+        let thermal_utilisation_feedback_fractional_chg_from_xenon: f64 = 
+            Xenon135Poisoning::simplified_poison_concentration_feedback(
+                xe135_mass_conc
+            ).get::<ratio>();
 
-        keff_six_factor.reactor_poison_feedback(
-            xe135_mass_conc, 
-            Xenon135Poisoning::simplified_poison_concentration_feedback,
-        );
+        keff_six_factor.f *= 
+            thermal_utilisation_feedback_fractional_chg_from_xenon;
 
 
         // after feedback we should get the reactivity 
@@ -341,6 +343,15 @@ impl FHRSimulatorApp {
 
         fhr_state_ref.reactivity_dollars = reactivity_dollars;
 
+        let xenon135_feedback_dollars_approx = 
+            thermal_utilisation_feedback_fractional_chg_from_xenon/
+            beta_delayed_frac_total;
+
+        fhr_state_ref.xenon135_feedback_dollars = 
+            xenon135_feedback_dollars_approx.get::<ratio>();
+
+        fhr_state_ref.xenon135_feedback_dollars = 
+            xenon135_feedback_dollars_approx.get::<ratio>();
         let debug_settings = false;
         if debug_settings {
             // that settles thermal hydraulics

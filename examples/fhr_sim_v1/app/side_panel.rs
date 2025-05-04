@@ -65,6 +65,9 @@ impl FHRSimulatorApp {
         ui.label("Reactivity ($ dollars)");
         ui.label(((1.0e3*reactivity_dollars).round() / 1.0e3).to_string());
 
+        let xe135_feedback_dollars = fhr_state_clone.xenon135_feedback_dollars;
+        ui.label("Xe135 feedback ($ dollars)");
+        ui.label(((1.0e3*xe135_feedback_dollars).round() / 1.0e3).to_string());
 
         // then temperature scale 
 
