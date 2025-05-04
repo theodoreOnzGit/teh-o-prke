@@ -204,6 +204,12 @@ impl FHRSimulatorApp {
         // adjust for xenon poisoning
         let xe135_mass_conc = fhr_xe135_poisoning.get_current_xe135_conc();
 
+        keff_six_factor.reactor_poison_feedback(
+            xe135_mass_conc, 
+            Xenon135Poisoning::simplified_poison_concentration_feedback,
+        );
+
+
         // after feedback we should get the reactivity 
         let reactivity: Ratio = keff_six_factor.calc_rho();
         let neutron_generation_time = Time::new::<second>(2.31e-4);
