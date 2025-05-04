@@ -13,6 +13,7 @@ pub struct SinglePipe {
 
 impl SinglePipe {
 
+    /// still need to correct for minimum size
     pub fn new(size: Vec2,
         min_temp: ThermodynamicTemperature,
         max_temp: ThermodynamicTemperature,
