@@ -112,6 +112,10 @@ impl FHRSimulatorApp {
 
             // now update the ciet state 
             let loop_time_end = loop_time.elapsed().unwrap();
+            let prke_timestep_microseconds = prke_timestep.get::<microsecond>();
+
+
+
             let time_taken_for_calculation_loop_microseconds: f64 = 
                 (loop_time_end - loop_time_start)
                 .as_micros() as f64;
