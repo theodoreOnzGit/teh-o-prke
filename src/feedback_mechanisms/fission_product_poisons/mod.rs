@@ -12,8 +12,8 @@ use crate::zero_power_prke::six_group::FissioningNuclideType;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Xenon135Poisoning {
-    pub iodine_135_concentration: VolumetricNumberDensity,
-    pub xenon_135_concentration: VolumetricNumberDensity,
+    pub iodine_135_num_density: VolumetricNumberDensity,
+    pub xenon_135_num_density: VolumetricNumberDensity,
 }
 
 impl Xenon135Poisoning {
@@ -99,7 +99,7 @@ impl Xenon135Poisoning {
             FissioningNuclideType::Pu239 => Self::fp_yield_iodine_135_from_pu239_thermal_fission(),
         };
 
-        let current_iodine_conc = self.iodine_135_concentration;
+        let current_iodine_conc = self.iodine_135_num_density;
         let additional_iodine_conc: VolumetricNumberDensity 
             = (timestep * fission_rate * gamma_i).into();
 
@@ -110,7 +110,7 @@ impl Xenon135Poisoning {
                 rhs / (Ratio::new::<ratio>(1.0) + timestep * Self::iodine_135_decay_const())
             ).into();
 
-        self.iodine_135_concentration = new_iodine_conc;
+        self.iodine_135_num_density = new_iodine_conc;
 
         return new_iodine_conc;
 
@@ -173,7 +173,7 @@ impl Xenon135Poisoning {
         let xe135_addition_rate_from_fission: VolumetricNumberRate = 
             (gamma_x * fission_rate).into();
 
-        let xe135_conc_last_timestep = self.xenon_135_concentration;
+        let xe135_conc_last_timestep = self.xenon_135_num_density;
 
         let mut rhs: VolumetricNumberDensity = xe135_conc_last_timestep;
         rhs += VolumetricNumberDensity::into((xe135_addition_rate_from_iodine * timestep).into());
@@ -193,7 +193,7 @@ impl Xenon135Poisoning {
         let xe_conc_next_timestep: VolumetricNumberDensity = 
             (rhs/denominator).into();
 
-        self.xenon_135_concentration = xe_conc_next_timestep;
+        self.xenon_135_num_density = xe_conc_next_timestep;
 
         return xe_conc_next_timestep;
     }
@@ -270,6 +270,23 @@ impl Xenon135Poisoning {
         return change_in_thermal_utilisation_factor;
     }
 
+    #[inline]
+    pub fn get_current_xe135_conc(&self) -> MassConcentration {
+        let xe135_number_density = self.xenon_135_num_density;
+        let avogadro_constant = 
+            Ratio::new::<ratio>(6.022e23)/
+            AmountOfSubstance::new::<mole>(1.0);
+        // get number of moles per m3 
+        let xe135_molar_density: MolarConcentration = 
+            (xe135_number_density/avogadro_constant).into();
+
+        // then mass concentration
+        let xe135_mass_conc = 
+            xe135_molar_density * Self::gaseous_xe135_molar_mass();
+
+        xe135_mass_conc.into()
+    }
+
     /// gives xenon density estimate 
     #[inline]
     pub fn gaseous_xe135_density_estimate() -> MassDensity {
@@ -306,8 +323,8 @@ impl Default for Xenon135Poisoning {
     /// returns a fresh core
     fn default() -> Self {
         return Self {
-            iodine_135_concentration: VolumetricNumberDensity::ZERO, 
-            xenon_135_concentration: VolumetricNumberDensity::ZERO, 
+            iodine_135_num_density: VolumetricNumberDensity::ZERO, 
+            xenon_135_num_density: VolumetricNumberDensity::ZERO, 
         }
     }
 }

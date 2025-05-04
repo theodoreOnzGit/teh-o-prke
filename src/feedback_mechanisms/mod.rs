@@ -198,7 +198,7 @@ impl SixFactorFormulaFeedback {
     /// reactor poison feedback
     ///
     /// reflects feedback due to 
-    /// reactor poison concentration
+    /// reactor poison concentration 
     ///
     /// this affects thermal utilisation factor usually
     ///
