@@ -200,7 +200,7 @@ impl eframe::App for FHRSimulatorApp {
                         max_temp, 
                         temp
                     );
-                    ui.put(pipe_1_rect, pipe_1_widget);
+                    //ui.put(pipe_1_rect, pipe_1_widget);
 
                     ui.separator();
                 });
