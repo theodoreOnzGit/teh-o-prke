@@ -18,7 +18,16 @@ impl SinglePipe {
         max_temp: ThermodynamicTemperature,
         temp: ThermodynamicTemperature,) -> Self {
 
-        Self { size, 
+        let min_width = 20.0;
+
+        let mut corrected_size = size;
+
+        if corrected_size.x <= min_width {
+            corrected_size.x = min_width
+        };
+
+
+        Self { size: corrected_size, 
             min_temp, 
             max_temp, 
             temp,

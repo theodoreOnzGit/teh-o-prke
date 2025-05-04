@@ -171,8 +171,8 @@ impl eframe::App for FHRSimulatorApp {
 
                     let temp = right_downcomer_lower_temp;
 
-                    let pipe_size = 
-                        vec2(100.0, 100.0);
+                    let pipe_coordinate_chg = 
+                        vec2(0.0, 100.0);
 
                     let pipe_1_start = 
                         vec2(
@@ -181,14 +181,17 @@ impl eframe::App for FHRSimulatorApp {
                         );
                     let pipe_2_start = 
                         vec2(
-                            pipe_1_start.x + pipe_size.x,
-                            pipe_1_start.y + pipe_size.y,
+                            pipe_1_start.x + pipe_coordinate_chg.x,
+                            pipe_1_start.y + pipe_coordinate_chg.y,
                         );
                     let pipe_1_rect = 
                         egui::Rect {
                             min: Pos2 { x: 0.0, y: 0.0 } + pipe_1_start,
                             max: Pos2 { x: 0.0, y: 0.0 } + pipe_2_start,
                         };
+
+                    let pipe_size = 
+                        vec2(100.0, 100.0);
 
 
                     let pipe_1_widget = SinglePipe::new(
