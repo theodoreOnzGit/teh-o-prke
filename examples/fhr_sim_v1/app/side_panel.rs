@@ -238,6 +238,34 @@ impl FHRSimulatorApp {
         );
         ui.add(temp_350_degc);
 
+        // time diagnostics 
+        ui.separator();
+        ui.heading("Timestep Diagnostics");
+
+        let prke_elapsed_time_seconds = fhr_state_clone.prke_elapsed_time_seconds;
+
+        ui.label("PRKE Elapsed Time Seconds");
+        ui.label(((1000.0*prke_elapsed_time_seconds).round() / 1000.0).to_string());
+
+
+        let prke_simulation_time_seconds = fhr_state_clone.prke_simulation_time_seconds;
+
+        ui.label("PRKE Simulation Time Seconds");
+        ui.label(((1000.0*prke_simulation_time_seconds).round() / 1000.0).to_string());
+
+
+        let prke_timestep_microseconds = fhr_state_clone.prke_timestep_microseconds;
+
+        ui.label("PRKE Timestep Microseconds");
+        ui.label(((1000.0*prke_timestep_microseconds).round() / 1000.0).to_string());
+
+        let prke_calc_time_microseconds = fhr_state_clone.prke_calc_time_microseconds;
+
+        ui.label("PRKE Calculation time per timestep Microseconds");
+        ui.label(((1000.0*prke_calc_time_microseconds).round() / 1000.0).to_string());
+
+        ui.separator();
+
         // then acknowledgements/citing
     }
 }

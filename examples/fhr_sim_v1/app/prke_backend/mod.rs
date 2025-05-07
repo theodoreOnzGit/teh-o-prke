@@ -102,13 +102,13 @@ impl FHRSimulatorApp {
 
             current_simulation_time += prke_timestep;
 
-            let simulation_time_seconds = current_simulation_time.get::<second>();
+            let prke_simulation_time_seconds = current_simulation_time.get::<second>();
 
             let prke_elapsed_time_seconds = 
                 (loop_time.elapsed().unwrap().as_secs_f64() * 100.0).round()/100.0;
 
             let overall_simulation_in_realtime_or_faster: bool = 
-                simulation_time_seconds > prke_elapsed_time_seconds;
+                prke_simulation_time_seconds > prke_elapsed_time_seconds;
 
             // now update the fhr state 
             let loop_time_end = loop_time.elapsed().unwrap();
@@ -126,8 +126,8 @@ impl FHRSimulatorApp {
             fhr_state_clone.lock().unwrap().prke_calc_time_microseconds 
                 = time_taken_for_calculation_loop_microseconds;
 
-            fhr_state_clone.lock().unwrap().simulation_time_seconds 
-                = simulation_time_seconds;
+            fhr_state_clone.lock().unwrap().prke_simulation_time_seconds 
+                = prke_simulation_time_seconds;
 
             fhr_state_clone.lock().unwrap().prke_elapsed_time_seconds 
                 = prke_elapsed_time_seconds;
