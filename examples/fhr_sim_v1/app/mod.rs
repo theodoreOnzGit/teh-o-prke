@@ -193,12 +193,10 @@ impl eframe::App for FHRSimulatorApp {
                             max: Pos2 { x: 0.0, y: 0.0 } + pipe_2_start,
                         };
 
-                    let pipe_direction_chg = 
-                        vec2(0.0, 100.0);
 
 
                     let pipe_1_widget = SinglePipe::new(
-                        pipe_direction_chg, 
+                        pipe_coordinate_chg, 
                         min_temp, 
                         max_temp, 
                         temp
