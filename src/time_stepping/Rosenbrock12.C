@@ -24,119 +24,139 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::Rosenbrock12
-
-Group
-    grpODESolvers
-
-Description
-    L-stable embedded Rosenbrock ODE solver of order (1)2.
-
-    References:
-    \verbatim
-        Verwer, J. G., Spee, E. J., Blom, J. G., & Hundsdorfer, W. (1999).
-        A second-order Rosenbrock method applied to
-        photochemical dispersion problems.
-        SIAM Journal on Scientific Computing, 20(4), 1456-1480.
-    \endverbatim
-
-SourceFiles
-    Rosenbrock12.C
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef Rosenbrock12_H
-#define Rosenbrock12_H
+#include "Rosenbrock12.H"
+#include "addToRunTimeSelectionTable.H"
 
-#include "ODESolver.H"
-#include "adaptiveSolver.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
+    defineTypeNameAndDebug(Rosenbrock12, 0);
+    addToRunTimeSelectionTable(ODESolver, Rosenbrock12, dictionary);
 
-/*---------------------------------------------------------------------------*\
-                           Class Rosenbrock12 Declaration
-\*---------------------------------------------------------------------------*/
+const scalar
+    Rosenbrock12::gamma = 1 + 1.0/std::sqrt(2.0),
+    Rosenbrock12::a21 = 1.0/gamma,
+    Rosenbrock12::c2 = 1.0,
+    Rosenbrock12::c21 = -2.0/gamma,
+    Rosenbrock12::b1 = (3.0/2.0)/gamma,
+    Rosenbrock12::b2 = (1.0/2.0)/gamma,
+    Rosenbrock12::e1 = b1 - 1.0/gamma,
+    Rosenbrock12::e2 = b2,
+    Rosenbrock12::d1 = gamma,
+    Rosenbrock12::d2 = -gamma;
+}
 
-class Rosenbrock12
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::Rosenbrock12::Rosenbrock12(const ODESystem& ode, const dictionary& dict)
 :
-    public ODESolver,
-    public adaptiveSolver
+    ODESolver(ode, dict),
+    adaptiveSolver(ode, dict),
+    k1_(n_),
+    k2_(n_),
+    err_(n_),
+    dydx_(n_),
+    dfdx_(n_),
+    dfdy_(n_, n_),
+    a_(n_, n_),
+    pivotIndices_(n_)
+{}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+bool Foam::Rosenbrock12::resize()
 {
-    // Private data
+    if (ODESolver::resize())
+    {
+        adaptiveSolver::resize(n_);
 
-        mutable scalarField k1_;
-        mutable scalarField k2_;
-        mutable scalarField err_;
-        mutable scalarField dydx_;
-        mutable scalarField dfdx_;
-        mutable scalarSquareMatrix dfdy_;
-        mutable scalarSquareMatrix a_;
-        mutable labelList pivotIndices_;
+        resizeField(k1_);
+        resizeField(k2_);
+        resizeField(err_);
+        resizeField(dydx_);
+        resizeField(dfdx_);
+        resizeMatrix(dfdy_);
+        resizeMatrix(a_);
+        resizeField(pivotIndices_);
 
-        static const scalar
-            a21,
-            c21,
-            b1, b2,
-            gamma,
-            c2,
-            e1, e2,
-            d1, d2;
+        return true;
+    }
 
-
-public:
-
-    //- Runtime type information
-    TypeName("Rosenbrock12");
+    return false;
+}
 
 
-    // Constructors
+Foam::scalar Foam::Rosenbrock12::solve
+(
+    const scalar x0,
+    const scalarField& y0,
+    const scalarField& dydx0,
+    const scalar dx,
+    scalarField& y
+) const
+{
+    odes_.jacobian(x0, y0, dfdx_, dfdy_);
 
-        //- Construct from ODESystem
-        Rosenbrock12(const ODESystem& ode, const dictionary& dict);
+    for (label i=0; i<n_; i++)
+    {
+        for (label j=0; j<n_; j++)
+        {
+            a_(i, j) = -dfdy_(i, j);
+        }
+
+        a_(i, i) += 1.0/(gamma*dx);
+    }
+
+    LUDecompose(a_, pivotIndices_);
+
+    // Calculate k1:
+    forAll(k1_, i)
+    {
+        k1_[i] = dydx0[i] + dx*d1*dfdx_[i];
+    }
+
+    LUBacksubstitute(a_, pivotIndices_, k1_);
+
+    // Calculate k2:
+    forAll(y, i)
+    {
+        y[i] = y0[i] + a21*k1_[i];
+    }
+
+    odes_.derivatives(x0 + c2*dx, y, dydx_);
+
+    forAll(k2_, i)
+    {
+        k2_[i] = dydx_[i] + dx*d2*dfdx_[i] + c21*k1_[i]/dx;
+    }
+
+    LUBacksubstitute(a_, pivotIndices_, k2_);
+
+    // Calculate error and update state:
+    forAll(y, i)
+    {
+        y[i] = y0[i] + b1*k1_[i] + b2*k2_[i];
+        err_[i] = e1*k1_[i] + e2*k2_[i];
+    }
+
+    return normalizeError(y0, y, err_);
+}
 
 
-    //- Destructor
-    virtual ~Rosenbrock12() = default;
+void Foam::Rosenbrock12::solve
+(
+    scalar& x,
+    scalarField& y,
+    scalar& dxTry
+) const
+{
+    adaptiveSolver::solve(odes_, x, y, dxTry);
+}
 
-
-    // Member Functions
-
-        //- Inherit solve from ODESolver
-        using ODESolver::solve;
-
-        //- Resize the ODE solver
-        virtual bool resize();
-
-        //- Solve a single step dx and return the error
-        virtual scalar solve
-        (
-            const scalar x0,
-            const scalarField& y0,
-            const scalarField& dydx0,
-            const scalar dx,
-            scalarField& y
-        ) const;
-
-        //- Solve the ODE system and the update the state
-        virtual void solve
-        (
-            scalar& x,
-            scalarField& y,
-            scalar& dxTry
-        ) const;
-};
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#endif
 
 // ************************************************************************* //
