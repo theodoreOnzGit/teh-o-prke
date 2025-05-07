@@ -89,9 +89,9 @@ pub struct FHRState {
     // this is important for timestep monitoring 
     // time diagnostics
     pub simulation_time_seconds: f64,
-    pub elapsed_time_seconds: f64,
+    pub prke_elapsed_time_seconds: f64,
     pub prke_calc_time_microseconds: f64,
-    pub prke_timestep_microseconds: f32,
+    pub prke_timestep_microseconds: f64,
 }
 
 impl Default for FHRState {
@@ -119,7 +119,7 @@ impl Default for FHRState {
             reactivity_dollars: 0.0,
             xenon135_feedback_dollars: 0.0,
             simulation_time_seconds: 0.0,
-            elapsed_time_seconds: 0.0,
+            prke_elapsed_time_seconds: 0.0,
             prke_calc_time_microseconds: 0.0,
             prke_timestep_microseconds: 0.0,
 

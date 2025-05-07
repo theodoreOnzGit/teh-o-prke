@@ -104,15 +104,18 @@ impl FHRSimulatorApp {
 
             let simulation_time_seconds = current_simulation_time.get::<second>();
 
-            let elapsed_time_seconds = 
+            let prke_elapsed_time_seconds = 
                 (loop_time.elapsed().unwrap().as_secs_f64() * 100.0).round()/100.0;
 
             let overall_simulation_in_realtime_or_faster: bool = 
-                simulation_time_seconds > elapsed_time_seconds;
+                simulation_time_seconds > prke_elapsed_time_seconds;
 
-            // now update the ciet state 
+            // now update the fhr state 
             let loop_time_end = loop_time.elapsed().unwrap();
             let prke_timestep_microseconds = prke_timestep.get::<microsecond>();
+
+            fhr_state_clone.lock().unwrap().prke_timestep_microseconds 
+                = prke_timestep_microseconds;
 
 
 
@@ -120,7 +123,14 @@ impl FHRSimulatorApp {
                 (loop_time_end - loop_time_start)
                 .as_micros() as f64;
 
+            fhr_state_clone.lock().unwrap().prke_calc_time_microseconds 
+                = time_taken_for_calculation_loop_microseconds;
 
+            fhr_state_clone.lock().unwrap().simulation_time_seconds 
+                = simulation_time_seconds;
+
+            fhr_state_clone.lock().unwrap().prke_elapsed_time_seconds 
+                = prke_elapsed_time_seconds;
 
             let time_to_sleep_microseconds: u64 = 
                 (prke_timestep.get::<microsecond>() - 
