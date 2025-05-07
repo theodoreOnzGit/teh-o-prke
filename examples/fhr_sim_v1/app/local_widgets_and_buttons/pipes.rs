@@ -6,6 +6,7 @@ use super::hot_to_cold_colour_mark_1;
 
 pub struct SinglePipe {
     size: Vec2,
+    vector: Vec2,
     min_temp: ThermodynamicTemperature,
     max_temp: ThermodynamicTemperature,
     temp: ThermodynamicTemperature,
@@ -14,21 +15,31 @@ pub struct SinglePipe {
 impl SinglePipe {
 
     /// still need to correct for minimum size
-    pub fn new(size: Vec2,
+    ///
+    /// note that you will put in a vector from start to end 
+    /// like how many pixels in x,y direction you want to go 
+    /// then the pipe will autosize everything
+    pub fn new(vector: Vec2,
         min_temp: ThermodynamicTemperature,
         max_temp: ThermodynamicTemperature,
         temp: ThermodynamicTemperature,) -> Self {
 
         let min_width = 20.0;
 
-        let mut corrected_size = size;
+        // now the size here
+        let mut size = vector;
 
-        if corrected_size.x <= min_width {
-            corrected_size.x = min_width
+        if size.x <= min_width {
+            size.x = min_width
         };
 
+        if size.y <= min_width {
+            size.y = min_width
+        }
 
-        Self { size: corrected_size, 
+
+        Self { size, 
+            vector,
             min_temp, 
             max_temp, 
             temp,
@@ -78,8 +89,8 @@ impl Widget for SinglePipe {
         let rect = response.rect;
         let pipe_ctr = rect.center();
 
-        let delta_x = rect.width();
-        let delta_y = rect.height();
+        let delta_x = &self.vector.x;
+        let delta_y = &self.vector.y;
 
         painter.line_segment(
             [pipe_ctr - vec2(0.50*delta_x, 0.50*delta_y), 
