@@ -82,7 +82,7 @@ impl FHRSimulatorApp {
 
 
             // last condition for sleeping
-            let real_time_in_current_timestep: bool = 
+            let _real_time_in_current_timestep: bool = 
                 time_to_sleep_microseconds > 1;
 
             //
@@ -133,6 +133,9 @@ impl FHRSimulatorApp {
             // this can be heat transferred to some outside boundary condition
             //
             // now, just like CIET, we have a top and bottom mixing node
+
+            let _ = fhr_state_ref;
+            let _ = thermal_hydraulics_timestep;
         }
 
     }
