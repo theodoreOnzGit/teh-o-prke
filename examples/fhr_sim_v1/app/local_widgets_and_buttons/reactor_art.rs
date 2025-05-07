@@ -51,12 +51,12 @@ pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
     let (response, painter) = ui.allocate_painter(
         size, Sense::hover()
     );
-    let response_rect = response.rect;
+    let _response_rect = response.rect;
     
     // what I want to do now is to shift the 
     // response rectangle
 
-    let shift: Pos2 = user_rect.min;
+    let _shift: Pos2 = user_rect.min;
 
     // the rect here is 
     let rect: egui::Rect = 
@@ -67,7 +67,7 @@ pub fn fhr_reactor_vessel_prototype(ui: &mut Ui,
     
     let c = rect.center();
     // circle radius is r
-    let r = rect.width() / 2.0 - 1.0;
+    let _r = rect.width() / 2.0 - 1.0;
     let color = Color32::from_gray(128);
     let stroke = Stroke::new(1.0, color);
 

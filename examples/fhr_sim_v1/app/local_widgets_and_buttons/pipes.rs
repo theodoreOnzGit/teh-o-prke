@@ -1,4 +1,4 @@
-use egui::{epaint::{CubicBezierShape, PathShape}, vec2, Color32, Pos2, Sense, Stroke, Vec2, Widget};
+use egui::{vec2, Sense, Stroke, Vec2, Widget};
 use uom::si::{f64::*, thermodynamic_temperature::degree_celsius};
 
 

@@ -179,11 +179,14 @@ impl eframe::App for FHRSimulatorApp {
                             0.5 * reactor_rectangle.left() + 0.5 * reactor_rectangle.right(),
                             reactor_rectangle.bottom() - reactor_rectangle.height() * 0.28,
                         );
+
                     let pipe_2_start = 
                         vec2(
                             pipe_1_start.x + pipe_coordinate_chg.x,
                             pipe_1_start.y + pipe_coordinate_chg.y,
                         );
+
+
                     let pipe_1_rect = 
                         egui::Rect {
                             min: Pos2 { x: 0.0, y: 0.0 } + pipe_1_start,
@@ -200,7 +203,7 @@ impl eframe::App for FHRSimulatorApp {
                         max_temp, 
                         temp
                     );
-                    //ui.put(pipe_1_rect, pipe_1_widget);
+                    ui.put(pipe_1_rect, pipe_1_widget);
 
                     ui.separator();
                 });
