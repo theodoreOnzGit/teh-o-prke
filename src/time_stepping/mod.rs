@@ -11,3 +11,6 @@
 //    A second-order Rosenbrock method applied to
 //    photochemical dispersion problems.
 //    SIAM Journal on Scientific Computing, 20(4), 1456-1480.
+
+#[allow(non_upper_case_globals)]
+pub mod openfoam_rfk45;
