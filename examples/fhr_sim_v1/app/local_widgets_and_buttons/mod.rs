@@ -137,3 +137,7 @@ pub fn hot_to_cold_colour_mark_1(hotness: f32) -> Color32 {
         green as u8, 
         blue as u8);
 }
+
+/// contains traits to help objects in the simulation 
+/// visually connect to one another
+pub mod simulator_trait;

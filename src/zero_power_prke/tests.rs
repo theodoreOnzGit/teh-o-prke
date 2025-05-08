@@ -2,10 +2,10 @@ use uom::si::volumetric_number_density::per_cubic_meter;
 use uom::si::{f64::*, ratio::ratio};
 use uom::ConstZero;
 
-use crate::zero_power_prke::six_group::{new_u235_delayed_neutron_fraction_array, SixGroupPRKE};
-use crate::zero_power_prke::six_group::new_u233_delayed_neutron_fraction_array;
-use crate::zero_power_prke::six_group::new_pu239_delayed_neutron_fraction_array;
-use crate::zero_power_prke::six_group::FissioningNuclideType;
+use crate::zero_power_prke::six_group_prke::{new_u235_delayed_neutron_fraction_array, SixGroupPRKE};
+use crate::zero_power_prke::six_group_prke::new_u233_delayed_neutron_fraction_array;
+use crate::zero_power_prke::six_group_prke::new_pu239_delayed_neutron_fraction_array;
+use crate::zero_power_prke::six_group_prke::FissioningNuclideType;
 #[test]
 pub fn test_pu239_total_delayed_frac(){
 
