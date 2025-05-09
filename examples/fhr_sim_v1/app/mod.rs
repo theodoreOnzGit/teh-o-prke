@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use egui::{vec2, Pos2, Rect};
-use local_widgets_and_buttons::fhr_reactor_widget::FHRReactorWidget;
+use local_widgets_and_buttons::{fhr_reactor_widget::FHRReactorWidget, pipes::SinglePipe};
 use uom::si::f64::*;
 use uom::si::thermodynamic_temperature::degree_celsius;
 
@@ -27,28 +27,10 @@ impl eframe::App for FHRSimulatorApp {
         });
 
         egui::SidePanel::right("Supplementary Info").show(ctx, |ui|{
-            let mut fhr_state_ptr = self.fhr_state.lock().unwrap();
+            self.side_panel(ui);
 
-            let left_cr_slider = egui::Slider::new(
-                &mut fhr_state_ptr.left_cr_insertion_frac, 
-                0.0000..=1.0)
-                .logarithmic(false)
-                .text("Left Control Rod insertion Fraction")
-                .drag_value_speed(0.001);
 
-            ui.add(left_cr_slider);
 
-            let right_cr_slider = egui::Slider::new(
-                &mut fhr_state_ptr.right_cr_insertion_frac, 
-                0.0000..=1.0)
-                .logarithmic(false)
-                .text("Right Control Rod insertion Fraction")
-                .drag_value_speed(0.001);
-
-            ui.add(right_cr_slider);
-
-            //
-            drop(fhr_state_ptr);
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
@@ -63,6 +45,7 @@ impl eframe::App for FHRSimulatorApp {
             let mut right_control_rod_insertion_frac 
                 = 0.0;
 
+            ui.separator();
             egui::ScrollArea::both()
                 .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::AlwaysVisible)
                 .drag_to_scroll(true)
@@ -78,7 +61,6 @@ impl eframe::App for FHRSimulatorApp {
                     // images, line segments etc.
                     // obtain lock first 
 
-                    ui.separator();
                     // quickly clone the fhr state and drop ptr asap 
                     // just to read
                     let fhr_state_ptr = self.fhr_state.lock().unwrap();
@@ -126,7 +108,7 @@ impl eframe::App for FHRSimulatorApp {
                         vec2(reactor_rectangle.width(), reactor_rectangle.height());
 
                     let min_temp = ThermodynamicTemperature::new::<degree_celsius>(450.0);
-                    let max_temp = ThermodynamicTemperature::new::<degree_celsius>(800.0);
+                    let max_temp = ThermodynamicTemperature::new::<degree_celsius>(1000.0);
                     let pebble_core_temp = ThermodynamicTemperature::new::<degree_celsius>(
                         fhr_state_clone.pebble_core_temp_degc
                     );
@@ -187,6 +169,40 @@ impl eframe::App for FHRSimulatorApp {
 
                     ui.put(reactor_rectangle, fhr_widget);
 
+                    let temp = right_downcomer_lower_temp;
+
+                    let pipe_coordinate_chg = 
+                        vec2(0.0, 100.0);
+
+                    let pipe_1_start = 
+                        vec2(
+                            0.5 * reactor_rectangle.left() + 0.5 * reactor_rectangle.right(),
+                            reactor_rectangle.bottom() - reactor_rectangle.height() * 0.28,
+                        );
+
+                    let pipe_2_start = 
+                        vec2(
+                            pipe_1_start.x + pipe_coordinate_chg.x,
+                            pipe_1_start.y + pipe_coordinate_chg.y,
+                        );
+
+
+                    let pipe_1_rect = 
+                        egui::Rect {
+                            min: Pos2 { x: 0.0, y: 0.0 } + pipe_1_start,
+                            max: Pos2 { x: 0.0, y: 0.0 } + pipe_2_start,
+                        };
+
+
+
+                    let pipe_1_widget = SinglePipe::new(
+                        pipe_coordinate_chg, 
+                        min_temp, 
+                        max_temp, 
+                        temp
+                    );
+                    ui.put(pipe_1_rect, pipe_1_widget);
+
                     ui.separator();
                 });
 
@@ -239,3 +255,7 @@ fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
 }
 
 pub mod local_widgets_and_buttons;
+
+pub mod side_panel;
+
+pub mod panel_enum;

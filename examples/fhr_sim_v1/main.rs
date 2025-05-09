@@ -24,7 +24,7 @@ pub fn fhr_simulator_v1() -> eframe::Result<()> {
         ..Default::default()
     };
     eframe::run_native(
-        "FHR Simulator V1 Powered by TUAS and teh-o-prke",
+        "FHR Core / Primary Simulator V1 Powered by TUAS and teh-o-prke",
         native_options,
         Box::new(|cc| {
             // image support,
@@ -69,10 +69,29 @@ pub struct FHRState {
     pub right_downcomer_mid_temp_degc: f64,
     pub right_downcomer_lower_temp_degc: f64,
 
+    // for diagnostics
+    /// this displays reactor thermal power in megawatts,
+    /// including decay heat
+    pub reactor_power_megawatts: f64,
+    /// this displays reactor keff
+    pub keff: f64,
+    /// this displays reactivity in dollars 
+    pub reactivity_dollars: f64,
+    /// this displays xenon feedback in dollars 
+    pub xenon135_feedback_dollars: f64,
+
     // this is important for coupling between prke loop and thermal 
     // hydraulics loop
     pub prke_loop_accumulated_timestep_seconds: f64,
     pub prke_loop_accumulated_heat_removal_kilojoules: f64,
+
+
+    // this is important for timestep monitoring 
+    // time diagnostics
+    pub prke_simulation_time_seconds: f64,
+    pub prke_elapsed_time_seconds: f64,
+    pub prke_calc_time_microseconds: f64,
+    pub prke_timestep_microseconds: f64,
 }
 
 impl Default for FHRState {
@@ -95,6 +114,14 @@ impl Default for FHRState {
             right_downcomer_lower_temp_degc: default_temperature_degc,
             prke_loop_accumulated_timestep_seconds: 0.0,
             prke_loop_accumulated_heat_removal_kilojoules: 0.0,
+            reactor_power_megawatts: 0.0,
+            keff: 0.0,
+            reactivity_dollars: 0.0,
+            xenon135_feedback_dollars: 0.0,
+            prke_simulation_time_seconds: 0.0,
+            prke_elapsed_time_seconds: 0.0,
+            prke_calc_time_microseconds: 0.0,
+            prke_timestep_microseconds: 0.0,
 
         }
     }
@@ -143,7 +170,10 @@ impl FHRSimulatorApp {
 
         // spawn a thread to do the thermal hydraulics
         thread::spawn(move ||{
-            fhr_state_thermal_hydraulics_ptr
+            FHRSimulatorApp::calculate_thermal_hydraulics_loop(
+                fhr_state_thermal_hydraulics_ptr
+            );
+            
         });
 
         new_fhr_app

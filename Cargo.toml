@@ -1,6 +1,6 @@
 [package]
 name = "teh-o-prke"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -23,7 +23,6 @@ ndarray-linalg = { version = "0.16.0", features = ["openblas-system"] }
 
 [dev-dependencies]
 chem-eng-real-time-process-control-simulator = "0.0.3"
-opcua = "0.12.0"
 egui = "0.29.1"
 eframe = { version = "0.29.1", default-features = false, features = [
     "accesskit",     # Make egui comptaible with screen readers. NOTE: adds a lot of dependencies.
@@ -39,13 +38,6 @@ egui_extras = { version = "0.29.0", features = ["all_loaders"] }
 serde = { version = "1", features = ["derive"] }
 tuas_boussinesq_solver = "0.0.7"
 
-[[example]]
-name = "zero_power_client"
-path = "examples/zero_power_prke_demo/client/main.rs"
-
-[[example]]
-name = "zero_power_server"
-path = "examples/zero_power_prke_demo/server/main.rs"
 
 
 [[example]]

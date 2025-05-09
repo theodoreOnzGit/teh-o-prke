@@ -36,3 +36,13 @@ pub mod teh_o_prke_error;
 /// this uses the six factor formula rather than simply adjusting reactivity
 pub mod feedback_mechanisms;
 
+
+/// contains code for decay heat simulation
+/// the user can have up to seven groups
+///
+pub mod decay_heat;
+
+/// contains code for time stepping for prke 
+/// some algorithms copied from OpenFOAM
+///
+pub mod time_stepping;

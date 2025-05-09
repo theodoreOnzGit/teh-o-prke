@@ -24,38 +24,6 @@ cargo run --example fhr_sim_v1 --release
 ```
 
 
-## zero power PRKE
-The zero power PRKE is split into two parts, the server and client.
-Here, we don't have temperature feedback or whatsoever
-To run the server:
-
-```sh
-cargo run --example zero_power_server --release
-```
-
-To run the client:
-
-```sh
-cargo run --example zero_power_client --release
-```
-
-Please remember to run the client AFTER the server.
-
-
-## PRKE with fuel temperature feedback and control rod
-The PRKE simulator is split into two parts, the server and client.
-Here, we don't have temperature feedback or whatsoever
-To run the server:
-
-```sh
-cargo run --example server --release
-```
-
-To run the client:
-
-```sh
-cargo run --example client --release
-```
 
 Please remember to run the client AFTER the server.
 
@@ -63,4 +31,11 @@ Please remember to run the client AFTER the server.
 
 You'll need openblas to run this on linux.
 
+# licensing 
+
+The point reactor kinetics code here copies some of the time stepping 
+algorithm source files available in OpenFOAM. These are licensed files  
+are available under GPLv3. The source files in Rust directly translte 
+these source files. To respect OpenFOAM copyright, the PRKE files here 
+are also released under GPLv3.
 

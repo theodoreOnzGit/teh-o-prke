@@ -23,7 +23,7 @@ pub struct SixGroupPRKE {
     pub delayed_fraction_array: [Ratio;6],
     /// determines the set of delayed group constants based on your choice 
     /// of fissile isotope
-    pub delayed_group_mode: DelayedGroupMode,
+    pub delayed_group_mode: FissioningNuclideType,
 
     /// precursor_and_neutron_pop_and_source_array 
     pub precursor_and_neutron_pop_and_source_array: [VolumetricNumberDensity;7],
@@ -31,7 +31,7 @@ pub struct SixGroupPRKE {
 
 /// different nuclides or fuels have different delayed groups
 #[derive(Debug,Clone,Copy)]
-pub enum DelayedGroupMode {
+pub enum FissioningNuclideType {
     /// chooses the U233 group of delayed constants
     U233,
     /// chooses the U235 group of delayed constants
@@ -40,18 +40,18 @@ pub enum DelayedGroupMode {
     Pu239
 }
 
-impl DelayedGroupMode {
+impl FissioningNuclideType {
     /// returns a new decay constant array based on nuclide
     /// (for this version, all decay constant arrays are the same)
     pub fn get_decay_constant_array(&self) -> [DecayConstant;6] {
         match self {
-            DelayedGroupMode::U233 => {
+            FissioningNuclideType::U233 => {
                 return new_decay_constant_array();
             },
-            DelayedGroupMode::U235 => {
+            FissioningNuclideType::U235 => {
                 return new_decay_constant_array();
             },
-            DelayedGroupMode::Pu239 => {
+            FissioningNuclideType::Pu239 => {
                 return new_decay_constant_array();
             },
         }
@@ -60,13 +60,13 @@ impl DelayedGroupMode {
     /// returns a delayed fraction array based on nuclide 
     pub fn get_delayed_fraction_array(&self) -> [Ratio;6] {
         match self {
-            DelayedGroupMode::U233 => {
+            FissioningNuclideType::U233 => {
                 return new_u233_delayed_neutron_fraction_array();
             },
-            DelayedGroupMode::U235 => {
+            FissioningNuclideType::U235 => {
                 return new_u235_delayed_neutron_fraction_array();
             },
-            DelayedGroupMode::Pu239 => {
+            FissioningNuclideType::Pu239 => {
                 return new_pu239_delayed_neutron_fraction_array();
             },
         }
@@ -78,7 +78,7 @@ impl DelayedGroupMode {
 /// starting neutron population of 1 per m3
 impl Default for SixGroupPRKE {
     fn default() -> Self {
-        let delayed_group_mode = DelayedGroupMode::U235;
+        let delayed_group_mode = FissioningNuclideType::U235;
 
         // the arrangement is 
         // [precursor grp 1, 

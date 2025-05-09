@@ -2,10 +2,10 @@ use uom::si::volumetric_number_density::per_cubic_meter;
 use uom::si::{f64::*, ratio::ratio};
 use uom::ConstZero;
 
-use crate::zero_power_prke::six_group::{new_u235_delayed_neutron_fraction_array, SixGroupPRKE};
-use crate::zero_power_prke::six_group::new_u233_delayed_neutron_fraction_array;
-use crate::zero_power_prke::six_group::new_pu239_delayed_neutron_fraction_array;
-use crate::zero_power_prke::six_group::DelayedGroupMode;
+use crate::zero_power_prke::six_group_precursor_prke::{new_u235_delayed_neutron_fraction_array, SixGroupPRKE};
+use crate::zero_power_prke::six_group_precursor_prke::new_u233_delayed_neutron_fraction_array;
+use crate::zero_power_prke::six_group_precursor_prke::new_pu239_delayed_neutron_fraction_array;
+use crate::zero_power_prke::six_group_precursor_prke::FissioningNuclideType;
 #[test]
 pub fn test_pu239_total_delayed_frac(){
 
@@ -60,7 +60,7 @@ pub fn prke_test_zero_reactivity(){
 
     use uom::si::time::{millisecond, nanosecond};
     use approx::assert_abs_diff_eq;
-    let delayed_group_mode = DelayedGroupMode::U235;
+    let delayed_group_mode = FissioningNuclideType::U235;
 
 
     let precursor_and_neutron_pop_and_source_array: [VolumetricNumberDensity;7] = 
