@@ -139,7 +139,7 @@ impl RKF45 {
         //         *(a61*dydx0[i] + a62*k2_[i] + a63*k3_[i] + a64*k4_[i] + a65*k5_[i]);
         // }
         for (i,_yTemp) in yTemp_.iter().enumerate() {
-            y[i] = y0[i]
+            self.yTemp_[i] = y0[i]
                 + dx*(
                     a61*dydx0[i] + a62*self.k2_[i] + a63*self.k3_[i] 
                     + a64*self.k4_[i] + a65*self.k5_[i]
@@ -158,10 +158,11 @@ impl RKF45 {
         // }
 
         for (i,_yTemp) in yTemp_.iter().enumerate() {
-            self.yTemp_[i] = y0[i]
+
+            y[i] = y0[i]
                 + dx*(
-                    a61*dydx0[i] + a62*self.k2_[i] + a63*self.k3_[i] 
-                    + a64*self.k4_[i] + a65*self.k5_[i]
+                    b1*dydx0[i] + b3*self.k3_[i] + b4*self.k4_[i] 
+                    + b5*self.k5_[i] + b6*self.k6_[i]
                 );
         }
         // // Calculate the error estimate from the difference between the
@@ -172,6 +173,13 @@ impl RKF45 {
         //         dx
         //        *(e1*dydx0[i] + e3*k3_[i] + e4*k4_[i] + e5*k5_[i] + e6*k6_[i]);
         // }
+        for (i,_yTemp) in yTemp_.iter().enumerate() {
+
+            self.err_[i] =
+                dx
+                *(e1*dydx0[i] + e3*self.k3_[i] + e4*self.k4_[i] 
+                    + e5*self.k5_[i] + e6*self.k6_[i]);
+        }
 
         // return normalizeError(y0, y, err_);
 
