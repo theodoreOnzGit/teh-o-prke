@@ -90,6 +90,8 @@ impl RKF45 {
             self.yTemp_[i] = y0[i] + a21*dx*dydx0[i];
         }
 
+        //note: it appears odes_ is a reference to the ODE system 
+        //in ODESolver.H
 
         // odes_.derivatives(x0 + c2*dx, yTemp_, k2_);
 
