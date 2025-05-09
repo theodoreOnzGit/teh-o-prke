@@ -92,6 +92,8 @@ impl RKF45 {
 
         //note: it appears odes_ is a reference to the ODE system 
         //in ODESolver.H
+        // in ODESolver.H, we find that the ode_ is a pointer to 
+        // the ODESystem class
 
         // odes_.derivatives(x0 + c2*dx, yTemp_, k2_);
 
