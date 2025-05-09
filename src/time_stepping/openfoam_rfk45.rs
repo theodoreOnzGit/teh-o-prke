@@ -99,6 +99,14 @@ impl RKF45 {
         // question is what does the derivatives method do?
 
         // odes_.derivatives(x0 + c2*dx, yTemp_, k2_);
+        //
+        // //- Calculate the derivatives in dydx
+        // virtual void derivatives
+        // (
+        //     const scalar x,
+        //     const scalarField& y,
+        //     scalarField& dydx
+        // ) const = 0;
 
         // forAll(yTemp_, i)
         // {
