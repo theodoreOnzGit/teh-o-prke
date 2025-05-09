@@ -78,11 +78,12 @@ pub struct RKF45 {
 impl RKF45 {
 
     #[inline]
-    pub fn solve(&mut self, x0: f64, 
+    pub fn solve(&mut self, 
+        x0: f64, 
         y0: Vec<f64>,
         dydx0: Vec<f64>,
         dx: f64,
-        y: Vec<f64>){
+        mut y: Vec<f64>){
 
         let yTemp_ = self.yTemp_.clone();
 
@@ -94,6 +95,8 @@ impl RKF45 {
         //in ODESolver.H
         // in ODESolver.H, we find that the ode_ is a pointer to 
         // the ODESystem class
+        //
+        // question is what does the derivatives method do?
 
         // odes_.derivatives(x0 + c2*dx, yTemp_, k2_);
 
@@ -136,12 +139,43 @@ impl RKF45 {
         //         *(a61*dydx0[i] + a62*k2_[i] + a63*k3_[i] + a64*k4_[i] + a65*k5_[i]);
         // }
         for (i,_yTemp) in yTemp_.iter().enumerate() {
+            y[i] = y0[i]
+                + dx*(
+                    a61*dydx0[i] + a62*self.k2_[i] + a63*self.k3_[i] 
+                    + a64*self.k4_[i] + a65*self.k5_[i]
+                );
+        }
+
+
+        // odes_.derivatives(x0 + c6*dx, yTemp_, k6_);
+
+        // // Calculate the 5th-order solution
+        // forAll(y, i)
+        // {
+        //     y[i] = y0[i]
+        //       + dx
+        //        *(b1*dydx0[i] + b3*k3_[i] + b4*k4_[i] + b5*k5_[i] + b6*k6_[i]);
+        // }
+
+        for (i,_yTemp) in yTemp_.iter().enumerate() {
             self.yTemp_[i] = y0[i]
                 + dx*(
                     a61*dydx0[i] + a62*self.k2_[i] + a63*self.k3_[i] 
                     + a64*self.k4_[i] + a65*self.k5_[i]
                 );
         }
+        // // Calculate the error estimate from the difference between the
+        // // 4th-order and 5th-order solutions
+        // forAll(err_, i)
+        // {
+        //     err_[i] =
+        //         dx
+        //        *(e1*dydx0[i] + e3*k3_[i] + e4*k4_[i] + e5*k5_[i] + e6*k6_[i]);
+        // }
+
+        // return normalizeError(y0, y, err_);
+
+
     }
 
 }
