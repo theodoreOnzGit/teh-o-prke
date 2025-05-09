@@ -107,6 +107,11 @@ impl RKF45 {
         //     const scalarField& y,
         //     scalarField& dydx
         // ) const = 0;
+        
+        // it seems the method isn't properly derived. 
+        //
+        // But, yes. RKF45 after all is a method, the derivatives themselves 
+        // are user defined.
 
         // forAll(yTemp_, i)
         // {
