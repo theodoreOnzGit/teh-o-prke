@@ -28,6 +28,8 @@ License
 // #include "RKF45.H"
 // #include "addToRunTimeSelectionTable.H"
 // these are the constants from the RKF45.C
+// From wikipedia:
+// COEFFICIENTS FOR RK4(5), FORMULA 2 Table III in Fehlberg
 const c2  : f64 = 1.0/4.0;
 const c3  : f64 = 3.0/8.0;
 const c4  : f64 = 12.0/13.0;
@@ -60,6 +62,7 @@ const e5  : f64 = -1.0/5.0 - b5;
 const e6  : f64 = -b6;
 
 
+/// note: need a verification test too
 
 #[allow(non_snake_case)]
 #[derive(Debug,Clone)]
@@ -83,9 +86,14 @@ impl RKF45 {
         y0: Vec<f64>,
         dydx0: Vec<f64>,
         dx: f64,
-        mut y: Vec<f64>){
+        y: &mut Vec<f64>){
 
         let yTemp_ = self.yTemp_.clone();
+
+        // note, in the RKF45, there is k1_
+        //
+        // but k1_ in this case is just dydx0
+        // ie f(x,y)
 
         for (i,_yTemp) in yTemp_.iter().enumerate() {
             self.yTemp_[i] = y0[i] + a21*dx*dydx0[i];
