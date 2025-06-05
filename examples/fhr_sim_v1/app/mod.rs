@@ -269,3 +269,5 @@ pub mod local_widgets_and_buttons;
 pub mod side_panel;
 
 pub mod panel_enum;
+
+pub mod graph_data;
