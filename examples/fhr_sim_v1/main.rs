@@ -2,6 +2,8 @@ use std::{sync::{Arc, Mutex}, thread};
 
 use uom::si::{f64::*, power::kilowatt};
 
+use crate::app::panel_enum::Panel;
+
 
 /// this represents the first iteration 
 /// of the fhr simulator
@@ -44,6 +46,9 @@ pub fn fhr_simulator_v1() -> eframe::Result<()> {
 pub struct FHRSimulatorApp {
 
     pub fhr_state: Arc<Mutex<FHRState>>,
+
+    /// what panel is open
+    pub open_panel: Panel,
 }
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -187,9 +192,12 @@ impl Default for FHRSimulatorApp {
 
         let fhr_state = FHRState::default();
         let fhr_state_ptr = Arc::new(Mutex::new(fhr_state));
+        let default_open_panel = Panel::MainPage;
 
         Self {
-            fhr_state: fhr_state_ptr
+            fhr_state: fhr_state_ptr,
+            open_panel: default_open_panel,
+
         }
     }
 }

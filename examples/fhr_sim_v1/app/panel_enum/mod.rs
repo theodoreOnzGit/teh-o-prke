@@ -1,5 +1,5 @@
 
-#[derive(serde::Deserialize, serde::Serialize,PartialEq,Clone)]
+#[derive(serde::Deserialize, serde::Serialize,PartialEq,Clone, Debug)]
 pub(crate) enum Panel {
     MainPage,
     ReactorPowerGraphs,
