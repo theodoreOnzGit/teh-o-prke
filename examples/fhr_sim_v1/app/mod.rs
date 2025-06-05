@@ -60,7 +60,7 @@ impl eframe::App for FHRSimulatorApp {
 
                     match self.open_panel {
                         Panel::MainPage => self.main_page(ui),
-                        Panel::ReactorPowerGraphs => {},
+                        Panel::ReactorPowerGraphs => self.reactor_power_page_graph(ui),
                         Panel::PoisonGraphs => {},
                     }
                 });
