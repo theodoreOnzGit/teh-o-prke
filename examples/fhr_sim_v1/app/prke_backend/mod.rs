@@ -42,7 +42,7 @@ impl FHRSimulatorApp {
         let fhr_state_clone = fhr_state.clone();
 
         // then decay heat struct 
-        let mut fhr_decay_heat = DecayHeat::default();
+        let mut fhr_decay_heat_struct = DecayHeat::default();
 
         // then xenon poisoning struct 
         let mut fhr_xe135_poisoning = Xenon135Poisoning::default();
@@ -94,7 +94,7 @@ impl FHRSimulatorApp {
                 prke_timestep,
                 reactor_volume,
                 macroscopic_fission_xs,
-                &mut fhr_decay_heat,
+                &mut fhr_decay_heat_struct,
                 &mut pebble_bed_th_struct,
                 &mut fhr_xe135_poisoning,
             );
@@ -304,9 +304,10 @@ impl FHRSimulatorApp {
         // adjust fission power for decay heat 
         // fission power less decay heat = 1.0 - 0.04 - 0.04 - 0.02 = 0.9
         let mut fission_power_corrected_for_decay_heat = fission_power_instantaneous * 0.9;
-        fission_power_corrected_for_decay_heat -= fhr_decay_heat.calc_decay_heat_power_1(prke_timestep);
-        fission_power_corrected_for_decay_heat -= fhr_decay_heat.calc_decay_heat_power_2(prke_timestep);
-        fission_power_corrected_for_decay_heat -= fhr_decay_heat.calc_decay_heat_power_3(prke_timestep);
+        let mut reactor_current_decay_heat: Power = -fhr_decay_heat.calc_decay_heat_power_1(prke_timestep);
+        reactor_current_decay_heat -= fhr_decay_heat.calc_decay_heat_power_2(prke_timestep);
+        reactor_current_decay_heat -= fhr_decay_heat.calc_decay_heat_power_3(prke_timestep);
+        fission_power_corrected_for_decay_heat += reactor_current_decay_heat;
 
         // with the correct fission power now, we can 
         // calc temperature
@@ -353,6 +354,8 @@ impl FHRSimulatorApp {
         fhr_state_ref.keff = keff.get::<ratio>();
         fhr_state_ref.reactor_power_megawatts = 
             fission_power_corrected_for_decay_heat.get::<megawatt>();
+        fhr_state_ref.reactor_decay_heat_megawatts = 
+            reactor_current_decay_heat.get::<megawatt>();
 
         // reactivity in dollars 
         let beta_delayed_frac_total = prke_six_group.get_total_delayed_fraction();

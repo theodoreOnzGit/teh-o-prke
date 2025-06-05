@@ -82,6 +82,8 @@ pub struct FHRState {
     /// this displays reactor thermal power in megawatts,
     /// including decay heat
     pub reactor_power_megawatts: f64,
+    /// this is decay heat in megawatts 
+    pub reactor_decay_heat_megawatts: f64,
     /// this displays reactor keff
     pub keff: f64,
     /// this displays reactivity in dollars 
@@ -131,6 +133,7 @@ impl Default for FHRState {
             prke_elapsed_time_seconds: 0.0,
             prke_calc_time_microseconds: 0.0,
             prke_timestep_microseconds: 0.0,
+            reactor_decay_heat_megawatts: 0.0,
 
         }
     }
