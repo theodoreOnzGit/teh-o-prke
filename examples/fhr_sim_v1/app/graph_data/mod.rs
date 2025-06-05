@@ -1,7 +1,7 @@
 
 use uom::si::f64::*;
 use uom::ConstZero;
-use uom::si::power::watt;
+use uom::si::power::{megawatt, watt};
 use uom::si::time::second;
 
 #[derive(Debug,Clone)]
@@ -79,14 +79,14 @@ impl PagePlotData {
 
     /// gets reactor power data over time
     /// time in second, temp in degc
-    pub fn get_reactor_power_watts_vs_time_secs_vec(&self) -> Vec<[f64;2]> {
+    pub fn get_reactor_power_megawatts_vs_time_secs_vec(&self) -> Vec<[f64;2]> {
 
         let time_reactor_power_vec: Vec<[f64;2]> = self.reactor_power_plot_data.iter().map(
             |tuple|{
                 let (time,reactor_power,_power_less_decay_heat) = *tuple;
 
-                if reactor_power.get::<watt>() > 0.0 {
-                    [time.get::<second>(), reactor_power.get::<watt>()]
+                if reactor_power.get::<megawatt>() > 0.0 {
+                    [time.get::<second>(), reactor_power.get::<megawatt>()]
                 } else {
                     // don't return anything, a default 0.0 will do 
                     // this is the initial condition
@@ -103,14 +103,14 @@ impl PagePlotData {
 
     /// gets reactor power data over time
     /// time in second, temp in degc
-    pub fn get_reactor_power_no_decay_heat_watts_vs_time_secs_vec(&self) -> Vec<[f64;2]> {
+    pub fn get_reactor_power_no_decay_heat_megawatts_vs_time_secs_vec(&self) -> Vec<[f64;2]> {
 
         let time_reactor_power_vec: Vec<[f64;2]> = self.reactor_power_plot_data.iter().map(
             |tuple|{
                 let (time,_reactor_power,reactor_power_less_decay_heat) = *tuple;
 
-                if reactor_power_less_decay_heat.get::<watt>() > 0.0 {
-                    [time.get::<second>(), reactor_power_less_decay_heat.get::<watt>()]
+                if reactor_power_less_decay_heat.get::<megawatt>() > 0.0 {
+                    [time.get::<second>(), reactor_power_less_decay_heat.get::<megawatt>()]
                 } else {
                     // don't return anything, a default 0.0 will do 
                     // this is the initial condition

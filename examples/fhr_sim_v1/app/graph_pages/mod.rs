@@ -40,10 +40,10 @@ impl FHRSimulatorApp {
             // let's make the time and reactor power vector
             // that is with and without decay heat
             let time_reactor_power_vec: Vec<[f64;2]> = 
-                latest_ciet_plot_data.get_reactor_power_watts_vs_time_secs_vec();
+                latest_ciet_plot_data.get_reactor_power_megawatts_vs_time_secs_vec();
 
             let time_reactor_power_no_decay_heat_vec: Vec<[f64;2]> = 
-                latest_ciet_plot_data.get_reactor_power_no_decay_heat_watts_vs_time_secs_vec();
+                latest_ciet_plot_data.get_reactor_power_no_decay_heat_megawatts_vs_time_secs_vec();
 
             ui.heading("Reactor Power vs Time");
             reactor_power_plot.show(ui, |plot_ui| {
