@@ -1,7 +1,7 @@
 use std::{ops::DerefMut, sync::{Arc, Mutex}, time::Duration};
 
 
-use uom::si::{f64::*, power::{kilowatt, megawatt}, time::second};
+use uom::si::{f64::*, power::megawatt, time::second};
 
 use crate::{FHRSimulatorApp, FHRState};
 

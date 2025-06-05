@@ -1,7 +1,7 @@
 
 use uom::si::f64::*;
 use uom::ConstZero;
-use uom::si::power::{megawatt, watt};
+use uom::si::power::megawatt;
 use uom::si::time::second;
 
 #[derive(Debug,Clone)]
