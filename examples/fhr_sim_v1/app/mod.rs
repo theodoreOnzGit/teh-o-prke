@@ -271,3 +271,5 @@ pub mod side_panel;
 pub mod panel_enum;
 
 pub mod graph_data;
+
+pub mod graph_pages;

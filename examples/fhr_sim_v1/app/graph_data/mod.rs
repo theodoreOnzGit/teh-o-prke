@@ -1,6 +1,8 @@
 
 use uom::si::f64::*;
 use uom::ConstZero;
+use uom::si::power::watt;
+use uom::si::time::second;
 
 #[derive(Debug,Clone)]
 pub struct PagePlotData {
@@ -75,27 +77,53 @@ impl PagePlotData {
 
 
 
-    ///// gets bt 65 data over time
-    ///// time in second, temp in degc
-    //pub fn get_bt_65_degc_vs_time_secs_vec(&self) -> Vec<[f64;2]> {
+    /// gets reactor power data over time
+    /// time in second, temp in degc
+    pub fn get_reactor_power_watts_vs_time_secs_vec(&self) -> Vec<[f64;2]> {
 
-    //    let time_bt65_vec: Vec<[f64;2]> = self.tchx_plot_data.iter().map(
-    //        |tuple|{
-    //            let (time,_tchx_htc,bt65,_bt66,_bt66_setpt) = *tuple;
+        let time_reactor_power_vec: Vec<[f64;2]> = self.reactor_power_plot_data.iter().map(
+            |tuple|{
+                let (time,reactor_power,_power_less_decay_heat) = *tuple;
 
-    //            if bt65.get::<kelvin>() > 0.0 {
-    //                [time.get::<second>(), bt65.get::<degree_celsius>()]
-    //            } else {
-    //                // don't return anything, a default 20.0 will do 
-    //                // this is the initial condition
-    //                [0.0,20.0]
-    //            }
+                if reactor_power.get::<watt>() > 0.0 {
+                    [time.get::<second>(), reactor_power.get::<watt>()]
+                } else {
+                    // don't return anything, a default 0.0 will do 
+                    // this is the initial condition
 
-    //        }
-    //    ).collect();
+                    // doesn't make sense for reactor power to be less than 0
+                    [0.0,0.0]
+                }
 
-    //    return time_bt65_vec;
-    //}
+            }
+        ).collect();
+
+        return time_reactor_power_vec;
+    }
+
+    /// gets reactor power data over time
+    /// time in second, temp in degc
+    pub fn get_reactor_power_no_decay_heat_watts_vs_time_secs_vec(&self) -> Vec<[f64;2]> {
+
+        let time_reactor_power_vec: Vec<[f64;2]> = self.reactor_power_plot_data.iter().map(
+            |tuple|{
+                let (time,_reactor_power,reactor_power_less_decay_heat) = *tuple;
+
+                if reactor_power_less_decay_heat.get::<watt>() > 0.0 {
+                    [time.get::<second>(), reactor_power_less_decay_heat.get::<watt>()]
+                } else {
+                    // don't return anything, a default 0.0 will do 
+                    // this is the initial condition
+
+                    // doesn't make sense for reactor power to be less than 0
+                    [0.0,0.0]
+                }
+
+            }
+        ).collect();
+
+        return time_reactor_power_vec;
+    }
 
 
 

@@ -2,7 +2,7 @@ use std::{sync::{Arc, Mutex}, thread};
 
 use uom::si::{f64::*, power::kilowatt};
 
-use crate::app::panel_enum::Panel;
+use crate::app::{graph_data::PagePlotData, panel_enum::Panel};
 
 
 /// this represents the first iteration 
@@ -49,6 +49,10 @@ pub struct FHRSimulatorApp {
 
     /// what panel is open
     pub open_panel: Panel,
+
+    #[serde(skip)]
+    /// pointer for plotting 
+    pub fhr_simulator_ptr_for_plotting: Arc<Mutex<PagePlotData>>
 }
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -192,11 +196,14 @@ impl Default for FHRSimulatorApp {
 
         let fhr_state = FHRState::default();
         let fhr_state_ptr = Arc::new(Mutex::new(fhr_state));
+        let fhr_plot: PagePlotData = PagePlotData::default();
+        let fhr_plot_ptr = Arc::new(Mutex::new(fhr_plot));
         let default_open_panel = Panel::MainPage;
 
         Self {
             fhr_state: fhr_state_ptr,
             open_panel: default_open_panel,
+            fhr_simulator_ptr_for_plotting: fhr_plot_ptr,
 
         }
     }
