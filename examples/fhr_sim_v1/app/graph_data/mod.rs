@@ -32,7 +32,7 @@ pub const NUM_DATA_PTS_IN_PLOTS: usize = 4000;
 impl PagePlotData {
 
     /// inserts a data point, most recent being on top 
-    pub fn insert_heater_data(&mut self, 
+    pub fn insert_reactor_power_data(&mut self, 
         simulation_time: Time,
         reactor_power_with_decay_heat: Power,
         reactor_power_without_decay_heat: Power){

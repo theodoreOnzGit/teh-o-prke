@@ -1,7 +1,7 @@
 use std::{ops::DerefMut, sync::{Arc, Mutex}, time::Duration};
 
 
-use uom::si::{f64::*, power::kilowatt, time::second};
+use uom::si::{f64::*, power::{kilowatt, megawatt}, time::second};
 
 use crate::{FHRSimulatorApp, FHRState};
 
@@ -21,13 +21,28 @@ impl FHRSimulatorApp {
             let mut local_fhr_plot: PagePlotData = 
                 fhr_simulator_ptr_for_plotting.lock().unwrap().clone();
 
-            let current_time: Time = Time::new::<second>(
+            let simulation_time: Time = Time::new::<second>(
                 local_fhr_state.prke_simulation_time_seconds);
             {
 
                 let reactor_power_with_decay_heat: Power = 
-                    Power::new::<kilowatt>(
+                    Power::new::<megawatt>(
                         local_fhr_state.reactor_power_megawatts);
+                let reactor_decay_heat: Power = 
+                    Power::new::<megawatt>(
+                        local_fhr_state.reactor_decay_heat_megawatts);
+
+                let reactor_power_without_decay_heat = 
+                    reactor_power_with_decay_heat - 
+                    reactor_decay_heat;
+
+                local_fhr_plot.insert_reactor_power_data(
+                    simulation_time, 
+                    reactor_power_with_decay_heat, 
+                    reactor_power_without_decay_heat);
+
+
+
             }
 
 

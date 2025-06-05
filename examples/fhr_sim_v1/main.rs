@@ -172,6 +172,13 @@ impl FHRSimulatorApp {
             new_fhr_app.fhr_state.clone();
         let fhr_state_thermal_hydraulics_ptr: Arc<Mutex<FHRState>> = 
             new_fhr_app.fhr_state.clone();
+        // these are pointers/references for plotting reactor power 
+        // both the instantaneous state 
+        // and page plotting
+        let fhr_state_plot_ptr: Arc<Mutex<FHRState>> = 
+            new_fhr_app.fhr_state.clone();
+        let fhr_page_plot_ptr: Arc<Mutex<PagePlotData>> = 
+            new_fhr_app.fhr_simulator_ptr_for_plotting.clone();
 
         // now spawn a thread to do the kinetics
         //
@@ -184,6 +191,14 @@ impl FHRSimulatorApp {
         thread::spawn(move ||{
             FHRSimulatorApp::calculate_thermal_hydraulics_loop(
                 fhr_state_thermal_hydraulics_ptr
+            );
+            
+        });
+        // spawn a thread to do the updating of graph plots
+        thread::spawn(move ||{
+            FHRSimulatorApp::update_plot_from_fhr_state(
+                fhr_state_plot_ptr,
+                fhr_page_plot_ptr
             );
             
         });
