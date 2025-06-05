@@ -6,6 +6,7 @@ use uom::si::f64::*;
 use uom::si::thermodynamic_temperature::degree_celsius;
 
 use crate::{FHRSimulatorApp, FHRState};
+use crate::Panel;
 
 pub mod prke_backend;
 pub mod thermal_hydraulics_backend;
@@ -24,6 +25,15 @@ impl eframe::App for FHRSimulatorApp {
 
 
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+                        // allow user to select which panel is open
+            ui.horizontal( 
+                |ui| {
+                    ui.selectable_value(&mut self.open_panel, Panel::MainPage, "Main Page"); 
+                    ui.selectable_value(&mut self.open_panel, Panel::ReactorPowerGraphs, "Power Diagnostics"); 
+                    ui.selectable_value(&mut self.open_panel, Panel::PoisonGraphs, "Reactor Poison Diagnostics"); 
+            }
+            );
+            ui.separator();
         });
 
         egui::SidePanel::right("Supplementary Info").show(ctx, |ui|{
