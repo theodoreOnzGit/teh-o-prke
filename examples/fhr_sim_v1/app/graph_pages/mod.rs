@@ -33,26 +33,26 @@ impl FHRSimulatorApp {
             );
             reactor_power_plot = reactor_power_plot.y_axis_label(
                 "Reactor Power (Megawatts)".to_owned());
-            let latest_ciet_plot_data: PagePlotData = 
+            let latest_fhr_plot_data: PagePlotData = 
                 self.fhr_simulator_ptr_for_plotting.lock().unwrap().clone();
 
 
             // let's make the time and reactor power vector
             // that is with and without decay heat
             let time_reactor_power_vec: Vec<[f64;2]> = 
-                latest_ciet_plot_data.get_reactor_power_megawatts_vs_time_secs_vec();
+                latest_fhr_plot_data.get_reactor_power_megawatts_vs_time_secs_vec();
 
             let time_reactor_power_no_decay_heat_vec: Vec<[f64;2]> = 
-                latest_ciet_plot_data.get_reactor_power_no_decay_heat_megawatts_vs_time_secs_vec();
+                latest_fhr_plot_data.get_reactor_power_no_decay_heat_megawatts_vs_time_secs_vec();
 
             ui.heading("Reactor Power vs Time");
             reactor_power_plot.show(ui, |plot_ui| {
                 plot_ui.line(Line::new(PlotPoints::from(
                             time_reactor_power_vec.clone()
-                )).name("Reactor power (no decay heat) Megawatts"));
+                )).name("Reactor power with decay heat Megawatts"));
                 plot_ui.line(Line::new(PlotPoints::from(
                             time_reactor_power_no_decay_heat_vec.clone()
-                )).name("Reactor power with decay heat Megawatts"));
+                )).name("Reactor power without decay heat Megawatts"));
                 //plot_ui.line(Line::new(PlotPoints::from(
                 //            time_simulated_reactor_feedback_outlet_temp_vec.clone()
                 //)).name("simulated reactivity bt12 (heater outlet) temperature deg C"));
