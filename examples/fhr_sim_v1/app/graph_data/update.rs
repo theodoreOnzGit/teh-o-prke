@@ -34,7 +34,7 @@ impl FHRSimulatorApp {
 
                 let reactor_power_without_decay_heat = 
                     reactor_power_with_decay_heat - 
-                    reactor_decay_heat;
+                    reactor_decay_heat.abs();
 
                 local_fhr_plot.insert_reactor_power_data(
                     simulation_time, 
