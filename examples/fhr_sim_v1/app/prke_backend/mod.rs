@@ -304,10 +304,10 @@ impl FHRSimulatorApp {
         // adjust fission power for decay heat 
         // fission power less decay heat = 1.0 - 0.04 - 0.04 - 0.02 = 0.9
         let mut fission_power_corrected_for_decay_heat = fission_power_instantaneous * 0.9;
-        let mut reactor_current_decay_heat: Power = fhr_decay_heat.calc_decay_heat_power_1(prke_timestep);
-        reactor_current_decay_heat += fhr_decay_heat.calc_decay_heat_power_2(prke_timestep);
-        reactor_current_decay_heat += fhr_decay_heat.calc_decay_heat_power_3(prke_timestep);
-        fission_power_corrected_for_decay_heat -= reactor_current_decay_heat;
+        let mut reactor_current_decay_heat: Power = fhr_decay_heat.calc_decay_heat_power_1(prke_timestep).abs();
+        reactor_current_decay_heat += fhr_decay_heat.calc_decay_heat_power_2(prke_timestep).abs();
+        reactor_current_decay_heat += fhr_decay_heat.calc_decay_heat_power_3(prke_timestep).abs();
+        fission_power_corrected_for_decay_heat += reactor_current_decay_heat;
 
         // with the correct fission power now, we can 
         // calc temperature
