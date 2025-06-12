@@ -75,7 +75,12 @@ pub struct RKF45 {
     k6_: Vec<f64>,
     err_: Vec<f64>,
 
+    // i'll need to make way for a system of ODEs
+
 }
+
+
+
 
 #[allow(non_snake_case)]
 impl RKF45 {
@@ -120,6 +125,12 @@ impl RKF45 {
         //
         // But, yes. RKF45 after all is a method, the derivatives themselves 
         // are user defined.
+        //
+        // so this is evaluating the system of derivatives at 
+        // x = x0 + c2*dx
+        // y = yTemp_
+        //
+        // and in this case, storing it in self.k2_
 
         // forAll(yTemp_, i)
         // {
