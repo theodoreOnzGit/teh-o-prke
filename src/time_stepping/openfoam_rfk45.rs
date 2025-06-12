@@ -1,3 +1,5 @@
+use super::openfoam_ode_system::ODESystem;
+
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
@@ -75,7 +77,9 @@ pub struct RKF45 {
     k6_: Vec<f64>,
     err_: Vec<f64>,
     // i'll need to make way for a system of ODEs
+    //
 
+    odes_: ODESystem,
 }
 
 
@@ -110,7 +114,7 @@ impl RKF45 {
         //
         // question is what does the derivatives method do?
 
-        // odes_.derivatives(x0 + c2*dx, yTemp_, k2_);
+        self.odes_.derivatives(x0 + c2*dx, &yTemp_, &mut self.k2_);
         //
         // //- Calculate the derivatives in dydx
         // virtual void derivatives
@@ -139,7 +143,7 @@ impl RKF45 {
             self.yTemp_[i] = y0[i] + dx*(a31*dydx0[i] + a32*self.k2_[i]);
         }
 
-        // odes_.derivatives(x0 + c3*dx, yTemp_, k3_);
+        self.odes_.derivatives(x0 + c3*dx, &yTemp_, &mut self.k3_);
 
         // forAll(yTemp_, i)
         // {
@@ -149,7 +153,7 @@ impl RKF45 {
             self.yTemp_[i] = y0[i] + dx*(a41*dydx0[i] + a42*self.k2_[i] + a43*self.k3_[i]);
         }
 
-        // odes_.derivatives(x0 + c4*dx, yTemp_, k4_);
+        self.odes_.derivatives(x0 + c4*dx, &yTemp_, &mut self.k4_);
 
         // forAll(yTemp_, i)
         // {
@@ -161,7 +165,7 @@ impl RKF45 {
                 + dx*(a51*dydx0[i] + a52*self.k2_[i] + a53*self.k3_[i] + a54*self.k4_[i]);
         }
 
-        // odes_.derivatives(x0 + c5*dx, yTemp_, k5_);
+        self.odes_.derivatives(x0 + c5*dx, &yTemp_, &mut self.k5_);
 
         // forAll(yTemp_, i)
         // {
@@ -178,7 +182,7 @@ impl RKF45 {
         }
 
 
-        // odes_.derivatives(x0 + c6*dx, yTemp_, k6_);
+        self.odes_.derivatives(x0 + c6*dx, &yTemp_, &mut self.k6_);
 
         // // Calculate the 5th-order solution
         // forAll(y, i)
