@@ -16,3 +16,5 @@
 pub mod openfoam_rfk45;
 
 pub mod openfoam_ode_system;
+
+pub mod openfoam_ode_solver;
