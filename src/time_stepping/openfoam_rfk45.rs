@@ -74,7 +74,6 @@ pub struct RKF45 {
     k5_: Vec<f64>,
     k6_: Vec<f64>,
     err_: Vec<f64>,
-
     // i'll need to make way for a system of ODEs
 
 }

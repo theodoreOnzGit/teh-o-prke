@@ -15,4 +15,4 @@
 #[allow(non_upper_case_globals)]
 pub mod openfoam_rfk45;
 
-pub mod ode;
+pub mod openfoam_ode_system;

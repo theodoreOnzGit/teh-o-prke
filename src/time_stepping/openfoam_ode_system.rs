@@ -1,3 +1,4 @@
+/// rust translation of the OpenFOAM ODE system
 pub struct ODESystem {
     /// takes in two vectors, x and y 
     /// and then outputs dydx
@@ -8,6 +9,8 @@ pub struct ODESystem {
 
 impl ODESystem {
 
+    /// constructor for ODE system 
+    /// probably want some easier ways to construct the ode system
     pub fn new(ode_system: fn(Vec<f64>, Vec<f64>) -> Vec<f64>) -> Self
     {
         Self {
