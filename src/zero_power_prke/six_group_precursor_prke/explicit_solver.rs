@@ -164,6 +164,9 @@ impl SixGroupPRKE {
                     dydt
                 };
 
+            // note that I may be able to use box types in this case
+            //
+            // https://doc.rust-lang.org/book/ch20-04-advanced-functions-and-closures.html
             //ode_system = ODESystem::new(prke_ode_system);
 
 
