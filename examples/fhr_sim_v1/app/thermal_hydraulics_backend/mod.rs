@@ -36,6 +36,8 @@ impl FHRSimulatorApp {
         let loop_time = SystemTime::now();
         let mut current_simulation_time = Time::ZERO;
 
+        // create components first
+
 
         // calculation loop (indefinite)
         //
