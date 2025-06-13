@@ -4,10 +4,10 @@ use uom::ConstZero;
 use uom::si::f64::*;
 use uom::si::volumetric_number_density::per_cubic_meter;
 use uom::si::ratio::ratio;
-pub mod six_group_constants;
 
 use crate::teh_o_prke_error::TehOPrkeError;
-use crate::zero_power_prke::six_group_precursor_prke::six_group_constants::FissioningNuclideType;
+pub mod six_group_constants;
+use six_group_constants::FissioningNuclideType;
 
 /// Decay Constant is essentially the same units as frequency
 pub type DecayConstant = Frequency;
