@@ -72,8 +72,11 @@ impl Default for SixGroupPRKE {
     }
 }
 
-/// contains implicit solvers for SixGroupPRKE
+/// contains time stepping implicit solvers for SixGroupPRKE
 pub mod implicit_solver;
+
+/// contains time stepping explicit solvers for SixGroupPRKE 
+pub mod explicit_solver;
 
 impl SixGroupPRKE {
 
