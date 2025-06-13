@@ -240,7 +240,7 @@ impl FHRSimulatorApp {
 
 
         let _neutron_pop_and_six_group_precursor_vec = 
-            prke_six_group.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+            prke_six_group.solve_next_timestep_precursor_concentration_and_neutron_pop_vector_implicit(
                 prke_timestep, 
                 reactivity, 
                 mean_neutron_time, 

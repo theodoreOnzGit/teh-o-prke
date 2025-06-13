@@ -94,7 +94,7 @@ impl DecayHeat {
         let e_decay_t_plus_delta_t = e_decay_t / coeff;
 
         self.decay_heat_precursor1 = e_decay_t_plus_delta_t;
-
+        
         return (e_decay_t_plus_delta_t - e_decay_t)/timestep;
 
         

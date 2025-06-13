@@ -132,7 +132,7 @@ impl SixGroupPRKE {
     /// returns the next timestep neutron source vector
     ///
     /// also updates the current precursor and concentration vector
-    pub fn solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+    pub fn solve_next_timestep_precursor_concentration_and_neutron_pop_vector_implicit(
         &mut self,
         timestep: Time,
         reactivity: Ratio,
