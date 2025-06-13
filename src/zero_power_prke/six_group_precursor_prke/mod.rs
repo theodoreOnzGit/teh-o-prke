@@ -129,9 +129,13 @@ impl SixGroupPRKE {
         total_delayed_fraction
     }
 
+
+
     /// returns the next timestep neutron source vector
     ///
     /// also updates the current precursor and concentration vector
+    ///
+    /// this timestepping is implicit rather than explicit
     pub fn solve_next_timestep_precursor_concentration_and_neutron_pop_vector_implicit(
         &mut self,
         timestep: Time,
