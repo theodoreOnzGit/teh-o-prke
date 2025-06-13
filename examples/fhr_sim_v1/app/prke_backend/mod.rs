@@ -4,7 +4,7 @@ use std::time::{Duration, SystemTime};
 
 use teh_o_prke::decay_heat::DecayHeat;
 use teh_o_prke::feedback_mechanisms::fission_product_poisons::Xenon135Poisoning;
-use teh_o_prke::zero_power_prke::six_group_precursor_prke::FissioningNuclideType;
+use teh_o_prke::zero_power_prke::six_group_precursor_prke::six_group_constants::FissioningNuclideType;
 use teh_o_prke::{feedback_mechanisms::SixFactorFormulaFeedback, zero_power_prke::six_group_precursor_prke::SixGroupPRKE};
 use uom::si::area::square_meter;
 use uom::si::energy::{kilojoule, megaelectronvolt};
