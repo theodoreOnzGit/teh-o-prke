@@ -169,6 +169,8 @@ impl SixGroupPRKE {
             // https://doc.rust-lang.org/book/ch20-04-advanced-functions-and-closures.html
             //
             //ode_system = ODESystem::new(Box::new(prke_ode_system));
+            
+            let mut dydt: Vec<f64> = vec![];
 
 
 
