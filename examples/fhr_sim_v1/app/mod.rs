@@ -116,17 +116,13 @@ impl FHRSimulatorApp {
 
         // quickly clone the fhr state and drop ptr asap 
         // just to read
-        let mut left_control_rod_insertion_frac 
-            = 0.0;
-        let mut right_control_rod_insertion_frac 
-            = 0.0;
         let fhr_state_ptr = self.fhr_state.lock().unwrap();
         let fhr_state_clone: FHRState = fhr_state_ptr.clone();
         drop(fhr_state_ptr);
 
-        left_control_rod_insertion_frac 
+        let left_control_rod_insertion_frac 
             = fhr_state_clone.left_cr_insertion_frac;
-        right_control_rod_insertion_frac 
+        let right_control_rod_insertion_frac 
             = fhr_state_clone.right_cr_insertion_frac;
 
 
