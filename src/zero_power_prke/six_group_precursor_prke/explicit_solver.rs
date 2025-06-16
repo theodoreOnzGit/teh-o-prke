@@ -172,6 +172,12 @@ impl SixGroupPRKE {
             
             let mut dydt: Vec<f64> = vec![];
 
+            fn test_fn(func: impl Fn(f64, &Vec<f64>) -> Vec<f64>){
+
+            }
+
+            test_fn(prke_ode_system);
+
 
 
             todo!()

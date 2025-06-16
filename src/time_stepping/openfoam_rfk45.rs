@@ -94,7 +94,7 @@ impl RKF45 {
         y0: Vec<f64>,
         dydx0: Vec<f64>,
         dx: f64,
-        y: &mut Vec<f64>){
+        y: &mut Vec<f64>,){
 
         let yTemp_ = self.yTemp_.clone();
 
@@ -230,10 +230,9 @@ impl RKF45 {
     pub fn solve_functional_prog(&mut self, 
         x0: f64, 
         y0: Vec<f64>,
-        dydx0: Vec<f64>,
         dx: f64,
         y: &mut Vec<f64>,
-        user_defined_ode: impl Fn(f64, Vec<f64>) -> Vec<f64>){
+        user_defined_ode: impl Fn(f64, &Vec<f64>) -> Vec<f64>){
 
         let yTemp_ = self.yTemp_.clone();
 
@@ -241,6 +240,8 @@ impl RKF45 {
         //
         // but k1_ in this case is just dydx0
         // ie f(x,y)
+
+        let dydx0: Vec<f64> = user_defined_ode(x0,&y0);
 
         for (i,_yTemp) in yTemp_.iter().enumerate() {
             self.yTemp_[i] = y0[i] + a21*dx*dydx0[i];
@@ -252,7 +253,7 @@ impl RKF45 {
         // the ODESystem class
         //
         // question is what does the derivatives method do?
-
+        
         self.odes_.derivatives(x0 + c2*dx, &yTemp_, &mut self.k2_);
         //
         // //- Calculate the derivatives in dydx
