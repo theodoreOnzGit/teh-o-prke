@@ -24,7 +24,7 @@ impl ODESystem {
 
 
     /// this evaluates a vector dydx based on a vector y and 
-    /// vector x
+    /// scalar coordinate x
     pub fn derivatives(&self,
         x: f64,
         y: &Vec<f64>,
@@ -36,4 +36,20 @@ impl ODESystem {
 
 
     }
+
+    /// this evaluates a vector dydx based on a vector y and 
+    /// scalar coordinate x
+    pub fn derivatives_with_fn(
+        ode_system: impl Fn(f64, &Vec<f64>) -> Vec<f64>,
+        x: f64,
+        y: &Vec<f64>,
+        dydx: &mut Vec<f64>) {
+
+        let dydx_local = (ode_system)(x,y);
+
+        *dydx = dydx_local;
+
+
+    }
+
 }
