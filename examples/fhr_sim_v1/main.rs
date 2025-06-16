@@ -109,8 +109,8 @@ impl Default for FHRState {
     fn default() -> Self {
         let default_temperature_degc = 500.0;
         FHRState { 
-            left_cr_insertion_frac: 1.0,
-            right_cr_insertion_frac: 1.0,
+            left_cr_insertion_frac: 0.6,
+            right_cr_insertion_frac: 0.6,
             pebble_core_temp_degc: default_temperature_degc,
             pebble_bed_coolant_temp_degc: default_temperature_degc,
             core_bottom_temp_degc: default_temperature_degc,
