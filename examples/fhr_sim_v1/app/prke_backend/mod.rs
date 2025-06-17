@@ -34,7 +34,7 @@ impl FHRSimulatorApp {
         // default
         let mut prke_six_group :SixGroupPRKE = SixGroupPRKE::default();
 
-        let prke_timestep = Time::new::<microsecond>(20.0);
+        let prke_timestep = Time::new::<microsecond>(50.0);
         let reactor_volume = Volume::new::<cubic_meter>(0.5);
         let macroscopic_fission_xs = LinearNumberDensity::new::<per_meter>(1.0);
         let mut pebble_bed_th_struct = 
@@ -109,7 +109,7 @@ impl FHRSimulatorApp {
                 (loop_time.elapsed().unwrap().as_secs_f64() * 100.0).round()/100.0;
 
             let overall_simulation_in_realtime_or_faster: bool = 
-                prke_simulation_time_seconds > prke_elapsed_time_seconds;
+                prke_simulation_time_seconds >= prke_elapsed_time_seconds;
 
             // now update the fhr state 
             let prke_timestep_microseconds = prke_timestep.get::<microsecond>();
@@ -153,10 +153,7 @@ impl FHRSimulatorApp {
 
             if overall_simulation_in_realtime_or_faster {
                 thread::sleep(time_to_sleep);
-            } else {
-                // sleep 10 microseconds by default
-                thread::sleep(Duration::from_micros(10));
-            }
+            }             
             //let time_to_sleep = Duration::from_millis(40);
 
             //dbg!(&(
