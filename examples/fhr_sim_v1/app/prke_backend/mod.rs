@@ -34,7 +34,7 @@ impl FHRSimulatorApp {
         // default
         let mut prke_six_group :SixGroupPRKE = SixGroupPRKE::default();
 
-        let prke_timestep = Time::new::<second>(5.0e-4);
+        let prke_timestep = Time::new::<microsecond>(20.0);
         let reactor_volume = Volume::new::<cubic_meter>(0.5);
         let macroscopic_fission_xs = LinearNumberDensity::new::<per_meter>(1.0);
         let mut pebble_bed_th_struct = 
@@ -153,6 +153,9 @@ impl FHRSimulatorApp {
 
             if overall_simulation_in_realtime_or_faster {
                 thread::sleep(time_to_sleep);
+            } else {
+                // sleep 10 microseconds by default
+                thread::sleep(Duration::from_micros(10));
             }
             //let time_to_sleep = Duration::from_millis(40);
 
@@ -237,15 +240,28 @@ impl FHRSimulatorApp {
         let background_source_rate = 
             VolumetricNumberRate::new::<per_cubic_meter_second>(5.0);
 
+        // use this to toggle between implicit and explicit solver
+        let implicit_solver = false;
 
 
-        let _neutron_pop_and_six_group_precursor_vec = 
-            prke_six_group.solve_next_timestep_precursor_concentration_and_neutron_pop_vector_implicit(
-                prke_timestep, 
-                reactivity, 
-                mean_neutron_time, 
-                background_source_rate
-            );
+        if implicit_solver == true {
+            let _neutron_pop_and_six_group_precursor_vec = 
+                prke_six_group.solve_next_timestep_precursor_concentration_and_neutron_pop_vector_implicit(
+                    prke_timestep, 
+                    reactivity, 
+                    mean_neutron_time, 
+                    background_source_rate
+                );
+        } else {
+
+            let _neutron_pop_and_six_group_precursor_vec = 
+                prke_six_group.solve_next_timestep_precursor_concentration_and_neutron_pop_vector_explicit(
+                    prke_timestep, 
+                    reactivity, 
+                    mean_neutron_time, 
+                    background_source_rate
+                );
+        }
 
         // then get the current neutron population 
         let current_neutron_pop_density: VolumetricNumberDensity = 
