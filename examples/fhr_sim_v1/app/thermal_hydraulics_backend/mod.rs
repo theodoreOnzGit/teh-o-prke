@@ -3,6 +3,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::{Duration, SystemTime};
 
+use components::*;
 //use teh_o_prke::decay_heat::DecayHeat;
 //use teh_o_prke::feedback_mechanisms::fission_product_poisons::Xenon135Poisoning;
 //use teh_o_prke::zero_power_prke::six_group::FissioningNuclideType;
@@ -19,7 +20,7 @@ use uom::si::time::{microsecond, second};
 //use uom::si::volumetric_number_rate::per_cubic_meter_second;
 use uom::si::f64::*;
 //use uom::si::ratio::ratio;
-//use uom::si::thermodynamic_temperature::degree_celsius;
+use uom::si::thermodynamic_temperature::degree_celsius;
 use uom::ConstZero;
 
 
@@ -37,6 +38,21 @@ impl FHRSimulatorApp {
         let mut current_simulation_time = Time::ZERO;
 
         // create components first
+        let initial_temperature = ThermodynamicTemperature::new::<degree_celsius>(
+            fhr_state_clone.lock().unwrap().core_outlet_temp_degc
+        );
+        let reactor_vessel_1 = new_reactor_vessel_pipe_1(initial_temperature);
+        let downcomer_pipe_2 = new_downcomer_pipe_2(initial_temperature);
+        let downcomer_pipe_3 = new_downcomer_pipe_3(initial_temperature);
+        let pipe_4 = new_fhr_pipe_4(initial_temperature);
+        let pri_loop_pump = new_fhr_pri_loop_pump(initial_temperature);
+
+        // create initial mass flowrates 
+
+        let mut pri_loop_forced_circ_mass_flowrate = MassRate::ZERO;
+        let mut core_mass_flowrate = MassRate::ZERO;
+        let mut downcomer_pipe_2_mass_flowrate = MassRate::ZERO;
+        let mut downcomer_pipe_3_mass_flowrate = MassRate::ZERO;
 
 
         // calculation loop (indefinite)
@@ -162,3 +178,7 @@ impl FHRSimulatorApp {
 /// these are components for primary loop and secondary loop 
 /// turbine components not included (will be in tampines-steam-tables)
 pub mod components;
+
+/// contains functions for calculating pri loop 
+/// fluid mechanics
+pub mod pri_loop_fluid_mechanics_calc_fns;

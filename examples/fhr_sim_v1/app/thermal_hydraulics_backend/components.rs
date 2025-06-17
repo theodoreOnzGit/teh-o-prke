@@ -1,4 +1,5 @@
 use tuas_boussinesq_solver::pre_built_components::insulated_pipes_and_fluid_components::InsulatedFluidComponent;
+use tuas_boussinesq_solver::pre_built_components::non_insulated_fluid_components::NonInsulatedFluidComponent;
 use uom::si::angle::degree;
 use uom::si::area::{square_centimeter, square_meter};
 use uom::si::f64::*;
@@ -251,7 +252,7 @@ pub fn new_downcomer_pipe_3(initial_temperature: ThermodynamicTemperature) -> In
 /// creates a new pipe 4 for the fhr simulator, this goes from bottom 
 /// to top of the pebble bed
 ///
-/// this is supposed to be part of the forced cooling loop
+/// this is supposed to be part of the forced cooling primary loop
 ///
 /// it is then joined to two mixing nodes at the top and bottom of the 
 /// reactor
@@ -271,7 +272,7 @@ pub fn new_downcomer_pipe_3(initial_temperature: ThermodynamicTemperature) -> In
 /// https://kairospower.com/generic-fhr-core-model/
 ///
 /// we can scale it down
-pub fn new_pipe_4(initial_temperature: ThermodynamicTemperature) -> InsulatedFluidComponent {
+pub fn new_fhr_pipe_4(initial_temperature: ThermodynamicTemperature) -> InsulatedFluidComponent {
     let ambient_temperature = ThermodynamicTemperature::new::<degree_celsius>(20.0);
     let fluid_pressure = Pressure::new::<atmosphere>(1.0);
     let solid_pressure = Pressure::new::<atmosphere>(1.0);
@@ -323,6 +324,58 @@ pub fn new_pipe_4(initial_temperature: ThermodynamicTemperature) -> InsulatedFlu
 
     insulated_component
 }
+
+
+/// creates a new pump component for the primary loop
+pub fn new_fhr_pri_loop_pump(initial_temperature: ThermodynamicTemperature) -> NonInsulatedFluidComponent {
+    let ambient_temperature = ThermodynamicTemperature::new::<degree_celsius>(20.0);
+    let fluid_pressure = Pressure::new::<atmosphere>(1.0);
+    let solid_pressure = Pressure::new::<atmosphere>(1.0);
+    let hydraulic_diameter = Length::new::<meter>(5.0);
+    let component_length = Length::new::<meter>(0.36);
+    let flow_area = Area::new::<square_centimeter>(20.0);
+    let incline_angle = Angle::new::<degree>(0.0);
+    let form_loss = Ratio::new::<ratio>(0.0);
+    let reynolds_power = -1_f64;
+    let reynolds_coefficient = Ratio::new::<ratio>(0.0);
+    //estimated component wall roughness (doesn't matter here,
+    //but i need to fill in)
+    let shell_id = hydraulic_diameter;
+    let pipe_thickness = Length::new::<meter>(0.0027686);
+    let shell_od = shell_id + 2.0 * pipe_thickness;
+    let pipe_shell_material = SolidMaterial::SteelSS304L;
+    let pipe_fluid = LiquidMaterial::FLiBe;
+    let htc_to_ambient = HeatTransfer::new::<watt_per_square_meter_kelvin>(20.0);
+    // from SAM nodalisation, we have 2 nodes only, 
+    // now because there are two outer nodes, we subtract 2
+    let user_specified_inner_nodes = 2-2; 
+
+
+
+    let non_insulated_component = NonInsulatedFluidComponent::
+        new_custom_component(
+            initial_temperature, 
+            ambient_temperature, 
+            fluid_pressure, 
+            solid_pressure, 
+            flow_area, 
+            incline_angle, 
+            form_loss, 
+            reynolds_coefficient, 
+            reynolds_power, 
+            shell_id, 
+            shell_od, 
+            component_length, 
+            hydraulic_diameter, 
+            pipe_shell_material, 
+            pipe_fluid, 
+            htc_to_ambient, 
+            user_specified_inner_nodes);
+
+    non_insulated_component
+
+}
+
 
 /// creates a new pipe6a for CIET using the RELAP5-3D and SAM parameters 
 /// Pipe6a in Compact Integral Effects Test (CIET)
@@ -389,5 +442,75 @@ pub fn new_ciet_pipe_6a(initial_temperature: ThermodynamicTemperature) -> Insula
         surface_roughness);
 
     insulated_component
+}
+
+
+/// creates a new component for CIET using the RELAP5-3D and SAM parameters 
+///
+/// ctah pump is a custom therminol component with
+/// ie no friction factor losses
+/// but it provides a source pressure
+///
+/// it is located between pipe 12 and 13
+///
+/// Zou, Ling, Rui Hu, and Anne Charpentier. SAM code 
+/// validation using the compact integral effects test (CIET) 
+/// experimental data. No. ANL/NSE-19/11. Argonne National Lab.(ANL), 
+///
+///
+/// Zweibaum, Nicolas. Experimental validation of passive safety 
+/// system models: Application to design and optimization of 
+/// fluoride-salt-cooled, high-temperature reactors. University of 
+/// California, Berkeley, 2015.
+/// Argonne, IL (United States), 2019.
+///
+/// this is used as a template to copy over
+pub fn new_ctah_pump(initial_temperature: ThermodynamicTemperature) -> NonInsulatedFluidComponent {
+    let ambient_temperature = ThermodynamicTemperature::new::<degree_celsius>(20.0);
+    let fluid_pressure = Pressure::new::<atmosphere>(1.0);
+    let solid_pressure = Pressure::new::<atmosphere>(1.0);
+    let hydraulic_diameter = Length::new::<meter>(2.79e-2);
+    let component_length = Length::new::<meter>(0.36);
+    let flow_area = Area::new::<square_meter>(6.11e-4);
+    let incline_angle = Angle::new::<degree>(0.0);
+    let form_loss = Ratio::new::<ratio>(0.0);
+    let reynolds_power = -1_f64;
+    let reynolds_coefficient = Ratio::new::<ratio>(0.0);
+    //estimated component wall roughness (doesn't matter here,
+    //but i need to fill in)
+    let shell_id = hydraulic_diameter;
+    let pipe_thickness = Length::new::<meter>(0.0027686);
+    let shell_od = shell_id + 2.0 * pipe_thickness;
+    let pipe_shell_material = SolidMaterial::SteelSS304L;
+    let pipe_fluid = LiquidMaterial::TherminolVP1;
+    let htc_to_ambient = HeatTransfer::new::<watt_per_square_meter_kelvin>(20.0);
+    // from SAM nodalisation, we have 2 nodes only, 
+    // now because there are two outer nodes, we subtract 2
+    let user_specified_inner_nodes = 2-2; 
+
+
+
+    let non_insulated_component = NonInsulatedFluidComponent::
+        new_custom_component(
+            initial_temperature, 
+            ambient_temperature, 
+            fluid_pressure, 
+            solid_pressure, 
+            flow_area, 
+            incline_angle, 
+            form_loss, 
+            reynolds_coefficient, 
+            reynolds_power, 
+            shell_id, 
+            shell_od, 
+            component_length, 
+            hydraulic_diameter, 
+            pipe_shell_material, 
+            pipe_fluid, 
+            htc_to_ambient, 
+            user_specified_inner_nodes);
+
+    non_insulated_component
+
 }
 
