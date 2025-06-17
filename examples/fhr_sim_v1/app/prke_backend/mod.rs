@@ -146,14 +146,28 @@ impl FHRSimulatorApp {
 
 
             // last condition for sleeping
-            let _real_time_in_current_timestep: bool = 
+            let real_time_in_current_timestep: bool = 
                 time_to_sleep_microseconds > 1;
 
             //
+            let fast_forward_botton_on = true;
 
-            if overall_simulation_in_realtime_or_faster {
+            if overall_simulation_in_realtime_or_faster && 
+                real_time_in_current_timestep && 
+                    !fast_forward_botton_on 
+            {
                 thread::sleep(time_to_sleep);
-            }             
+            } else if overall_simulation_in_realtime_or_faster 
+                && real_time_in_current_timestep 
+                    && fast_forward_botton_on 
+            {
+                // sleep 5 microseconds if fast fwd
+                let short_time_to_sleep: Duration = Duration::from_micros(5);
+                thread::sleep(short_time_to_sleep);
+            } else {
+                // don't sleep
+
+            }
             //let time_to_sleep = Duration::from_millis(40);
 
             //dbg!(&(
