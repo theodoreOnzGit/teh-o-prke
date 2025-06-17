@@ -150,7 +150,7 @@ impl FHRSimulatorApp {
                 time_to_sleep_microseconds > 1;
 
             //
-            let fast_forward_botton_on = false;
+            let fast_forward_botton_on = true;
 
             if overall_simulation_in_realtime_or_faster && 
                 real_time_in_current_timestep && 
