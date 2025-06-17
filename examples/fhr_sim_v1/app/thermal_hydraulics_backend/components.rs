@@ -1,6 +1,6 @@
 use tuas_boussinesq_solver::pre_built_components::insulated_pipes_and_fluid_components::InsulatedFluidComponent;
 use uom::si::angle::degree;
-use uom::si::area::square_meter;
+use uom::si::area::{square_centimeter, square_meter};
 use uom::si::f64::*;
 use uom::si::heat_transfer::watt_per_square_meter_kelvin;
 use uom::si::length::{centimeter, meter, millimeter};
@@ -44,7 +44,7 @@ pub fn new_reactor_vessel_pipe_1(initial_temperature: ThermodynamicTemperature) 
     // area of a 120 cm radius circle is about 11310 cm^2 
     // assume 60% filled by pebbles 
     // we get about 4523 cm2
-    let flow_area = Area::new::<square_meter>(4500.0);
+    let flow_area = Area::new::<square_centimeter>(4500.0);
     let incline_angle = Angle::new::<degree>(90.0);
     // not putting in ergun equation yet
     let form_loss = Ratio::new::<ratio>(55.05);
@@ -121,7 +121,7 @@ pub fn new_downcomer_pipe_2(initial_temperature: ThermodynamicTemperature) -> In
     // area of a 120 cm radius circle is about 11310 cm^2 
     // assume 60% filled by pebbles 
     // we get about 4523 cm2
-    let flow_area = Area::new::<square_meter>(100.0);
+    let flow_area = Area::new::<square_centimeter>(100.0);
     let incline_angle = Angle::new::<degree>(90.0);
     // not putting in ergun equation yet
     let form_loss = Ratio::new::<ratio>(55.05);
@@ -202,7 +202,7 @@ pub fn new_downcomer_pipe_3(initial_temperature: ThermodynamicTemperature) -> In
     // area of a 120 cm radius circle is about 11310 cm^2 
     // assume 60% filled by pebbles 
     // we get about 4523 cm2
-    let flow_area = Area::new::<square_meter>(100.0);
+    let flow_area = Area::new::<square_centimeter>(100.0);
     let incline_angle = Angle::new::<degree>(90.0);
     // not putting in ergun equation yet
     let form_loss = Ratio::new::<ratio>(55.05);
@@ -222,6 +222,81 @@ pub fn new_downcomer_pipe_3(initial_temperature: ThermodynamicTemperature) -> In
     let pipe_fluid = LiquidMaterial::FLiBe;
     // I just made this side more conductive to environment
     let htc_to_ambient = HeatTransfer::new::<watt_per_square_meter_kelvin>(200.0);
+    // we want 5 total nodes,
+    // so two outer nodes on each end, plus 3 inner nodes
+    let user_specified_inner_nodes = 3; 
+
+    let insulated_component = InsulatedFluidComponent::new_insulated_pipe(
+        initial_temperature, 
+        ambient_temperature, 
+        fluid_pressure, 
+        solid_pressure, 
+        flow_area, 
+        incline_angle, 
+        form_loss, 
+        shell_id, 
+        shell_od, 
+        insulation_thickness, 
+        pipe_length, 
+        hydraulic_diameter, 
+        pipe_shell_material, 
+        insulation_material, 
+        pipe_fluid, 
+        htc_to_ambient, 
+        user_specified_inner_nodes, 
+        surface_roughness);
+
+    insulated_component
+}
+/// creates a new pipe 4 for the fhr simulator, this goes from bottom 
+/// to top of the pebble bed
+///
+/// 
+///
+/// it is then joined to two mixing nodes at the top and bottom of the 
+/// reactor
+///
+/// we make it roughly 
+/// 310 cm in height 
+/// 5 cm in radius
+///
+/// this is based on 
+///
+/// core barrel thickness of 2 cm 
+/// vessel thickness of 4 cm
+/// downcomer width of 5cm
+///
+/// expected mass flowrate of FLiBe is about 1173 kg/s for a 280 MWth reactor
+/// 
+/// https://kairospower.com/generic-fhr-core-model/
+///
+/// we can scale it down
+pub fn new_pipe_4(initial_temperature: ThermodynamicTemperature) -> InsulatedFluidComponent {
+    let ambient_temperature = ThermodynamicTemperature::new::<degree_celsius>(20.0);
+    let fluid_pressure = Pressure::new::<atmosphere>(1.0);
+    let solid_pressure = Pressure::new::<atmosphere>(1.0);
+    let hydraulic_diameter = Length::new::<centimeter>(5.0);
+    let pipe_length = Length::new::<meter>(1.0);
+    let flow_area = Area::new::<square_meter>(20.0);
+    let incline_angle = Angle::new::<degree>(90.0);
+    // not putting in ergun equation yet
+    let form_loss = Ratio::new::<ratio>(55.05);
+    //estimated component wall roughness (doesn't matter here,
+    //but i need to fill in)
+    let surface_roughness = Length::new::<millimeter>(0.015);
+    let shell_id = hydraulic_diameter;
+    // the pipe at this point just functions as thermal inertia 
+    // it isn't meant to conduct heat to graphite and so on, even though it 
+    // can. 
+    // It is a quick an dirty way to gprogram this
+    let pipe_thickness = Length::new::<centimeter>(4.0);
+    let shell_od = shell_id + 2.0 * pipe_thickness;
+    let insulation_thickness = Length::new::<meter>(0.0508);
+    let pipe_shell_material = SolidMaterial::SteelSS304L;
+    let insulation_material = SolidMaterial::Fiberglass;
+    let pipe_fluid = LiquidMaterial::FLiBe;
+    // I just made this side more conductive to environment
+    let htc_to_ambient = HeatTransfer::new::<watt_per_square_meter_kelvin>(20.0);
     // we want 5 total nodes,
     // so two outer nodes on each end, plus 3 inner nodes
     let user_specified_inner_nodes = 3; 
