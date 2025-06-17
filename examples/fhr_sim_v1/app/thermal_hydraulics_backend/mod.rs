@@ -156,3 +156,9 @@ impl FHRSimulatorApp {
 
     }
 }
+
+/// contains simple components for the fhr simulator
+///
+/// these are components for primary loop and secondary loop 
+/// turbine components not included (will be in tampines-steam-tables)
+pub mod components;
