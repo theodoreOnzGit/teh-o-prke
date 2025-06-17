@@ -1,14 +1,17 @@
 use ndarray::*;
 use ndarray_linalg::Solve;
 use uom::si::f64::*;
+use uom::si::time::second;
 use uom::si::volumetric_number_density::per_cubic_meter;
 use uom::si::ratio::ratio;
 use uom::si::volumetric_number_rate::per_cubic_meter_second;
 
 use crate::teh_o_prke_error::TehOPrkeError;
 use crate::time_stepping::openfoam_ode_system::ODESystem;
+use crate::time_stepping::openfoam_rfk45::RKF45;
 use super::SixGroupPRKE;
 impl SixGroupPRKE {
+
     pub fn solve_next_timestep_precursor_concentration_and_neutron_pop_vector_explicit(
         &mut self,
         timestep: Time,
@@ -27,8 +30,6 @@ impl SixGroupPRKE {
             let delayed_neutron_precursor_group_5_concentration = self.precursor_and_neutron_pop_and_source_array[5];
             let delayed_neutron_precursor_group_6_concentration = self.precursor_and_neutron_pop_and_source_array[6];
 
-            // construct the ODE system 
-            let ode_system: ODESystem;
 
             // the ode system here takes a time t 
             // and a vector of neutron population and precursor densities 
@@ -178,9 +179,66 @@ impl SixGroupPRKE {
 
             test_fn(prke_ode_system);
 
+            // now the ode system needs to be solved because 
+            // we need a stepsize dt 
+            // as well as dydt = f(t,y)
+            //
+            // now, for prke, the dydt function is not 
+            // explicitly based on time here 
+            // it is based on a time changing reactivity based 
+            // on user input and feedback mechanism.
+            //
+            // for the sake of this programming,
+            // dydt = f(y)
+            // so i need to make a dummy time to put this into the
+            // function 
+            //
 
+            let dummy_time = timestep;
+            let current_neutron_pop_and_precursor_vector_si_units: Vec<f64>
+                = vec![
+                neutron_population_number_density.get::<per_cubic_meter>(),
+                delayed_neutron_precursor_group_1_concentration.get::<per_cubic_meter>(),
+                delayed_neutron_precursor_group_2_concentration.get::<per_cubic_meter>(),
+                delayed_neutron_precursor_group_3_concentration.get::<per_cubic_meter>(),
+                delayed_neutron_precursor_group_4_concentration.get::<per_cubic_meter>(),
+                delayed_neutron_precursor_group_5_concentration.get::<per_cubic_meter>(),
+                delayed_neutron_precursor_group_6_concentration.get::<per_cubic_meter>(),
+                ];
 
-            todo!()
+            let next_timestep_neutron_pop_and_precursor_vector_si_units = 
+                RKF45::solve_functional_prog_single_stepsize_no_stepsize_adjust(
+                    dummy_time.get::<second>(), 
+                    current_neutron_pop_and_precursor_vector_si_units, 
+                    timestep.get::<second>(), 
+                    prke_ode_system
+                    );
+
+            let precursor_and_neutron_pop_and_source_vector_next_timestep: Vec<VolumetricNumberDensity>
+                = 
+                next_timestep_neutron_pop_and_precursor_vector_si_units
+                .into_iter()
+                .map(|num_density_f64|{
+                    VolumetricNumberDensity::new::<per_cubic_meter>(num_density_f64)
+                })
+                .collect();
+
+            self.precursor_and_neutron_pop_and_source_array[0] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[0];
+            self.precursor_and_neutron_pop_and_source_array[1] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[1];
+            self.precursor_and_neutron_pop_and_source_array[2] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[2];
+            self.precursor_and_neutron_pop_and_source_array[3] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[3];
+            self.precursor_and_neutron_pop_and_source_array[4] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[4];
+            self.precursor_and_neutron_pop_and_source_array[5] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[5];
+            self.precursor_and_neutron_pop_and_source_array[6] = 
+                precursor_and_neutron_pop_and_source_vector_next_timestep[6];
+            // return to environment
+            Ok(precursor_and_neutron_pop_and_source_vector_next_timestep.into())
     }
 
 }
