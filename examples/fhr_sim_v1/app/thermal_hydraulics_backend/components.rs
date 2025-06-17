@@ -251,7 +251,7 @@ pub fn new_downcomer_pipe_3(initial_temperature: ThermodynamicTemperature) -> In
 /// creates a new pipe 4 for the fhr simulator, this goes from bottom 
 /// to top of the pebble bed
 ///
-/// 
+/// this is supposed to be part of the forced cooling loop
 ///
 /// it is then joined to two mixing nodes at the top and bottom of the 
 /// reactor
