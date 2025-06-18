@@ -20,6 +20,12 @@ pub fn four_branch_pri_loop_flowrates_parallel(
     fhr_pri_loop_pump: &NonInsulatedFluidComponent
     ) -> (MassRate, MassRate, MassRate, MassRate,){
 
+    // note: this crashes due to non convergency issues...
+    //thread '<unnamed>' panicked at C:\Users\fifad\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tuas_boussinesq_solver-0.0.7\src\lib\array_control_vol_an
+    //d_fluid_component_collections\fluid_component_collection\collection_series_and_parallel_functions.rs:444:74:
+    //called `Result::unwrap()` on an `Err` value: NoConvergency
+    //note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
     let mut reactor_branch = 
         FluidComponentCollection::new_series_component_collection();
 
