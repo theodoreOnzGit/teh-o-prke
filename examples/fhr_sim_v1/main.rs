@@ -96,6 +96,9 @@ pub struct FHRState {
     pub prke_loop_accumulated_timestep_seconds: f64,
     pub prke_loop_accumulated_heat_removal_kilojoules: f64,
 
+    /// pump pressure settings 
+    pub fhr_pri_loop_pump_pressure_kilopascals: f64,
+
 
     // this is important for timestep monitoring 
     // time diagnostics
@@ -103,6 +106,11 @@ pub struct FHRState {
     pub prke_elapsed_time_seconds: f64,
     pub prke_calc_time_microseconds: f64,
     pub prke_timestep_microseconds: f64,
+
+
+    pub thermal_hydraulics_simulation_time_seconds: f64,
+    pub thermal_hydraulics_calc_time_microseconds: f64,
+    pub thermal_hydraulics_timestep_microseconds: f64,
 }
 
 impl Default for FHRState {
@@ -134,7 +142,10 @@ impl Default for FHRState {
             prke_calc_time_microseconds: 0.0,
             prke_timestep_microseconds: 0.0,
             reactor_decay_heat_megawatts: 0.0,
-
+            fhr_pri_loop_pump_pressure_kilopascals: 0.0,
+            thermal_hydraulics_simulation_time_seconds: 0.0,
+            thermal_hydraulics_calc_time_microseconds: 0.0,
+            thermal_hydraulics_timestep_microseconds: 0.0,
         }
     }
 }

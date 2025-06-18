@@ -4,6 +4,9 @@ use std::thread;
 use std::time::{Duration, SystemTime};
 
 use components::*;
+use tuas_boussinesq_solver::pre_built_components::insulated_pipes_and_fluid_components::InsulatedFluidComponent;
+use tuas_boussinesq_solver::pre_built_components::non_insulated_fluid_components::NonInsulatedFluidComponent;
+use uom::si::pressure::kilopascal;
 //use teh_o_prke::decay_heat::DecayHeat;
 //use teh_o_prke::feedback_mechanisms::fission_product_poisons::Xenon135Poisoning;
 //use teh_o_prke::zero_power_prke::six_group::FissioningNuclideType;
@@ -24,9 +27,75 @@ use uom::si::thermodynamic_temperature::degree_celsius;
 use uom::ConstZero;
 
 
+use crate::app::thermal_hydraulics_backend::pri_loop_fluid_mechanics_calc_fns::four_branch_pri_loop_flowrates_parallel;
 use crate::{FHRSimulatorApp, FHRState};
 
+
+
 impl FHRSimulatorApp {
+
+    #[inline]
+    pub fn calculate_thermal_hydraulics_for_one_timestep(
+        fhr_state_ref: &mut FHRState,
+        thermal_hydraulics_timestep: Time,
+        reactor_pipe_1: &mut InsulatedFluidComponent,
+        downcomer_pipe_2: &mut InsulatedFluidComponent,
+        downcomer_pipe_3: &mut InsulatedFluidComponent,
+        fhr_pipe_4: &mut InsulatedFluidComponent,
+        fhr_pri_loop_pump: &mut NonInsulatedFluidComponent,
+    ){
+
+        // over here, I will have four parallel branches in the 
+        // main loop 
+        //
+        // two deal with downcomer
+        // one with the main core 
+        // and the last one is the main outside loop with 
+        // the pump
+        //
+        // the left and right downcomer can be represented with  
+        // one vertical pipe each for simplicity 
+        // the core part can be represented with 
+        // one vertical pipe too 
+        //
+        // the outside loop can be represented with two  
+        // horizontal pipes and one vertical pipe 
+        //
+        // there will be no dracs loop, as heat is removed via 
+        // radiation. 
+        // in the arvacs system for kp-fhr it is removed to ambient 
+        // surroundings through use of radiant heat transfer.
+        //
+        // these then transfer heat to thin thimbles containing water 
+        // which boils
+        //
+        // this can be heat transferred to some outside boundary condition
+        //
+        // now, just like ciet, we have a top and bottom mixing node
+
+
+
+        let _ = fhr_state_ref;
+        let _: Time = thermal_hydraulics_timestep;
+
+        let pump_pressure = Pressure::new::<kilopascal>(
+            fhr_state_ref.fhr_pri_loop_pump_pressure_kilopascals
+        );
+
+        let (reactor_flow, downcomer_1_flow, 
+            downcomer_branch_2_flow, intermediate_heat_exchanger_branch_flow)
+            = four_branch_pri_loop_flowrates_parallel(
+                pump_pressure, 
+                &reactor_pipe_1, 
+                &downcomer_pipe_2, 
+                &downcomer_pipe_3, 
+                &fhr_pipe_4, 
+                &fhr_pri_loop_pump);
+            
+    }
+
+
+
     pub fn calculate_thermal_hydraulics_loop(
         fhr_state: Arc<Mutex<FHRState>>){
 
@@ -41,11 +110,11 @@ impl FHRSimulatorApp {
         let initial_temperature = ThermodynamicTemperature::new::<degree_celsius>(
             fhr_state_clone.lock().unwrap().core_outlet_temp_degc
         );
-        let reactor_vessel_1 = new_reactor_vessel_pipe_1(initial_temperature);
-        let downcomer_pipe_2 = new_downcomer_pipe_2(initial_temperature);
-        let downcomer_pipe_3 = new_downcomer_pipe_3(initial_temperature);
-        let pipe_4 = new_fhr_pipe_4(initial_temperature);
-        let pri_loop_pump = new_fhr_pri_loop_pump(initial_temperature);
+        let mut reactor_vessel_1 = new_reactor_vessel_pipe_1(initial_temperature);
+        let mut downcomer_pipe_2 = new_downcomer_pipe_2(initial_temperature);
+        let mut downcomer_pipe_3 = new_downcomer_pipe_3(initial_temperature);
+        let mut fhr_pipe_4 = new_fhr_pipe_4(initial_temperature);
+        let mut fhr_pri_loop_pump = new_fhr_pri_loop_pump(initial_temperature);
 
         // create initial mass flowrates 
 
@@ -67,9 +136,14 @@ impl FHRSimulatorApp {
 
             let loop_time_start = loop_time.elapsed().unwrap();
 
-            calculate_thermal_hydraulics_for_one_timestep(
+            Self::calculate_thermal_hydraulics_for_one_timestep(
                 &mut fhr_state_clone.lock().unwrap(),
                 thermal_hydraulics_timestep,
+                &mut reactor_vessel_1,
+                &mut downcomer_pipe_2,
+                &mut downcomer_pipe_3,
+                &mut fhr_pipe_4,
+                &mut fhr_pri_loop_pump,
             );
 
             current_simulation_time += thermal_hydraulics_timestep;
@@ -78,6 +152,9 @@ impl FHRSimulatorApp {
 
             let elapsed_time_seconds = 
                 (loop_time.elapsed().unwrap().as_secs_f64() * 100.0).round()/100.0;
+
+            *&mut fhr_state_clone.lock().unwrap().thermal_hydraulics_simulation_time_seconds 
+                = elapsed_time_seconds;
 
             let overall_simulation_in_realtime_or_faster: bool = 
                 simulation_time_seconds > elapsed_time_seconds;
@@ -88,6 +165,10 @@ impl FHRSimulatorApp {
                 (loop_time_end - loop_time_start)
                 .as_micros() as f64;
 
+            *&mut fhr_state_clone.lock().unwrap().thermal_hydraulics_timestep_microseconds
+                = thermal_hydraulics_timestep.get::<microsecond>().round();
+            *&mut fhr_state_clone.lock().unwrap().thermal_hydraulics_calc_time_microseconds
+                = time_taken_for_calculation_loop_microseconds;
 
 
             let time_to_sleep_microseconds: u64 = 
@@ -122,52 +203,8 @@ impl FHRSimulatorApp {
                 // don't sleep
 
             }
-            //let time_to_sleep = Duration::from_millis(40);
 
-            //dbg!(&(
-            //        time_taken_for_calculation_loop_microseconds,
-            //        prke_timestep.get::<microsecond>(),
-            //)
-            //);
-            //thread::sleep(time_to_sleep);
-        }
 
-        #[inline]
-        pub fn calculate_thermal_hydraulics_for_one_timestep(
-            fhr_state_ref: &mut FHRState,
-            thermal_hydraulics_timestep: Time,
-        ){
-
-            // over here, I will have four parallel branches in the 
-            // main loop 
-            //
-            // two deal with downcomer
-            // one with the main core 
-            // and the last one is the main outside loop with 
-            // the pump
-            //
-            // the left and right downcomer can be represented with  
-            // one vertical pipe each for simplicity 
-            // the core part can be represented with 
-            // one vertical pipe too 
-            //
-            // the outside loop can be represented with two  
-            // horizontal pipes and one vertical pipe 
-            //
-            // there will be no DRACS loop, as heat is removed via 
-            // radiation. 
-            // In the ARVACS system for KP-FHR it is removed to ambient 
-            // surroundings through use of radiant heat transfer.
-            //
-            // these then transfer heat to thin thimbles containing water 
-            // which boils
-            //
-            // this can be heat transferred to some outside boundary condition
-            //
-            // now, just like CIET, we have a top and bottom mixing node
-
-            let _ = fhr_state_ref;
-            let _ = thermal_hydraulics_timestep;
         }
 
     }

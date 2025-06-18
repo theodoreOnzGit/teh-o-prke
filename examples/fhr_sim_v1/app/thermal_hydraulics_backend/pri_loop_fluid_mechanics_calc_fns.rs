@@ -1,13 +1,81 @@
 use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::fluid_component::FluidComponent;
 use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::fluid_component_collection::{FluidComponentCollection, FluidComponentCollectionMethods};
 use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::fluid_component_super_collection::FluidComponentSuperCollection;
+use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::fluid_component_traits::FluidComponentTrait;
 use tuas_boussinesq_solver::pre_built_components::non_insulated_fluid_components::NonInsulatedFluidComponent;
 use tuas_boussinesq_solver::pre_built_components::insulated_pipes_and_fluid_components::InsulatedFluidComponent;
 use uom::si::f64::*;
 use uom::ConstZero;
 
+pub fn four_branch_pri_loop_flowrates_parallel(
+    pump_pressure: Pressure,
+    // reactor branch
+    reactor_pipe_1: &InsulatedFluidComponent,
+    // downcomer branch 1
+    downcomer_pipe_2: &InsulatedFluidComponent,
+    // downcomer branch 2
+    downcomer_pipe_3: &InsulatedFluidComponent,
+    // Intermediate heat exchanger branch 
+    fhr_pipe_4: &InsulatedFluidComponent,
+    fhr_pri_loop_pump: &NonInsulatedFluidComponent
+    ) -> (MassRate, MassRate, MassRate, MassRate,){
 
-/// fluid mechanics bit for primar loop 
+    let mut reactor_branch = 
+        FluidComponentCollection::new_series_component_collection();
+
+    reactor_branch.clone_and_add_component(reactor_pipe_1);
+
+
+
+
+    let mut downcomer_branch_1 = 
+        FluidComponentCollection::new_series_component_collection();
+
+    downcomer_branch_1.clone_and_add_component(downcomer_pipe_2);
+
+
+
+
+    let mut downcomer_branch_2 = 
+        FluidComponentCollection::new_series_component_collection();
+
+    downcomer_branch_2.clone_and_add_component(downcomer_pipe_3);
+
+
+
+
+    let mut intermediate_heat_exchanger_branch =
+        FluidComponentCollection::new_series_component_collection();
+
+    intermediate_heat_exchanger_branch.clone_and_add_component(fhr_pipe_4);
+    let mut fhr_pump_clone: NonInsulatedFluidComponent 
+        = fhr_pri_loop_pump.clone();
+    fhr_pump_clone.set_internal_pressure_source(pump_pressure);
+    intermediate_heat_exchanger_branch.clone_and_add_component(&fhr_pump_clone);
+
+    
+
+    let mut pri_loop_branches = 
+        FluidComponentSuperCollection::default();
+
+    pri_loop_branches.set_orientation_to_parallel();
+
+    pri_loop_branches.fluid_component_super_vector.push(reactor_branch);
+    pri_loop_branches.fluid_component_super_vector.push(downcomer_branch_1);
+    pri_loop_branches.fluid_component_super_vector.push(downcomer_branch_2);
+    pri_loop_branches.fluid_component_super_vector.push(intermediate_heat_exchanger_branch);
+
+    let (reactor_branch_flow, downcomer_branch_1_flow,
+        downcomer_branch_2_flow, intermediate_heat_exchanger_branch_flow)
+        = get_mass_flowrate_across_for_reactor_downcomers_and_heat_exchg_br(
+            &pri_loop_branches);
+
+
+    return (reactor_branch_flow, downcomer_branch_1_flow,
+        downcomer_branch_2_flow, intermediate_heat_exchanger_branch_flow);
+}
+
+/// fluid mechanics bit for primary loop 
 /// calculate fluid mechanics across four branches in parallel,
 /// ie  the mass flowrate across each branch
 ///

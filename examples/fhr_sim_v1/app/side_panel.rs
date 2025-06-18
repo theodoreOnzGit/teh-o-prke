@@ -249,7 +249,7 @@ impl FHRSimulatorApp {
 
                 let prke_elapsed_time_seconds = fhr_state_clone.prke_elapsed_time_seconds;
 
-                ui.label("PRKE Elapsed Time Seconds");
+                ui.label("Elapsed Time Seconds");
                 ui.label(((1000.0*prke_elapsed_time_seconds).round() / 1000.0).to_string());
 
 
@@ -268,6 +268,28 @@ impl FHRSimulatorApp {
 
                 ui.label("PRKE Calculation time per timestep Microseconds");
                 ui.label(((1000.0*prke_calc_time_microseconds).round() / 1000.0).to_string());
+
+
+                ui.separator();
+                ui.separator();
+
+
+                let thermal_hydraulics_simulation_time_seconds = fhr_state_clone.thermal_hydraulics_simulation_time_seconds;
+
+                ui.label("Thermal Hydraulics Simulation Time Seconds");
+                ui.label(((1000.0*thermal_hydraulics_simulation_time_seconds).round() / 1000.0).to_string());
+
+                let thermal_hydraulics_timestep_microseconds = fhr_state_clone.thermal_hydraulics_timestep_microseconds;
+
+                ui.label("Thermal Hydraulics Timestep Microseconds");
+                ui.label(((1000.0*thermal_hydraulics_timestep_microseconds).round() / 1000.0).to_string());
+
+                let thermal_hydraulics_calc_time_microseconds = fhr_state_clone.thermal_hydraulics_calc_time_microseconds;
+
+                ui.label("Thermal Hydraulics Calculation time per timestep Microseconds");
+                ui.label(((1000.0*thermal_hydraulics_calc_time_microseconds).round() / 1000.0).to_string());
+
+
 
                 ui.separator();
 
