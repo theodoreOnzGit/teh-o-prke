@@ -7,6 +7,17 @@ use uom::si::f64::*;
 use uom::ConstZero;
 
 
+pub fn get_mass_flowrate_across_for_reactor_downcomers_and_heat_exchg_br(
+    pri_loop_branches: &FluidComponentSuperCollection
+) -> (MassRate, MassRate, MassRate, MassRate) {
+
+
+
+    todo!();
+
+}
+
+
 /// ciet coupled dracs loop calculations, serves as an example
 pub fn ciet_get_abs_mass_flowrate_across_two_branches(dracs_branches: &FluidComponentSuperCollection) -> 
 MassRate {
