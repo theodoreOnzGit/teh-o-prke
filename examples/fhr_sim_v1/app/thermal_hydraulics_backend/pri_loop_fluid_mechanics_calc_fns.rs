@@ -7,13 +7,43 @@ use uom::si::f64::*;
 use uom::ConstZero;
 
 
+/// fluid mechanics bit for primar loop 
+/// calculate fluid mechanics across four branches in parallel,
+/// ie  the mass flowrate across each branch
+///
+/// this is for the fhr having 
+/// 1. reactor branch
+/// 2. downcomer branch 1 
+/// 3. downcomer branch 2 
+/// 4. intermediate heat exchanger branch
 pub fn get_mass_flowrate_across_for_reactor_downcomers_and_heat_exchg_br(
     pri_loop_branches: &FluidComponentSuperCollection
 ) -> (MassRate, MassRate, MassRate, MassRate) {
 
+    // basically the net flowrate across the branches as a whole is zero 
+    //
+    let pressure_change_across_each_branch = 
+        pri_loop_branches.get_pressure_change(MassRate::ZERO);
+
+    let mass_flowrate_across_each_branch: Vec<MassRate> = 
+        pri_loop_branches. 
+        get_mass_flowrate_across_each_parallel_branch(
+            pressure_change_across_each_branch
+        );
+
+    // note, the mass flowrate order depends on how you add the branches 
+
+    let mass_flowrate_branch_1 = mass_flowrate_across_each_branch[0];
+    let mass_flowrate_branch_2 = mass_flowrate_across_each_branch[1];
+    let mass_flowrate_branch_3 = mass_flowrate_across_each_branch[2];
+    let mass_flowrate_branch_4 = mass_flowrate_across_each_branch[3];
 
 
-    todo!();
+    return(mass_flowrate_branch_1,
+        mass_flowrate_branch_2,
+        mass_flowrate_branch_3,
+        mass_flowrate_branch_4);
+
 
 }
 
