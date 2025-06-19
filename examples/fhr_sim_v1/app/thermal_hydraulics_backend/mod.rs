@@ -132,10 +132,10 @@ impl FHRSimulatorApp {
 
         // create initial mass flowrates 
 
-        let mut pri_loop_forced_circ_mass_flowrate = MassRate::ZERO;
-        let mut core_mass_flowrate = MassRate::ZERO;
-        let mut downcomer_pipe_2_mass_flowrate = MassRate::ZERO;
-        let mut downcomer_pipe_3_mass_flowrate = MassRate::ZERO;
+        let mut _pri_loop_forced_circ_mass_flowrate = MassRate::ZERO;
+        let mut _core_mass_flowrate = MassRate::ZERO;
+        let mut _downcomer_pipe_2_mass_flowrate = MassRate::ZERO;
+        let mut _downcomer_pipe_3_mass_flowrate = MassRate::ZERO;
 
 
         // calculation loop (indefinite)

@@ -1,17 +1,16 @@
 use ndarray::*;
-use ndarray_linalg::Solve;
 use uom::si::f64::*;
 use uom::si::time::second;
 use uom::si::volumetric_number_density::per_cubic_meter;
-use uom::si::ratio::ratio;
 use uom::si::volumetric_number_rate::per_cubic_meter_second;
 
 use crate::teh_o_prke_error::TehOPrkeError;
-use crate::time_stepping::openfoam_ode_system::ODESystem;
 use crate::time_stepping::openfoam_rfk45::RKF45;
 use super::SixGroupPRKE;
 impl SixGroupPRKE {
 
+    /// solves for the neutron population and precursor concentration 
+    /// using an explicit time marching scheme
     pub fn solve_next_timestep_precursor_concentration_and_neutron_pop_vector_explicit(
         &mut self,
         timestep: Time,
@@ -165,19 +164,6 @@ impl SixGroupPRKE {
                     dydt
                 };
 
-            // note that I may be able to use box types in this case
-            //
-            // https://doc.rust-lang.org/book/ch20-04-advanced-functions-and-closures.html
-            //
-            //ode_system = ODESystem::new(Box::new(prke_ode_system));
-            
-            let mut dydt: Vec<f64> = vec![];
-
-            fn test_fn(func: impl Fn(f64, &Vec<f64>) -> Vec<f64>){
-
-            }
-
-            test_fn(prke_ode_system);
 
             // now the ode system needs to be solved because 
             // we need a stepsize dt 

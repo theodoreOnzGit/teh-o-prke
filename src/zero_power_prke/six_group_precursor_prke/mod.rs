@@ -1,11 +1,8 @@
-use ndarray::*;
-use ndarray_linalg::Solve;
 use uom::ConstZero;
 use uom::si::f64::*;
 use uom::si::volumetric_number_density::per_cubic_meter;
 use uom::si::ratio::ratio;
 
-use crate::teh_o_prke_error::TehOPrkeError;
 /// contains six group delayed precursor decay constants and 
 /// delayed fraction
 pub mod six_group_constants;

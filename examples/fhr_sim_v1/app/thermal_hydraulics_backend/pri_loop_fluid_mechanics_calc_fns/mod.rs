@@ -17,6 +17,8 @@ use tuas_boussinesq_solver::prelude::beta_testing::InsulatedPorousMediaFluidComp
 use uom::ConstZero;
 use uom::si::f64::*;
 
+use crate::app::thermal_hydraulics_backend::pri_loop_fluid_mechanics_calc_fns::parallel_branch_flow_calculator::calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1;
+
 pub mod parallel_branch_flow_calculator;
 
 pub fn four_branch_pri_loop_flowrates_parallel(
@@ -85,7 +87,7 @@ pub fn four_branch_pri_loop_flowrates_parallel(
 
     let (reactor_branch_flow, downcomer_branch_1_flow,
         downcomer_branch_2_flow, intermediate_heat_exchanger_branch_flow)
-        = get_mass_flowrate_across_for_reactor_downcomers_and_heat_exchg_br(
+        = calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
             &pri_loop_branches);
 
 
