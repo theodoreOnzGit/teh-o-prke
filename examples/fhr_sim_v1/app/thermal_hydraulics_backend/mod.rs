@@ -3,9 +3,6 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::{Duration, SystemTime};
 
-use components::*;
-use tuas_boussinesq_solver::pre_built_components::insulated_pipes_and_fluid_components::InsulatedFluidComponent;
-use tuas_boussinesq_solver::pre_built_components::non_insulated_fluid_components::NonInsulatedFluidComponent;
 use uom::si::mass_rate::kilogram_per_second;
 use uom::si::pressure::kilopascal;
 //use teh_o_prke::decay_heat::DecayHeat;
@@ -29,6 +26,13 @@ use uom::ConstZero;
 
 
 use crate::app::thermal_hydraulics_backend::pri_loop_fluid_mechanics_calc_fns::four_branch_pri_loop_flowrates_parallel;
+pub use tuas_boussinesq_solver::pre_built_components::insulated_pipes_and_fluid_components::InsulatedFluidComponent;
+pub use tuas_boussinesq_solver::pre_built_components::non_insulated_fluid_components::NonInsulatedFluidComponent;
+pub use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::*;
+pub use tuas_boussinesq_solver::boussinesq_thermophysical_properties::SolidMaterial;
+pub use tuas_boussinesq_solver::boussinesq_thermophysical_properties::LiquidMaterial;
+pub use tuas_boussinesq_solver::pre_built_components::*;
+use components::*;
 use crate::{FHRSimulatorApp, FHRState};
 
 
