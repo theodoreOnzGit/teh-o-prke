@@ -306,7 +306,7 @@ impl FHRSimulatorApp {
 
                 // flowrate diagnostics
                 ui.separator();
-                ui.heading("Timestep Diagnostics");
+                ui.heading("Mass Flowrate Diagnostics");
                 ui.separator();
 
 
