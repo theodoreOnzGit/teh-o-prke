@@ -1,7 +1,8 @@
 use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::fluid_component_collection::FluidComponentCollectionMethods;
 use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::fluid_component_super_collection::FluidComponentSuperCollection;
 use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::super_collection_series_and_parallel_functions::FluidComponentSuperCollectionParallelAssociatedFunctions;
-use uom::{si::{f64::*, mass_rate::kilogram_per_second}, ConstZero};
+use uom::{si::mass_rate::kilogram_per_second, ConstZero};
+use uom::si::f64::*;
 
 /// calculates pressure change given a mass
 /// flowrate through a parallel collection of
@@ -144,6 +145,9 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
             // I remember that +/- 10 kg/s is for CIET
             // but for FHR, the value is much larger. 
             // perhaps 100,000 kg/s is sufficient
+            //
+            // this is giving me problems here!
+            // calculate_pressure_change_using_guessed_branch_mass_flowrate
 
             let pressure_change = 
                 <FluidComponentSuperCollection as FluidComponentSuperCollectionParallelAssociatedFunctions>::
@@ -151,6 +155,10 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
                     max_mass_flowrate_across_each_branch, 
                     user_requested_mass_flowrate, 
                     &fluid_component_collection_vector);
+
+            dbg!(&(pressure_change));
+
+
             let mut mass_flowrate_vector: Vec<MassRate> =
                 vec![];
 

@@ -39,6 +39,15 @@ pub fn four_branch_pri_loop_flowrates_parallel(
     //d_fluid_component_collections\fluid_component_collection\collection_series_and_parallel_functions.rs:444:74:
     //called `Result::unwrap()` on an `Err` value: NoConvergency
     //note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+    //
+    //
+    //now, even by having more flowrate options, I'm still getting a no 
+    //convergency error especially once pump pressure exceeds 
+    // 10.0 - 13.0 Pa, and there is actually flowrate
+    // I'm getting flowrates in excess of 10 kg/s 
+    // 554 kg/s, and thats okay 
+    //
+    // but then I get NoConvergency errors
 
     let mut reactor_branch = 
         FluidComponentCollection::new_series_component_collection();
