@@ -1,3 +1,6 @@
+use tuas_boussinesq_solver::boussinesq_thermophysical_properties::{LiquidMaterial, SolidMaterial};
+use tuas_boussinesq_solver::pre_built_components::insulated_pipes_and_fluid_components::InsulatedFluidComponent;
+use tuas_boussinesq_solver::pre_built_components::non_insulated_fluid_components::NonInsulatedFluidComponent;
 use uom::si::angle::degree;
 use uom::si::area::{square_centimeter, square_meter};
 use uom::si::f64::*;
@@ -6,7 +9,6 @@ use uom::si::length::{centimeter, meter, millimeter};
 use uom::si::ratio::ratio;
 use uom::si::thermodynamic_temperature::degree_celsius;
 use uom::si::pressure::atmosphere;
-use super::*;
 
 
 /// creates a new pipe 1 for the fhr simulator, this goes from bottom 
