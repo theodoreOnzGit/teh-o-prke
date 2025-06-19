@@ -109,6 +109,7 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
             // the easiest solution is each branch has zero mass flowrate
 
 
+            dbg!("mass flowrate thru branches near zero");
             // however, more often than not, the trivial solution doesn't work
             // I then need to obtain the largest difference in pressure changes 
             // between each branch if it has zero flow rate
@@ -121,6 +122,7 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
                     &fluid_component_collection_vector
                 );
 
+
             // with this max pressure change, we can guess a maximum 
             // flowrate across each branch
 
@@ -129,9 +131,19 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
                 calculate_maximum_mass_flowrate_given_pressure_drop_across_each_branch(
                     max_pressure_change_between_branches, 
                     &fluid_component_collection_vector);
+            dbg!(&(max_pressure_change_between_branches,
+                    max_mass_flowrate_across_each_branch
+                    ));
 
-
-
+            // with a hypothetical mass flowrate across each branch 
+            //
+            // now we need to change the limits of the pressure change 
+            // instead of +/- 10 kg/s to something larger,
+            // say 100,000 kg/s
+            //
+            // I remember that +/- 10 kg/s is for CIET
+            // but for FHR, the value is much larger. 
+            // perhaps 100,000 kg/s is sufficient
 
             let pressure_change = 
                 <FluidComponentSuperCollection as FluidComponentSuperCollectionParallelAssociatedFunctions>::
@@ -273,6 +285,7 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
 
         if internal_circulation_dominant {
 
+            dbg!("internal circulation dominant");
             // in this case, the average mass flowrate through each of these
             // loops is very close to zero,
             // therefore zero flowrate is supplied
@@ -358,6 +371,7 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
         // value
         //
 
+        dbg!("generic solver (non implemented) employed");
 
         let external_circulation_dominant = 
             internal_circulation_driving_force_scale.value * 10.0 
