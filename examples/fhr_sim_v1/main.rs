@@ -107,10 +107,16 @@ pub struct FHRState {
     pub prke_calc_time_microseconds: f64,
     pub prke_timestep_microseconds: f64,
 
-
     pub thermal_hydraulics_simulation_time_seconds: f64,
     pub thermal_hydraulics_calc_time_microseconds: f64,
     pub thermal_hydraulics_timestep_microseconds: f64,
+
+
+    // diagnostics for thermal hydraulics loop 
+    pub reactor_branch_flowrate_kg_per_s: f64,
+    pub downcomer1_branch_flowrate_kg_per_s: f64,
+    pub downcomer2_branch_flowrate_kg_per_s: f64,
+    pub ihx_branch_flowrate_kg_per_s: f64,
 }
 
 impl Default for FHRState {
@@ -146,6 +152,10 @@ impl Default for FHRState {
             thermal_hydraulics_simulation_time_seconds: 0.0,
             thermal_hydraulics_calc_time_microseconds: 0.0,
             thermal_hydraulics_timestep_microseconds: 0.0,
+            reactor_branch_flowrate_kg_per_s: 0.0,
+            downcomer1_branch_flowrate_kg_per_s: 0.0,
+            downcomer2_branch_flowrate_kg_per_s: 0.0,
+            ihx_branch_flowrate_kg_per_s: 0.0,
         }
     }
 }

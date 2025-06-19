@@ -256,6 +256,7 @@ impl FHRSimulatorApp {
                 // time diagnostics 
                 ui.separator();
                 ui.heading("Timestep Diagnostics");
+                ui.separator();
 
                 let prke_elapsed_time_seconds = fhr_state_clone.prke_elapsed_time_seconds;
 
@@ -303,6 +304,16 @@ impl FHRSimulatorApp {
 
                 ui.separator();
 
+                // flowrate diagnostics
+                ui.separator();
+                ui.heading("Timestep Diagnostics");
+                ui.separator();
+
+
+                let ihx_br_flowrate_kg_per_s = fhr_state_clone.ihx_branch_flowrate_kg_per_s;
+
+                ui.label("Intermediate Heat Exchanger Branch Flowrate Microseconds");
+                ui.label(((1000.0*ihx_br_flowrate_kg_per_s).round() / 1000.0).to_string());
                 // then acknowledgements/citing
 
             });

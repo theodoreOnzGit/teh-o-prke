@@ -6,6 +6,7 @@ use std::time::{Duration, SystemTime};
 use components::*;
 use tuas_boussinesq_solver::pre_built_components::insulated_pipes_and_fluid_components::InsulatedFluidComponent;
 use tuas_boussinesq_solver::pre_built_components::non_insulated_fluid_components::NonInsulatedFluidComponent;
+use uom::si::mass_rate::kilogram_per_second;
 use uom::si::pressure::kilopascal;
 //use teh_o_prke::decay_heat::DecayHeat;
 //use teh_o_prke::feedback_mechanisms::fission_product_poisons::Xenon135Poisoning;
@@ -82,7 +83,7 @@ impl FHRSimulatorApp {
             fhr_state_ref.fhr_pri_loop_pump_pressure_kilopascals
         );
 
-        let (reactor_flow, downcomer_1_flow, 
+        let (reactor_flow, downcomer_branch_1_flow, 
             downcomer_branch_2_flow, intermediate_heat_exchanger_branch_flow)
             = four_branch_pri_loop_flowrates_parallel(
                 pump_pressure, 
@@ -91,6 +92,15 @@ impl FHRSimulatorApp {
                 &downcomer_pipe_3, 
                 &fhr_pipe_4, 
                 &fhr_pri_loop_pump);
+
+        fhr_state_ref.reactor_branch_flowrate_kg_per_s 
+            = reactor_flow.get::<kilogram_per_second>();
+        fhr_state_ref.downcomer1_branch_flowrate_kg_per_s
+            = downcomer_branch_1_flow.get::<kilogram_per_second>();
+        fhr_state_ref.downcomer2_branch_flowrate_kg_per_s
+            = downcomer_branch_2_flow.get::<kilogram_per_second>();
+        fhr_state_ref.ihx_branch_flowrate_kg_per_s
+            = intermediate_heat_exchanger_branch_flow.get::<kilogram_per_second>();
             
     }
 
