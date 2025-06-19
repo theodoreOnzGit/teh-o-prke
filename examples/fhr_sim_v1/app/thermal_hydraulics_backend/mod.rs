@@ -146,6 +146,9 @@ impl FHRSimulatorApp {
 
             let loop_time_start = loop_time.elapsed().unwrap();
 
+            // looks like will need to edit tuas directly
+            // not able to do thermal hydraulics yet (debugging)
+            //
             Self::calculate_thermal_hydraulics_for_one_timestep(
                 &mut fhr_state_clone.lock().unwrap(),
                 thermal_hydraulics_timestep,
