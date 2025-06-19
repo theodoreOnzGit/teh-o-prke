@@ -17,6 +17,8 @@ use tuas_boussinesq_solver::prelude::beta_testing::InsulatedPorousMediaFluidComp
 use uom::ConstZero;
 use uom::si::f64::*;
 
+pub mod parallel_branch_flow_calculator;
+
 pub fn four_branch_pri_loop_flowrates_parallel(
     pump_pressure: Pressure,
     // reactor branch
