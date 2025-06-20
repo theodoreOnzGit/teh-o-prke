@@ -151,14 +151,12 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
             // this is giving me problems here!
             // calculate_pressure_change_using_guessed_branch_mass_flowrate
 
-            dbg!("Starting pressure change iterations");
             let pressure_change = 
                 calculate_pressure_change_using_guessed_branch_mass_flowrate_fhr_sim_v1_custom(
                     max_mass_flowrate_across_each_branch, 
                     user_requested_mass_flowrate, 
                     &fluid_component_collection_vector);
 
-            dbg!("pressure change iteratively guessed...");
             dbg!(&(pressure_change));
 
 
@@ -501,6 +499,7 @@ pub fn calculate_pressure_change_using_guessed_branch_mass_flowrate_fhr_sim_v1_c
         [pressure_change_est_vector_forward_direction,
         pressure_change_est_vector_backward_direction].concat();
 
+    dbg!(&pressure_change_forward_and_backward_est_vector);
 
     let average_pressure_at_guessed_average_flow: Pressure = 
         <FluidComponentSuperCollection as FluidComponentSuperCollectionParallelAssociatedFunctions>::
@@ -594,8 +593,33 @@ pub fn calculate_pressure_change_using_guessed_branch_mass_flowrate_fhr_sim_v1_c
     //
     let mut convergency = SimpleConvergency { 
         eps:1e-9_f64, 
-        max_iter: 70
+        max_iter: 700
     };
+
+    dbg!(&(user_specified_pressure_upper_bound,
+            user_specified_pressure_lower_bound));
+    // basically with the pressure bounds
+    // 
+    // [examples/fhr_sim_v1/app/thermal_hydraulics_backend/pri_loop_fluid_mechanics_calc_fns/parallel_branch_flow_calculator.rs:599:5] &(user_specified_pressure_upper_bound, user_specified_pressure_lower_bound) = (
+    //   62321349.287009254 m^-1 kg^1 s^-2,
+    //   -62361304.52771309 m^-1 kg^1 s^-2,
+    //
+    // before any flow, the pressure bounds are:
+    //
+    // [examples/fhr_sim_v1/app/thermal_hydraulics_backend/pri_loop_fluid_mechanics_calc_fns/parallel_branch_flow_calculator.rs:599:5] &(user_specified_pressure_upper_bound, user_specified_pressure_lower_bound) = (
+    // -19970.120351919995 m^-1 kg^1 s^-2,
+    // -19980.120351919995 m^-1 kg^1 s^-2,
+    //
+    // the solver crashes. is this too much?
+    // i tried 700 iterations... is it that the 
+    // 
+    // basically, what I have are ridiculously large pressure drops 
+    // applied across each branch.
+    //
+    // These large pressure drops give rise to ridiculously large 
+    // flowrates. Which are too large to actually be realistic
+    //
+    //
 
     let pressure_change_pascals_result_user_specified_flow
         = find_root_brent(
