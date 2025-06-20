@@ -8,6 +8,19 @@ use uom::si::pressure::{bar, pascal};
 use uom::{si::mass_rate::kilogram_per_second, ConstZero};
 use uom::si::f64::*;
 
+// debug log: 
+// 
+// thought it's a fluid properties bug
+// tried changing from FLiBe to HITEC but not working
+//
+// basically from what I observed, the mass flowrate solvers 
+// do get stuck at some value and yet do not converge there...
+//
+// I believe the tolerance is an issue... 
+// so upon reducing tolerance, the mass flowrates are able to solve and  
+// converge!
+// but this produces wonky results
+//
 /// calculates pressure change given a mass
 /// flowrate through a parallel collection of
 /// fluid pipes or components
@@ -865,9 +878,6 @@ fn calculate_mass_flowrate_from_pressure_change_for_single_branch(
     // if pressure loss is negative, we have backflow
     //
 
-    let forward_flow_true: bool =
-        pressure_loss_pascals > 0.0 ;
-
 
     // if forward flow is true, then i want to iteratively calculate 
     // pressure changes using mass flowrates until the limit is reached
@@ -886,13 +896,14 @@ fn calculate_mass_flowrate_from_pressure_change_for_single_branch(
                 MassRate::new::<kilogram_per_second>(
                     mass_flow_kg_per_s_double);
 
-            dbg!(&mass_rate);
 
             let pressure_change_tested = 
                 <FluidComponentCollection as FluidComponentCollectionSeriesAssociatedFunctions>
                 ::calculate_pressure_change_from_mass_flowrate(
                     mass_rate, 
                     fluid_component_vector);
+            dbg!(&mass_rate);
+            dbg!(&pressure_change_tested);
 
             // now i've obtained the pressure change, i convert it to f64
 
@@ -918,7 +929,7 @@ fn calculate_mass_flowrate_from_pressure_change_for_single_branch(
     // But having done so, I want to use the newton raphson method to
     // try and converge this result, hopefully within 30 iterations
 
-    let mut convergency = SimpleConvergency { eps:1e-15f64, max_iter:70 };
+    let mut convergency = SimpleConvergency { eps:1e-8f64, max_iter:70 };
 
 
     let mut mass_flowrate_result 
