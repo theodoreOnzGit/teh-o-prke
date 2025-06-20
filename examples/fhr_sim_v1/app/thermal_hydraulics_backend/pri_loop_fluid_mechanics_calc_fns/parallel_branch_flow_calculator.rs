@@ -700,9 +700,13 @@ pub fn calculate_mass_flowrate_from_pressure_change_for_parallel_branches(
                 &*fluid_component_pointer;
 
 
+
+            let fluid_component_vector = 
+                fluid_component.get_immutable_fluid_component_vector();
+
             let fluid_component_mass_flowrate = 
-                fluid_component.get_mass_flowrate_from_pressure_change(
-                    pressure_change);
+                calculate_mass_flowrate_from_pressure_change_for_single_branch(
+                pressure_change, &fluid_component_vector);
 
             mass_flowrate_vector[index] = 
                 fluid_component_mass_flowrate;
