@@ -47,7 +47,7 @@ pub fn new_reactor_vessel_pipe_1(initial_temperature: ThermodynamicTemperature) 
     let flow_area = Area::new::<square_centimeter>(4500.0);
     let incline_angle = Angle::new::<degree>(90.0);
     // not putting in ergun equation yet
-    let form_loss = Ratio::new::<ratio>(55.05);
+    let form_loss = Ratio::new::<ratio>(5505.05);
     //estimated component wall roughness (doesn't matter here,
     //but i need to fill in)
     let surface_roughness = Length::new::<millimeter>(0.015);
@@ -124,7 +124,7 @@ pub fn new_downcomer_pipe_2(initial_temperature: ThermodynamicTemperature) -> In
     let flow_area = Area::new::<square_centimeter>(100.0);
     let incline_angle = Angle::new::<degree>(90.0);
     // not putting in ergun equation yet
-    let form_loss = Ratio::new::<ratio>(55.05);
+    let form_loss = Ratio::new::<ratio>(5505.05);
     //estimated component wall roughness (doesn't matter here,
     //but i need to fill in)
     let surface_roughness = Length::new::<millimeter>(0.015);
@@ -205,7 +205,7 @@ pub fn new_downcomer_pipe_3(initial_temperature: ThermodynamicTemperature) -> In
     let flow_area = Area::new::<square_centimeter>(100.0);
     let incline_angle = Angle::new::<degree>(90.0);
     // not putting in ergun equation yet
-    let form_loss = Ratio::new::<ratio>(55.05);
+    let form_loss = Ratio::new::<ratio>(5505.05);
     //estimated component wall roughness (doesn't matter here,
     //but i need to fill in)
     let surface_roughness = Length::new::<millimeter>(0.015);
@@ -280,7 +280,7 @@ pub fn new_fhr_pipe_4(initial_temperature: ThermodynamicTemperature) -> Insulate
     let flow_area = Area::new::<square_meter>(20.0);
     let incline_angle = Angle::new::<degree>(90.0);
     // not putting in ergun equation yet
-    let form_loss = Ratio::new::<ratio>(55.05);
+    let form_loss = Ratio::new::<ratio>(5505.05);
     //estimated component wall roughness (doesn't matter here,
     //but i need to fill in)
     let surface_roughness = Length::new::<millimeter>(0.015);
