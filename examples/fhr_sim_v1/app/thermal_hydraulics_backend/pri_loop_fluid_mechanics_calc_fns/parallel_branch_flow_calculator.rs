@@ -1,6 +1,8 @@
-use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::fluid_component_collection::FluidComponentCollectionMethods;
+use roots::{find_root_brent, SimpleConvergency};
+use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::fluid_component_collection::{FluidComponentCollection, FluidComponentCollectionMethods};
 use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::fluid_component_super_collection::FluidComponentSuperCollection;
 use tuas_boussinesq_solver::array_control_vol_and_fluid_component_collections::fluid_component_collection::super_collection_series_and_parallel_functions::FluidComponentSuperCollectionParallelAssociatedFunctions;
+use uom::si::pressure::pascal;
 use uom::{si::mass_rate::kilogram_per_second, ConstZero};
 use uom::si::f64::*;
 
@@ -134,7 +136,7 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
                     &fluid_component_collection_vector);
             dbg!(&(max_pressure_change_between_branches,
                     max_mass_flowrate_across_each_branch
-                    ));
+            ));
 
             // with a hypothetical mass flowrate across each branch 
             //
@@ -149,13 +151,14 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
             // this is giving me problems here!
             // calculate_pressure_change_using_guessed_branch_mass_flowrate
 
+            dbg!("Starting pressure change iterations");
             let pressure_change = 
-                <FluidComponentSuperCollection as FluidComponentSuperCollectionParallelAssociatedFunctions>::
-                calculate_pressure_change_using_guessed_branch_mass_flowrate(
+                calculate_pressure_change_using_guessed_branch_mass_flowrate_fhr_sim_v1_custom(
                     max_mass_flowrate_across_each_branch, 
                     user_requested_mass_flowrate, 
                     &fluid_component_collection_vector);
 
+            dbg!("pressure change iteratively guessed...");
             dbg!(&(pressure_change));
 
 
@@ -454,3 +457,155 @@ pub fn calculate_iterative_mass_flowrate_across_branches_for_fhr_sim_v1(
         todo!();
 
     }
+
+
+
+/// calculates pressure change at user specified mass flowrate
+/// given a guessed flowrate through each branch
+/// and user specified flowrate
+///
+/// the guessed flowrate should provide an upper bound for the given 
+/// flowrate
+///
+#[inline]
+pub fn calculate_pressure_change_using_guessed_branch_mass_flowrate_fhr_sim_v1_custom(
+    individual_branch_guess_upper_bound_mass_flowrate: MassRate,
+    user_specified_mass_flowrate: MassRate,
+    fluid_component_collection_vector: &Vec<FluidComponentCollection>) -> Pressure {
+
+
+    // first i am applying the guessed maximum 
+    // flowrate through all branches
+    //
+    // I will do forward and reverse flow for all branches
+
+
+    let pressure_change_est_vector_forward_direction: Vec<Pressure> = 
+        <FluidComponentSuperCollection as FluidComponentSuperCollectionParallelAssociatedFunctions>::
+        obtain_pressure_estimate_vector(
+            individual_branch_guess_upper_bound_mass_flowrate, 
+            fluid_component_collection_vector);
+
+    let pressure_change_est_vector_backward_direction: Vec<Pressure> = 
+        <FluidComponentSuperCollection as FluidComponentSuperCollectionParallelAssociatedFunctions>::
+        obtain_pressure_estimate_vector(
+            -individual_branch_guess_upper_bound_mass_flowrate, 
+            fluid_component_collection_vector);
+
+    // from these I should be able to get a vector of pressure 
+    // changes across all branches and get forward and reverse direction 
+    // flow
+
+    let pressure_change_forward_and_backward_est_vector: 
+        Vec<Pressure> = 
+        [pressure_change_est_vector_forward_direction,
+        pressure_change_est_vector_backward_direction].concat();
+
+
+    let average_pressure_at_guessed_average_flow: Pressure = 
+        <FluidComponentSuperCollection as FluidComponentSuperCollectionParallelAssociatedFunctions>::
+        obtain_average_pressure_from_vector(
+            &pressure_change_forward_and_backward_est_vector);
+
+
+    let max_pressure_change_at_guessed_average_flow = 
+        <FluidComponentSuperCollection as FluidComponentSuperCollectionParallelAssociatedFunctions>::
+        obtain_maximum_pressure_from_vector(
+            &pressure_change_forward_and_backward_est_vector);
+
+    let min_pressure_change_at_guessed_average_flow = 
+        <FluidComponentSuperCollection as FluidComponentSuperCollectionParallelAssociatedFunctions>::
+        obtain_minimum_pressure_from_vector(
+            &pressure_change_forward_and_backward_est_vector);
+
+    let pressure_diff_at_guessed_average_flow = 
+        max_pressure_change_at_guessed_average_flow -
+        min_pressure_change_at_guessed_average_flow;
+
+
+
+    let static_pressure_variation_estimate = 
+        pressure_diff_at_guessed_average_flow;
+
+
+    // with my upper and lower bounds
+    // i can now define the root function for pressure
+    // we are iterating pressure across each branch
+
+
+    // this is for use in the roots library
+    let pressure_change_from_mass_flowrate_root = 
+        |branch_pressure_change_pascals: f64| -> f64 {
+
+            // we obtain an iterated branch pressure change
+            // obtain a mass flowrate from it, by applying it to each branch
+            //
+            // then compare it to the user supplied mass flowrate
+            //
+
+            let iterated_pressure = 
+                Pressure::new::<pascal>(branch_pressure_change_pascals);
+
+            let iterated_mass_flowrate =
+                <FluidComponentSuperCollection as FluidComponentSuperCollectionParallelAssociatedFunctions>::
+                calculate_mass_flowrate_from_pressure_change(
+                    iterated_pressure, 
+                    fluid_component_collection_vector);
+
+            let mass_flowrate_error = 
+                iterated_mass_flowrate -
+                user_specified_mass_flowrate;
+
+            return mass_flowrate_error.get::<kilogram_per_second>();
+
+        };
+
+    // now we use the guessed average flowrates to decide upper
+    // and lower bounds for the pressure loss
+    //
+
+
+    let mut user_specified_pressure_upper_bound = 
+        average_pressure_at_guessed_average_flow 
+        + static_pressure_variation_estimate;
+
+    let mut user_specified_pressure_lower_bound =
+        average_pressure_at_guessed_average_flow 
+        - static_pressure_variation_estimate;
+
+    // now if the upper and lower bounds are the same,
+    // then we will add a 5 Pa difference to them
+    //
+
+    if user_specified_pressure_lower_bound.value ==
+        user_specified_pressure_upper_bound.value {
+
+            user_specified_pressure_lower_bound.value -= 5.0;
+            user_specified_pressure_upper_bound.value += 5.0;
+
+
+    }
+
+    // i was using panic macros to debug during development
+    // may wanna delete later
+    //panic!("{:?}", user_specified_pressure_upper_bound);
+
+    // i can't use a convergency value too strict, perhaps 1e-9 will do!
+    //
+    let mut convergency = SimpleConvergency { 
+        eps:1e-9_f64, 
+        max_iter: 70
+    };
+
+    let pressure_change_pascals_result_user_specified_flow
+        = find_root_brent(
+            user_specified_pressure_upper_bound.value,
+            user_specified_pressure_lower_bound.value,
+            &pressure_change_from_mass_flowrate_root,
+            &mut convergency);
+
+    let pressure_change_pascals_user_specified_flow: f64 = 
+        pressure_change_pascals_result_user_specified_flow.unwrap();
+
+    return Pressure::new::<pascal>(pressure_change_pascals_user_specified_flow);
+}
