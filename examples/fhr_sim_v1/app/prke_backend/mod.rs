@@ -343,7 +343,7 @@ impl FHRSimulatorApp {
         // These are arbitrary values, will adjust later
 
         let pebble_bed_mass = Mass::new::<kilogram>(8000.0);
-        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(100.0);
+        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(300.0);
         let pebble_bed_overall_htc = HeatTransfer::new::<watt_per_square_meter_kelvin>(400.0);
         let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(
             fhr_state_ref.pebble_bed_coolant_temp_degc
@@ -495,6 +495,8 @@ impl FHRSimulatorApp {
 
 
 
+/// this contains code for TIGHTLY coupled thermal hydraulics,
+/// that is between the PRKE
 pub mod pebble_bed_thermal_hydraulics;
 pub use pebble_bed_thermal_hydraulics::*;
 

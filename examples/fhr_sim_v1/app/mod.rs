@@ -227,7 +227,7 @@ impl FHRSimulatorApp {
         let pipe_coordinate_chg = 
             vec2(0.0, 100.0);
 
-        let pipe_1_start = 
+        let pipe_11_start = 
             vec2(
                 0.5 * reactor_rectangle.left() + 0.5 * reactor_rectangle.right(),
                 reactor_rectangle.bottom() - reactor_rectangle.height() * 0.28,
@@ -235,26 +235,26 @@ impl FHRSimulatorApp {
 
         let pipe_2_start = 
             vec2(
-                pipe_1_start.x + pipe_coordinate_chg.x,
-                pipe_1_start.y + pipe_coordinate_chg.y,
+                pipe_11_start.x + pipe_coordinate_chg.x,
+                pipe_11_start.y + pipe_coordinate_chg.y,
             );
 
 
-        let pipe_1_rect = 
+        let pipe_11_rect = 
             egui::Rect {
-                min: Pos2 { x: 0.0, y: 0.0 } + pipe_1_start,
+                min: Pos2 { x: 0.0, y: 0.0 } + pipe_11_start,
                 max: Pos2 { x: 0.0, y: 0.0 } + pipe_2_start,
             };
 
 
 
-        let pipe_1_widget = SinglePipe::new(
+        let pipe_11_widget = SinglePipe::new(
             pipe_coordinate_chg, 
             min_temp, 
             max_temp, 
             temp
         );
-        ui.put(pipe_1_rect, pipe_1_widget);
+        ui.put(pipe_11_rect, pipe_11_widget);
 
         ui.separator();
 

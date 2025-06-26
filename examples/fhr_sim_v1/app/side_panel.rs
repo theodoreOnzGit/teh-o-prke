@@ -38,12 +38,20 @@ impl FHRSimulatorApp {
 
                 let pri_loop_pump_slider = egui::Slider::new(
                     &mut fhr_state_ptr.fhr_pri_loop_pump_pressure_kilopascals, 
-                    -10.0..=10.0)
+                    0.0..=200.0)
                     .logarithmic(false)
                     .text("Primary Loop Pump Pressure (kPa)")
                     .drag_value_speed(0.001);
 
                 ui.add(pri_loop_pump_slider);
+                let intermediate_loop_pump_slider = egui::Slider::new(
+                    &mut fhr_state_ptr.fhr_intermediate_loop_pump_pressure_kilopascals, 
+                    0.0..=200.0)
+                    .logarithmic(false)
+                    .text("Intermediate Loop Pump Pressure (kPa)")
+                    .drag_value_speed(0.001);
+
+                ui.add(intermediate_loop_pump_slider);
 
 
                 // cloning the entire fhr state for diagnostics

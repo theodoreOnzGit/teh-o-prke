@@ -98,6 +98,7 @@ pub struct FHRState {
 
     /// pump pressure settings 
     pub fhr_pri_loop_pump_pressure_kilopascals: f64,
+    pub fhr_intermediate_loop_pump_pressure_kilopascals: f64,
 
 
     // this is important for timestep monitoring 
@@ -148,7 +149,8 @@ impl Default for FHRState {
             prke_calc_time_microseconds: 0.0,
             prke_timestep_microseconds: 0.0,
             reactor_decay_heat_megawatts: 0.0,
-            fhr_pri_loop_pump_pressure_kilopascals: 0.0,
+            fhr_pri_loop_pump_pressure_kilopascals: 100.0,
+            fhr_intermediate_loop_pump_pressure_kilopascals: 100.0,
             thermal_hydraulics_simulation_time_seconds: 0.0,
             thermal_hydraulics_calc_time_microseconds: 0.0,
             thermal_hydraulics_timestep_microseconds: 0.0,
