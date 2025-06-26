@@ -1047,6 +1047,10 @@ impl FHRSimulatorApp {
                 Pressure::new::<kilopascal>(
                     -fhr_state_clone.lock().unwrap().fhr_pri_loop_pump_pressure_kilopascals
                 );
+            intrmd_loop_pump_pressure = 
+                Pressure::new::<kilopascal>(
+                    -fhr_state_clone.lock().unwrap().fhr_intermediate_loop_pump_pressure_kilopascals
+                );
 
             current_fhr_thermal_hydraulics_state = 
                 Self::four_branch_pri_and_intermediate_loop_single_time_step(
