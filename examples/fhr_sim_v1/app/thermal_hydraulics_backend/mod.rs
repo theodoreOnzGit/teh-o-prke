@@ -8,6 +8,7 @@ use ndarray::{Array, Array1};
 use tuas_boussinesq_solver::boussinesq_thermophysical_properties::LiquidMaterial;
 use tuas_boussinesq_solver::pre_built_components::shell_and_tube_heat_exchanger::SimpleShellAndTubeHeatExchanger;
 use tuas_boussinesq_solver::prelude::beta_testing::{FluidArray, HeatTransferEntity, HeatTransferInteractionType};
+use uom::si::energy::kilojoule;
 use uom::si::mass_rate::kilogram_per_second;
 use uom::si::power::megawatt;
 use uom::si::pressure::{kilopascal, megapascal};
@@ -935,8 +936,8 @@ impl FHRSimulatorApp {
 
 
         // probably want to use fhr state
-        let pri_loop_pump_pressure = Pressure::new::<megapascal>(-0.2);
-        let intrmd_loop_pump_pressure = Pressure::new::<kilopascal>(-150.0);
+        let pri_loop_pump_pressure = Pressure::new::<kilopascal>(-10.0);
+        let intrmd_loop_pump_pressure = Pressure::new::<kilopascal>(-10.0);
 
         // mixing nodes for pri loop 
         let mut bottom_mixing_node_pri_loop = 
@@ -1014,6 +1015,7 @@ impl FHRSimulatorApp {
             downcomer_2_temp_profile_degc: vec![],
             downcomer_3_temp_profile_degc: vec![],
         };
+        dbg!(&fhr_thermal_hydraulics_state);
         // calculation loop (indefinite)
         //
         // to be done once every timestep
@@ -1026,11 +1028,19 @@ impl FHRSimulatorApp {
 
             let loop_time_start = loop_time.elapsed().unwrap();
 
-            // looks like will need to edit tuas directly
-            // not able to do thermal hydraulics yet (debugging)
             //
+            let accumulated_energy_from_prke = 
+                Energy::new::<kilojoule>(
+                    fhr_state_clone.lock().unwrap().prke_loop_accumulated_heat_removal_kilojoules
+                );
+
+            // once energy is "taken out" from the store, 
+            // it is meant to be zero
+            fhr_state_clone.lock().unwrap().prke_loop_accumulated_heat_removal_kilojoules 
+                = 0.0;
             let reactor_power = 
-                Power::new::<megawatt>(35.0);
+                accumulated_energy_from_prke/thermal_hydraulics_timestep;
+
             fhr_thermal_hydraulics_state = 
                 Self::four_branch_pri_and_intermediate_loop_single_time_step(
                     pri_loop_pump_pressure, 
@@ -1049,6 +1059,8 @@ impl FHRSimulatorApp {
                     &mut top_mixing_node_intrmd_loop, 
                     steam_generator_tube_side_temperature, 
                     steam_generator_overall_ua);
+
+            dbg!(&fhr_thermal_hydraulics_state);
 
             current_simulation_time += thermal_hydraulics_timestep;
 
@@ -1073,6 +1085,32 @@ impl FHRSimulatorApp {
                 = thermal_hydraulics_timestep.get::<microsecond>().round();
             *&mut fhr_state_clone.lock().unwrap().thermal_hydraulics_calc_time_microseconds
                 = time_taken_for_calculation_loop_microseconds;
+
+            // update temperatures
+            {
+                let mut fhr_state_lock = fhr_state_clone.lock().unwrap();
+
+                // the reactor branch itself has five elements
+                // from 0,1,2,3,4 in order of going from bottom 
+                // of the core to the top
+                fhr_state_lock.core_inlet_temp_degc = 
+                    fhr_thermal_hydraulics_state
+                    .reactor_temp_profile_degc[0];
+                fhr_state_lock.core_bottom_temp_degc = 
+                    fhr_thermal_hydraulics_state
+                    .reactor_temp_profile_degc[1];
+                fhr_state_lock.pebble_bed_coolant_temp_degc = 
+                    fhr_thermal_hydraulics_state
+                    .reactor_temp_profile_degc[2];
+                fhr_state_lock.core_top_temp_degc = 
+                    fhr_thermal_hydraulics_state
+                    .reactor_temp_profile_degc[3];
+                fhr_state_lock.core_outlet_temp_degc = 
+                    fhr_thermal_hydraulics_state
+                    .reactor_temp_profile_degc[4];
+
+
+            }
 
 
             let time_to_sleep_microseconds: u64 = 
