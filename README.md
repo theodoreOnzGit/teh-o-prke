@@ -16,7 +16,7 @@ This includes PRKE with feedback for:
 This also includes accounting for:
 1. decay heat
 
-more features to be added in future
+More features to be added in future...
 
 
 ```sh

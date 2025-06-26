@@ -1,3 +1,5 @@
+use super::openfoam_ode_system::ODESystem;
+
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
@@ -28,6 +30,8 @@ License
 // #include "RKF45.H"
 // #include "addToRunTimeSelectionTable.H"
 // these are the constants from the RKF45.C
+// From wikipedia:
+// COEFFICIENTS FOR RK4(5), FORMULA 2 Table III in Fehlberg
 const c2  : f64 = 1.0/4.0;
 const c3  : f64 = 3.0/8.0;
 const c4  : f64 = 12.0/13.0;
@@ -60,6 +64,7 @@ const e5  : f64 = -1.0/5.0 - b5;
 const e6  : f64 = -b6;
 
 
+/// note: need a verification test too
 
 #[allow(non_snake_case)]
 #[derive(Debug,Clone)]
@@ -71,20 +76,33 @@ pub struct RKF45 {
     k5_: Vec<f64>,
     k6_: Vec<f64>,
     err_: Vec<f64>,
+    // i'll need to make way for a system of ODEs
+    //
 
+    odes_: ODESystem,
 }
+
+
+
 
 #[allow(non_snake_case)]
 impl RKF45 {
 
     #[inline]
-    pub fn solve(&mut self, x0: f64, 
+    pub fn solve(&mut self, 
+        x0: f64, 
         y0: Vec<f64>,
         dydx0: Vec<f64>,
         dx: f64,
-        y: Vec<f64>){
+        y: &mut Vec<f64>,){
+
 
         let yTemp_ = self.yTemp_.clone();
+
+        // note, in the RKF45, there is k1_
+        //
+        // but k1_ in this case is just dydx0
+        // ie f(x,y)
 
         for (i,_yTemp) in yTemp_.iter().enumerate() {
             self.yTemp_[i] = y0[i] + a21*dx*dydx0[i];
@@ -92,8 +110,31 @@ impl RKF45 {
 
         //note: it appears odes_ is a reference to the ODE system 
         //in ODESolver.H
+        // in ODESolver.H, we find that the ode_ is a pointer to 
+        // the ODESystem class
+        //
+        // question is what does the derivatives method do?
 
-        // odes_.derivatives(x0 + c2*dx, yTemp_, k2_);
+        self.odes_.derivatives(x0 + c2*dx, &yTemp_, &mut self.k2_);
+        //
+        // //- Calculate the derivatives in dydx
+        // virtual void derivatives
+        // (
+        //     const scalar x,
+        //     const scalarField& y,
+        //     scalarField& dydx
+        // ) const = 0;
+        
+        // it seems the method isn't properly derived. 
+        //
+        // But, yes. RKF45 after all is a method, the derivatives themselves 
+        // are user defined.
+        //
+        // so this is evaluating the system of derivatives at 
+        // x = x0 + c2*dx
+        // y = yTemp_
+        //
+        // and in this case, storing it in self.k2_
 
         // forAll(yTemp_, i)
         // {
@@ -103,7 +144,7 @@ impl RKF45 {
             self.yTemp_[i] = y0[i] + dx*(a31*dydx0[i] + a32*self.k2_[i]);
         }
 
-        // odes_.derivatives(x0 + c3*dx, yTemp_, k3_);
+        self.odes_.derivatives(x0 + c3*dx, &yTemp_, &mut self.k3_);
 
         // forAll(yTemp_, i)
         // {
@@ -113,7 +154,7 @@ impl RKF45 {
             self.yTemp_[i] = y0[i] + dx*(a41*dydx0[i] + a42*self.k2_[i] + a43*self.k3_[i]);
         }
 
-        // odes_.derivatives(x0 + c4*dx, yTemp_, k4_);
+        self.odes_.derivatives(x0 + c4*dx, &yTemp_, &mut self.k4_);
 
         // forAll(yTemp_, i)
         // {
@@ -125,7 +166,7 @@ impl RKF45 {
                 + dx*(a51*dydx0[i] + a52*self.k2_[i] + a53*self.k3_[i] + a54*self.k4_[i]);
         }
 
-        // odes_.derivatives(x0 + c5*dx, yTemp_, k5_);
+        self.odes_.derivatives(x0 + c5*dx, &yTemp_, &mut self.k5_);
 
         // forAll(yTemp_, i)
         // {
@@ -140,6 +181,193 @@ impl RKF45 {
                     + a64*self.k4_[i] + a65*self.k5_[i]
                 );
         }
+
+
+        self.odes_.derivatives(x0 + c6*dx, &yTemp_, &mut self.k6_);
+
+        // // Calculate the 5th-order solution
+        // forAll(y, i)
+        // {
+        //     y[i] = y0[i]
+        //       + dx
+        //        *(b1*dydx0[i] + b3*k3_[i] + b4*k4_[i] + b5*k5_[i] + b6*k6_[i]);
+        // }
+
+        for (i,_yTemp) in yTemp_.iter().enumerate() {
+
+            y[i] = y0[i]
+                + dx*(
+                    b1*dydx0[i] + b3*self.k3_[i] + b4*self.k4_[i] 
+                    + b5*self.k5_[i] + b6*self.k6_[i]
+                );
+        }
+        // // Calculate the error estimate from the difference between the
+        // // 4th-order and 5th-order solutions
+        // forAll(err_, i)
+        // {
+        //     err_[i] =
+        //         dx
+        //        *(e1*dydx0[i] + e3*k3_[i] + e4*k4_[i] + e5*k5_[i] + e6*k6_[i]);
+        // }
+        for (i,_yTemp) in yTemp_.iter().enumerate() {
+
+            self.err_[i] =
+                dx
+                *(e1*dydx0[i] + e3*self.k3_[i] + e4*self.k4_[i] 
+                    + e5*self.k5_[i] + e6*self.k6_[i]);
+        }
+
+        // return normalizeError(y0, y, err_);
+
+
     }
 
+
+
+    /// solves using a more functional programming 
+    /// approach
+    /// ie, you need to define the function which returns
+    ///
+    #[inline]
+    pub fn solve_functional_prog_single_stepsize_no_stepsize_adjust( 
+        x0: f64, 
+        y0: Vec<f64>,
+        dx: f64,
+        user_defined_ode: impl Fn(f64, &Vec<f64>) -> Vec<f64>) -> Vec<f64>{
+
+        let k2_: Vec<f64>;
+        let k3_: Vec<f64>;
+        let k4_: Vec<f64>;
+        let k5_: Vec<f64>;
+        let k6_: Vec<f64>;
+        let mut err_: Vec<f64> = y0.clone();
+        let mut yTemp_ = y0.clone();
+        let mut y = y0.clone();
+
+        // note, in the RKF45, there is k1_
+        //
+        // but k1_ in this case is just dydx0
+        // ie f(x,y)
+
+        let dydx0: Vec<f64> = user_defined_ode(x0,&y0);
+
+        for (i,yTemp) in yTemp_.iter_mut().enumerate() {
+            *yTemp = y0[i] + a21*dx*dydx0[i];
+        }
+
+        //note: it appears odes_ is a reference to the ODE system 
+        //in ODESolver.H
+        // in ODESolver.H, we find that the ode_ is a pointer to 
+        // the ODESystem class
+        //
+        // question is what does the derivatives method do?
+        
+        k2_ = user_defined_ode(x0 + c2*dx, &yTemp_);
+        //
+        // //- Calculate the derivatives in dydx
+        // virtual void derivatives
+        // (
+        //     const scalar x,
+        //     const scalarField& y,
+        //     scalarField& dydx
+        // ) const = 0;
+        
+        // it seems the method isn't properly derived. 
+        //
+        // But, yes. RKF45 after all is a method, the derivatives themselves 
+        // are user defined.
+        //
+        // so this is evaluating the system of derivatives at 
+        // x = x0 + c2*dx
+        // y = yTemp_
+        //
+        // and in this case, storing it in k2_
+
+        // forAll(yTemp_, i)
+        // {
+        //     yTemp_[i] = y0[i] + dx*(a31*dydx0[i] + a32*k2_[i]);
+        // }
+        for (i,yTemp) in yTemp_.iter_mut().enumerate() {
+            *yTemp = y0[i] + dx*(a31*dydx0[i] + a32*k2_[i]);
+        }
+
+        k3_ = user_defined_ode(x0 + c3*dx, &yTemp_);
+
+        // forAll(yTemp_, i)
+        // {
+        //     yTemp_[i] = y0[i] + dx*(a41*dydx0[i] + a42*k2_[i] + a43*k3_[i]);
+        // }
+        for (i,yTemp) in yTemp_.iter_mut().enumerate() {
+            *yTemp = y0[i] + dx*(a41*dydx0[i] + a42*k2_[i] + a43*k3_[i]);
+        }
+
+        k4_ = user_defined_ode(x0 + c4*dx, &yTemp_);
+
+        // forAll(yTemp_, i)
+        // {
+        //     *_yTemp = y0[i]
+        //         + dx*(a51*dydx0[i] + a52*k2_[i] + a53*k3_[i] + a54*k4_[i]);
+        // }
+        for (i,yTemp) in yTemp_.iter_mut().enumerate() {
+            *yTemp = y0[i]
+                + dx*(a51*dydx0[i] + a52*k2_[i] + a53*k3_[i] + a54*k4_[i]);
+        }
+
+        k5_ = user_defined_ode(x0 + c5*dx, &yTemp_);
+
+        // forAll(yTemp_, i)
+        // {
+        //     *_yTemp = y0[i]
+        //         + dx
+        //         *(a61*dydx0[i] + a62*k2_[i] + a63*k3_[i] + a64*k4_[i] + a65*k5_[i]);
+        // }
+        for (i,yTemp) in yTemp_.iter_mut().enumerate() {
+            *yTemp = y0[i]
+                + dx*(
+                    a61*dydx0[i] + a62*k2_[i] + a63*k3_[i] 
+                    + a64*k4_[i] + a65*k5_[i]
+                );
+        }
+
+
+        k6_ = user_defined_ode(x0 + c6*dx, &yTemp_);
+
+        // // Calculate the 5th-order solution
+        // forAll(y, i)
+        // {
+        //     y[i] = y0[i]
+        //       + dx
+        //        *(b1*dydx0[i] + b3*k3_[i] + b4*k4_[i] + b5*k5_[i] + b6*k6_[i]);
+        // }
+
+        for (i,_yTemp) in yTemp_.iter_mut().enumerate() {
+
+            y[i] = y0[i]
+                + dx*(
+                    b1*dydx0[i] + b3*k3_[i] + b4*k4_[i] 
+                    + b5*k5_[i] + b6*k6_[i]
+                );
+        }
+        // // Calculate the error estimate from the difference between the
+        // // 4th-order and 5th-order solutions
+        // forAll(err_, i)
+        // {
+        //     err_[i] =
+        //         dx
+        //        *(e1*dydx0[i] + e3*k3_[i] + e4*k4_[i] + e5*k5_[i] + e6*k6_[i]);
+        // }
+        for (i,_yTemp) in yTemp_.iter_mut().enumerate() {
+
+            err_[i] =
+                dx
+                *(e1*dydx0[i] + e3*k3_[i] + e4*k4_[i] 
+                    + e5*k5_[i] + e6*k6_[i]);
+        }
+
+        // return normalizeError(y0, y, err_);
+
+        // returns the vector at next timestep
+        return y;
+
+    }
 }

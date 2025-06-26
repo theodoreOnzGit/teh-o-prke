@@ -100,7 +100,7 @@ pub fn prke_test_zero_reactivity(){
 
     for _ in 0..number_of_timesteps {
 
-        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector_implicit(
             timestep, 
             zero_reactivity, 
             neutron_generation_time, 
@@ -114,7 +114,7 @@ pub fn prke_test_zero_reactivity(){
     // populations should be 1.0
 
     let precursor_sum_with_neutron_pop_array = 
-        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector_implicit(
             timestep, 
             zero_reactivity, 
             neutron_generation_time, 
@@ -139,7 +139,7 @@ pub fn prke_test_zero_reactivity(){
 
     for _ in 0..number_of_timesteps {
 
-        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
+        prke_test.solve_next_timestep_precursor_concentration_and_neutron_pop_vector_implicit(
             timestep, 
             zero_reactivity, 
             neutron_generation_time, 

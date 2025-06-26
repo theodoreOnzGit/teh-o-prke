@@ -4,7 +4,7 @@ use std::time::{Duration, SystemTime};
 
 use teh_o_prke::decay_heat::DecayHeat;
 use teh_o_prke::feedback_mechanisms::fission_product_poisons::Xenon135Poisoning;
-use teh_o_prke::zero_power_prke::six_group_precursor_prke::FissioningNuclideType;
+use teh_o_prke::zero_power_prke::six_group_precursor_prke::six_group_constants::FissioningNuclideType;
 use teh_o_prke::{feedback_mechanisms::SixFactorFormulaFeedback, zero_power_prke::six_group_precursor_prke::SixGroupPRKE};
 use uom::si::area::square_meter;
 use uom::si::energy::{kilojoule, megaelectronvolt};
@@ -34,7 +34,7 @@ impl FHRSimulatorApp {
         // default
         let mut prke_six_group :SixGroupPRKE = SixGroupPRKE::default();
 
-        let prke_timestep = Time::new::<second>(5.0e-4);
+        let prke_timestep = Time::new::<microsecond>(25.0);
         let reactor_volume = Volume::new::<cubic_meter>(0.5);
         let macroscopic_fission_xs = LinearNumberDensity::new::<per_meter>(1.0);
         let mut pebble_bed_th_struct = 
@@ -42,7 +42,7 @@ impl FHRSimulatorApp {
         let fhr_state_clone = fhr_state.clone();
 
         // then decay heat struct 
-        let mut fhr_decay_heat = DecayHeat::default();
+        let mut fhr_decay_heat_struct = DecayHeat::default();
 
         // then xenon poisoning struct 
         let mut fhr_xe135_poisoning = Xenon135Poisoning::default();
@@ -94,7 +94,7 @@ impl FHRSimulatorApp {
                 prke_timestep,
                 reactor_volume,
                 macroscopic_fission_xs,
-                &mut fhr_decay_heat,
+                &mut fhr_decay_heat_struct,
                 &mut pebble_bed_th_struct,
                 &mut fhr_xe135_poisoning,
             );
@@ -109,7 +109,7 @@ impl FHRSimulatorApp {
                 (loop_time.elapsed().unwrap().as_secs_f64() * 100.0).round()/100.0;
 
             let overall_simulation_in_realtime_or_faster: bool = 
-                prke_simulation_time_seconds > prke_elapsed_time_seconds;
+                prke_simulation_time_seconds >= prke_elapsed_time_seconds;
 
             // now update the fhr state 
             let prke_timestep_microseconds = prke_timestep.get::<microsecond>();
@@ -146,13 +146,27 @@ impl FHRSimulatorApp {
 
 
             // last condition for sleeping
-            let _real_time_in_current_timestep: bool = 
+            let real_time_in_current_timestep: bool = 
                 time_to_sleep_microseconds > 1;
 
             //
+            let fast_forward_botton_on = false;
 
-            if overall_simulation_in_realtime_or_faster {
+            if overall_simulation_in_realtime_or_faster && 
+                real_time_in_current_timestep && 
+                    !fast_forward_botton_on 
+            {
                 thread::sleep(time_to_sleep);
+            } else if overall_simulation_in_realtime_or_faster 
+                && real_time_in_current_timestep 
+                    && fast_forward_botton_on 
+            {
+                // sleep 5 microseconds if fast fwd
+                let short_time_to_sleep: Duration = Duration::from_micros(5);
+                thread::sleep(short_time_to_sleep);
+            } else {
+                // don't sleep
+
             }
             //let time_to_sleep = Duration::from_millis(40);
 
@@ -237,15 +251,28 @@ impl FHRSimulatorApp {
         let background_source_rate = 
             VolumetricNumberRate::new::<per_cubic_meter_second>(5.0);
 
+        // use this to toggle between implicit and explicit solver
+        let implicit_solver = false;
 
 
-        let _neutron_pop_and_six_group_precursor_vec = 
-            prke_six_group.solve_next_timestep_precursor_concentration_and_neutron_pop_vector(
-                prke_timestep, 
-                reactivity, 
-                mean_neutron_time, 
-                background_source_rate
-            );
+        if implicit_solver == true {
+            let _neutron_pop_and_six_group_precursor_vec = 
+                prke_six_group.solve_next_timestep_precursor_concentration_and_neutron_pop_vector_implicit(
+                    prke_timestep, 
+                    reactivity, 
+                    mean_neutron_time, 
+                    background_source_rate
+                );
+        } else {
+
+            let _neutron_pop_and_six_group_precursor_vec = 
+                prke_six_group.solve_next_timestep_precursor_concentration_and_neutron_pop_vector_explicit(
+                    prke_timestep, 
+                    reactivity, 
+                    mean_neutron_time, 
+                    background_source_rate
+                );
+        }
 
         // then get the current neutron population 
         let current_neutron_pop_density: VolumetricNumberDensity = 
@@ -304,9 +331,10 @@ impl FHRSimulatorApp {
         // adjust fission power for decay heat 
         // fission power less decay heat = 1.0 - 0.04 - 0.04 - 0.02 = 0.9
         let mut fission_power_corrected_for_decay_heat = fission_power_instantaneous * 0.9;
-        fission_power_corrected_for_decay_heat -= fhr_decay_heat.calc_decay_heat_power_1(prke_timestep);
-        fission_power_corrected_for_decay_heat -= fhr_decay_heat.calc_decay_heat_power_2(prke_timestep);
-        fission_power_corrected_for_decay_heat -= fhr_decay_heat.calc_decay_heat_power_3(prke_timestep);
+        let mut reactor_current_decay_heat: Power = fhr_decay_heat.calc_decay_heat_power_1(prke_timestep).abs();
+        reactor_current_decay_heat += fhr_decay_heat.calc_decay_heat_power_2(prke_timestep).abs();
+        reactor_current_decay_heat += fhr_decay_heat.calc_decay_heat_power_3(prke_timestep).abs();
+        fission_power_corrected_for_decay_heat += reactor_current_decay_heat;
 
         // with the correct fission power now, we can 
         // calc temperature
@@ -315,7 +343,7 @@ impl FHRSimulatorApp {
         // These are arbitrary values, will adjust later
 
         let pebble_bed_mass = Mass::new::<kilogram>(8000.0);
-        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(100.0);
+        let pebble_bed_heat_transfer_area = Area::new::<square_meter>(300.0);
         let pebble_bed_overall_htc = HeatTransfer::new::<watt_per_square_meter_kelvin>(400.0);
         let pebble_bed_coolant_temp = ThermodynamicTemperature::new::<degree_celsius>(
             fhr_state_ref.pebble_bed_coolant_temp_degc
@@ -353,6 +381,8 @@ impl FHRSimulatorApp {
         fhr_state_ref.keff = keff.get::<ratio>();
         fhr_state_ref.reactor_power_megawatts = 
             fission_power_corrected_for_decay_heat.get::<megawatt>();
+        fhr_state_ref.reactor_decay_heat_megawatts = 
+            reactor_current_decay_heat.get::<megawatt>();
 
         // reactivity in dollars 
         let beta_delayed_frac_total = prke_six_group.get_total_delayed_fraction();
@@ -465,6 +495,8 @@ impl FHRSimulatorApp {
 
 
 
+/// this contains code for TIGHTLY coupled thermal hydraulics,
+/// that is between the PRKE
 pub mod pebble_bed_thermal_hydraulics;
 pub use pebble_bed_thermal_hydraulics::*;
 

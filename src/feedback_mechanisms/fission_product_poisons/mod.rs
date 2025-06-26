@@ -8,7 +8,8 @@ use uom::si::volumetric_number_density::per_cubic_centimeter;
 use uom::ConstZero;
 use uom::si::{f64::*, ratio::ratio};
 
-use crate::zero_power_prke::six_group_precursor_prke::FissioningNuclideType;
+use crate::zero_power_prke::six_group_precursor_prke::six_group_constants::FissioningNuclideType;
+
 
 #[derive(Debug, Clone, Copy)]
 pub struct Xenon135Poisoning {
