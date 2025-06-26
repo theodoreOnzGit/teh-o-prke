@@ -936,8 +936,8 @@ impl FHRSimulatorApp {
 
 
         // probably want to use fhr state
-        let pri_loop_pump_pressure = Pressure::new::<kilopascal>(-10.0);
-        let intrmd_loop_pump_pressure = Pressure::new::<kilopascal>(-10.0);
+        let mut pri_loop_pump_pressure = Pressure::new::<kilopascal>(-10.0);
+        let mut intrmd_loop_pump_pressure = Pressure::new::<kilopascal>(-10.0);
 
         // mixing nodes for pri loop 
         let mut bottom_mixing_node_pri_loop = 
@@ -1041,6 +1041,13 @@ impl FHRSimulatorApp {
             let reactor_power = 
                 accumulated_energy_from_prke/thermal_hydraulics_timestep;
 
+            // then primary loop pressure 
+            
+            pri_loop_pump_pressure = 
+                Pressure::new::<kilopascal>(
+                    -fhr_state_clone.lock().unwrap().fhr_pri_loop_pump_pressure_kilopascals
+                );
+
             fhr_thermal_hydraulics_state = 
                 Self::four_branch_pri_and_intermediate_loop_single_time_step(
                     pri_loop_pump_pressure, 
@@ -1109,6 +1116,32 @@ impl FHRSimulatorApp {
                     fhr_thermal_hydraulics_state
                     .reactor_temp_profile_degc[4];
 
+                // the downcomers 1 and 2 also have branches
+                // with 5 nodes each 
+                // however, the fhr itself only has three distinct regions 
+                // for display
+                // for now I will just use node 0, 2 and 4
+                //
+
+                fhr_state_lock.left_downcomer_lower_temp_degc = 
+                    fhr_thermal_hydraulics_state 
+                    .downcomer_2_temp_profile_degc[0];
+                fhr_state_lock.left_downcomer_mid_temp_degc = 
+                    fhr_thermal_hydraulics_state 
+                    .downcomer_2_temp_profile_degc[2];
+                fhr_state_lock.left_downcomer_upper_temp_degc = 
+                    fhr_thermal_hydraulics_state 
+                    .downcomer_2_temp_profile_degc[4];
+
+                fhr_state_lock.right_downcomer_lower_temp_degc = 
+                    fhr_thermal_hydraulics_state 
+                    .downcomer_3_temp_profile_degc[0];
+                fhr_state_lock.right_downcomer_mid_temp_degc = 
+                    fhr_thermal_hydraulics_state 
+                    .downcomer_3_temp_profile_degc[2];
+                fhr_state_lock.right_downcomer_upper_temp_degc = 
+                    fhr_thermal_hydraulics_state 
+                    .downcomer_3_temp_profile_degc[4];
 
             }
 
