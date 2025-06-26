@@ -320,8 +320,29 @@ impl FHRSimulatorApp {
 
                 let ihx_br_flowrate_kg_per_s = fhr_state_clone.ihx_branch_flowrate_kg_per_s;
 
-                ui.label("Intermediate Heat Exchanger Branch Flowrate Microseconds");
+                ui.label("Intermediate Heat Exchanger Branch Flowrate downwards through IHX (kg/s)");
                 ui.label(((1000.0*ihx_br_flowrate_kg_per_s).round() / 1000.0).to_string());
+
+                let reactor_branch_flowrate_kg_per_s = -fhr_state_clone.reactor_branch_flowrate_kg_per_s;
+
+                ui.label("Reactor Branch Flowrate (upwards) (kg/s)");
+                ui.label(((1000.0*reactor_branch_flowrate_kg_per_s).round() / 1000.0).to_string());
+
+                let downcomer1_branch_flowrate_kg_per_s = fhr_state_clone.downcomer1_branch_flowrate_kg_per_s;
+
+                ui.label("Left Downcomer Branch Flowrate (upwards) (kg/s)");
+                ui.label(((1000.0*downcomer1_branch_flowrate_kg_per_s).round() / 1000.0).to_string());
+
+
+                let downcomer2_branch_flowrate_kg_per_s = fhr_state_clone.downcomer2_branch_flowrate_kg_per_s;
+
+                ui.label("Right Downcomer Branch Flowrate (upwards) (kg/s)");
+                ui.label(((1000.0*downcomer2_branch_flowrate_kg_per_s).round() / 1000.0).to_string());
+
+                let intermediate_loop_clockwise_flowrate_kg_per_s = fhr_state_clone.intermediate_loop_clockwise_flow_kg_per_s;
+
+                ui.label("Intermediate Loop Flowrate (clockwise) (kg/s)");
+                ui.label(((1000.0*intermediate_loop_clockwise_flowrate_kg_per_s).round() / 1000.0).to_string());
                 // then acknowledgements/citing
 
             });

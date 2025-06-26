@@ -988,7 +988,7 @@ impl FHRSimulatorApp {
         let steam_generator_overall_ua: ThermalConductance 
             = ThermalConductance::new::<watt_per_kelvin>(1.2e5);
 
-        let mut fhr_thermal_hydraulics_state = FHRThermalHydraulicsState {
+        let mut current_fhr_thermal_hydraulics_state = FHRThermalHydraulicsState {
             downcomer_branch_1_flow,
             downcomer_branch_2_flow,
             intermediate_heat_exchanger_branch_flow,
@@ -1015,7 +1015,7 @@ impl FHRSimulatorApp {
             downcomer_2_temp_profile_degc: vec![],
             downcomer_3_temp_profile_degc: vec![],
         };
-        dbg!(&fhr_thermal_hydraulics_state);
+        dbg!(&current_fhr_thermal_hydraulics_state);
         // calculation loop (indefinite)
         //
         // to be done once every timestep
@@ -1048,7 +1048,7 @@ impl FHRSimulatorApp {
                     -fhr_state_clone.lock().unwrap().fhr_pri_loop_pump_pressure_kilopascals
                 );
 
-            fhr_thermal_hydraulics_state = 
+            current_fhr_thermal_hydraulics_state = 
                 Self::four_branch_pri_and_intermediate_loop_single_time_step(
                     pri_loop_pump_pressure, 
                     intrmd_loop_pump_pressure, 
@@ -1067,7 +1067,7 @@ impl FHRSimulatorApp {
                     steam_generator_tube_side_temperature, 
                     steam_generator_overall_ua);
 
-            dbg!(&fhr_thermal_hydraulics_state);
+            dbg!(&current_fhr_thermal_hydraulics_state);
 
             current_simulation_time += thermal_hydraulics_timestep;
 
@@ -1101,19 +1101,19 @@ impl FHRSimulatorApp {
                 // from 0,1,2,3,4 in order of going from bottom 
                 // of the core to the top
                 fhr_state_lock.core_inlet_temp_degc = 
-                    fhr_thermal_hydraulics_state
+                    current_fhr_thermal_hydraulics_state
                     .reactor_temp_profile_degc[0];
                 fhr_state_lock.core_bottom_temp_degc = 
-                    fhr_thermal_hydraulics_state
+                    current_fhr_thermal_hydraulics_state
                     .reactor_temp_profile_degc[1];
                 fhr_state_lock.pebble_bed_coolant_temp_degc = 
-                    fhr_thermal_hydraulics_state
+                    current_fhr_thermal_hydraulics_state
                     .reactor_temp_profile_degc[2];
                 fhr_state_lock.core_top_temp_degc = 
-                    fhr_thermal_hydraulics_state
+                    current_fhr_thermal_hydraulics_state
                     .reactor_temp_profile_degc[3];
                 fhr_state_lock.core_outlet_temp_degc = 
-                    fhr_thermal_hydraulics_state
+                    current_fhr_thermal_hydraulics_state
                     .reactor_temp_profile_degc[4];
 
                 // the downcomers 1 and 2 also have branches
@@ -1124,24 +1124,48 @@ impl FHRSimulatorApp {
                 //
 
                 fhr_state_lock.left_downcomer_lower_temp_degc = 
-                    fhr_thermal_hydraulics_state 
+                    current_fhr_thermal_hydraulics_state 
                     .downcomer_2_temp_profile_degc[0];
                 fhr_state_lock.left_downcomer_mid_temp_degc = 
-                    fhr_thermal_hydraulics_state 
+                    current_fhr_thermal_hydraulics_state 
                     .downcomer_2_temp_profile_degc[2];
                 fhr_state_lock.left_downcomer_upper_temp_degc = 
-                    fhr_thermal_hydraulics_state 
+                    current_fhr_thermal_hydraulics_state 
                     .downcomer_2_temp_profile_degc[4];
 
                 fhr_state_lock.right_downcomer_lower_temp_degc = 
-                    fhr_thermal_hydraulics_state 
+                    current_fhr_thermal_hydraulics_state 
                     .downcomer_3_temp_profile_degc[0];
                 fhr_state_lock.right_downcomer_mid_temp_degc = 
-                    fhr_thermal_hydraulics_state 
+                    current_fhr_thermal_hydraulics_state 
                     .downcomer_3_temp_profile_degc[2];
                 fhr_state_lock.right_downcomer_upper_temp_degc = 
-                    fhr_thermal_hydraulics_state 
+                    current_fhr_thermal_hydraulics_state 
                     .downcomer_3_temp_profile_degc[4];
+
+                // flowrate diagnostics 
+                fhr_state_lock.intermediate_loop_clockwise_flow_kg_per_s = 
+                    (current_fhr_thermal_hydraulics_state 
+                    .intrmd_loop_ihx_br_flow 
+                    .get::<kilogram_per_second>()*1000.0)/1000.0;
+
+                fhr_state_lock.reactor_branch_flowrate_kg_per_s = 
+                    (current_fhr_thermal_hydraulics_state 
+                    .reactor_branch_flow 
+                    .get::<kilogram_per_second>()*1000.0)/1000.0;
+                fhr_state_lock.downcomer1_branch_flowrate_kg_per_s = 
+                    (current_fhr_thermal_hydraulics_state 
+                    .downcomer_branch_1_flow 
+                    .get::<kilogram_per_second>()*1000.0)/1000.0;
+
+                fhr_state_lock.downcomer2_branch_flowrate_kg_per_s = 
+                    (current_fhr_thermal_hydraulics_state 
+                    .downcomer_branch_2_flow
+                    .get::<kilogram_per_second>()*1000.0)/1000.0;
+                fhr_state_lock.ihx_branch_flowrate_kg_per_s = 
+                    (current_fhr_thermal_hydraulics_state 
+                    .intermediate_heat_exchanger_branch_flow
+                    .get::<kilogram_per_second>()*1000.0)/1000.0;
 
             }
 
