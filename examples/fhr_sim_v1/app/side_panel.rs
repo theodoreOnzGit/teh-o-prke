@@ -318,12 +318,12 @@ impl FHRSimulatorApp {
                 ui.separator();
 
 
-                let ihx_br_flowrate_kg_per_s = fhr_state_clone.ihx_branch_flowrate_kg_per_s;
+                let ihx_br_flowrate_kg_per_s = -fhr_state_clone.ihx_branch_flowrate_kg_per_s;
 
                 ui.label("Intermediate Heat Exchanger Branch Flowrate downwards through IHX (kg/s)");
                 ui.label(((1000.0*ihx_br_flowrate_kg_per_s).round() / 1000.0).to_string());
 
-                let reactor_branch_flowrate_kg_per_s = -fhr_state_clone.reactor_branch_flowrate_kg_per_s;
+                let reactor_branch_flowrate_kg_per_s = fhr_state_clone.reactor_branch_flowrate_kg_per_s;
 
                 ui.label("Reactor Branch Flowrate (upwards) (kg/s)");
                 ui.label(((1000.0*reactor_branch_flowrate_kg_per_s).round() / 1000.0).to_string());
