@@ -50,7 +50,6 @@ impl FHRSimulatorApp {
     ///
     /// and handles fluid mechanics and heat transfer for one time step
     pub(crate) fn four_branch_pri_and_intermediate_loop_single_time_step(
-        fhr_state: Arc<Mutex<FHRState>>,
         pri_loop_pump_pressure: Pressure,
         intrmd_loop_pump_pressure: Pressure,
         reactor_power: Power,
@@ -1034,7 +1033,7 @@ impl FHRSimulatorApp {
                 Power::new::<megawatt>(35.0);
             fhr_thermal_hydraulics_state = 
                 Self::four_branch_pri_and_intermediate_loop_single_time_step(
-                    fhr_state_clone.clone(), pri_loop_pump_pressure, 
+                    pri_loop_pump_pressure, 
                     intrmd_loop_pump_pressure, 
                     reactor_power, 
                     thermal_hydraulics_timestep, current_simulation_time, 
@@ -1108,6 +1107,8 @@ impl FHRSimulatorApp {
                 // don't sleep
 
             }
+
+            
 
 
         }
