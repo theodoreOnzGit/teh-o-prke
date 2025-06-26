@@ -1,7 +1,13 @@
 [package]
 name = "teh-o-prke"
-version = "0.3.2"
+version = "0.0.1"
 edition = "2021"
+license = "GPL-3.0"
+description = "Point Reactor Kinetics Package (PRKE) for the Transport and Eigenvalue Hybrid Open source solver (Teh-O)"
+homepage = "https://github.com/theodoreOnzGit/teh-o-prke/"
+repository ="https://github.com/theodoreOnzGit/teh-o-prke/"
+readme = "README.md"
+categories = ["science"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -40,13 +46,6 @@ tuas_boussinesq_solver = "0.0.9"
 
 
 
-[[example]]
-name = "client"
-path = "examples/simple_prke_control_rod_fuel_temp_feedback_demo/client/main.rs"
-
-[[example]]
-name = "server"
-path = "examples/simple_prke_control_rod_fuel_temp_feedback_demo/server/main.rs"
 
 [[example]]
 name = "fhr_sim_v1"
